@@ -7,7 +7,7 @@ public class LineFollower
 {
     public static void main(String[] args)
     {
-        Controller controller = new Controller(SensorPort.S4, MotorPort.B, MotorPort.C);
+        Controller controller = new Controller(SensorPort.S1, MotorPort.B, MotorPort.C);
         
         controller.run();
         

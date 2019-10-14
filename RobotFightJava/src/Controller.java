@@ -58,13 +58,13 @@ public class Controller
         drive.forward();
         log("toto");
         System.out.println(sensor.onPath());
-        //Button.ENTER.waitForPressAndRelease();
+        Button.ENTER.waitForPressAndRelease();
         
         while (sensor.onPath())
         {
             delay();
             System.out.println(sensor.onPath());
-            //Button.ENTER.waitForPressAndRelease();
+            Button.ENTER.waitForPressAndRelease();
         }
 
         drive.stop();
