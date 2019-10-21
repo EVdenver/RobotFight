@@ -1,4 +1,5 @@
 import lejos.hardware.Button;
+
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.Font;
 import lejos.hardware.lcd.GraphicsLCD;
@@ -8,6 +9,7 @@ import lejos.robotics.Color;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.filter.MeanFilter;
 import lejos.utility.Delay;
+import java.util.Properties;
 
 public class TestColor {
 
@@ -59,7 +61,7 @@ public static boolean goMessage() {
 	 */
 	public static void main(String[] args) {
 		try {
-			
+			properties sauveur = new properties;
 			boolean again = true;
 			
 			if (!goMessage()) System.exit(0);
@@ -73,24 +75,27 @@ public static boolean goMessage() {
 			Button.ENTER.waitForPressAndRelease();
 			float[] blue = new float[average.sampleSize()];
 			average.fetchSample(blue, 0);
+			sauveur.setProperty("Blue"+ blue[0]+','+ blue[1]+','+ blue[2]);
 			
 			
 			System.out.println("Press enter to calibrate red...");
 			Button.ENTER.waitForPressAndRelease();
 			float[] red = new float[average.sampleSize()];
 			average.fetchSample(red, 0);
+			sauveur.setProperty("Red"+ red[0]+','+ red[1]+','+ red[2]);
 			
 			System.out.println("Press enter to calibrate green...");
 			Button.ENTER.waitForPressAndRelease();
 			float[] green = new float[average.sampleSize()];
 			average.fetchSample(green, 0);
+			sauveur.setProperty("Green"+ green[0]+','+ green[1]+','+ green[2]);
 
 			System.out.println("Press enter to calibrate black...");
 			Button.ENTER.waitForPressAndRelease();
 			float[] black = new float[average.sampleSize()];
 			average.fetchSample(black, 0);
 			System.out.println("Black calibrated");
-			
+			sauveur.setProperty("Black"+ black[0]+','+ black[1]+','+ black[2]);
 			
 			while (again) {
 				float[] sample = new float[average.sampleSize()];
