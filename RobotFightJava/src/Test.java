@@ -6,10 +6,19 @@ import lejos.utility.Delay;
 
 public class Test {
 	public static void main(String[] args) {
-		TouchSensor uTouch = new TouchSensor(SensorPort.S2);
-		boolean state = false;
-		EV3MediumRegulatedMotor grab = new EV3MediumRegulatedMotor(MotorPort.B);
-		DifferentialDrive d = new DifferentialDrive(MotorPort.C, MotorPort.A);
-		EchoSensor s = new EchoSensor(SensorPort.S3);
+		
+	}
+  
+  
+	public static void rechercheTournante (Actionneur a,EchoSensor es) {
+		float trouver=es.getDistance(); //distance entre 0 et 1
+		System.out.println("distance objet : "+trouver);
+		Delay.msDelay(10000);
+		while (trouver<0.23){
+			a.rotate(10);
+			trouver=es.getDistance(); //distance entre 0 et 1
+			System.out.println("distance objet : "+trouver);
+			Delay.msDelay(10000);
+		}
 	}
 }

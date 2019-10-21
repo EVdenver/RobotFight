@@ -24,7 +24,7 @@ public static boolean goMessage() {
 		g.drawString("To run the ", 2, 60, 0);
 		g.drawString("code one needs an EV3 ", 2, 70, 0);
 		g.drawString("brick with a EV3 color sensor", 2, 80, 0); 
-		g.drawString("attached to port 4.", 2, 90, 0);
+		g.drawString("attached to port 2.", 2, 90, 0);
 		  
 		// Quit GUI button:
 		g.setFont(Font.getSmallFont()); // can also get specific size using Font.getFont()
@@ -64,7 +64,7 @@ public static boolean goMessage() {
 			
 			if (!goMessage()) System.exit(0);
 			
-			Port port = LocalEV3.get().getPort("S4");
+			Port port = LocalEV3.get().getPort("S2");
 			EV3ColorSensor colorSensor = new EV3ColorSensor(port);
 			SampleProvider average = new MeanFilter(colorSensor.getRGBMode(), 1);
 			colorSensor.setFloodlight(Color.WHITE);
