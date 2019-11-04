@@ -38,7 +38,7 @@ public class ColorSensor
     	sauveur.newLine();
     	sauveur.write("n : "+ black[0].TestColor);
     	
-    
+    pas bon pour l'instant 
     }*/	
 
     public boolean onPath()

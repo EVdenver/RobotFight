@@ -9,7 +9,15 @@ import lejos.robotics.Color;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.filter.MeanFilter;
 import lejos.utility.Delay;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStream;
 import java.util.Properties;
+
+
 
 public class TestColor {
 
@@ -61,7 +69,9 @@ public static boolean goMessage() {
 	 */
 	public static void main(String[] args) {
 		try {
-			properties sauveur = new properties;
+			Properties sauveur = new Properties();
+			OutputStream out=System.out ;
+			
 			boolean again = true;
 			
 			if (!goMessage()) System.exit(0);
@@ -75,27 +85,37 @@ public static boolean goMessage() {
 			Button.ENTER.waitForPressAndRelease();
 			float[] blue = new float[average.sampleSize()];
 			average.fetchSample(blue, 0);
-			sauveur.setProperty("Blue"+ blue[0]+','+ blue[1]+','+ blue[2]);
+			sauveur.setProperty("Blue", blue[0]+ ","+ blue[1]+","+ blue[2]);
 			
 			
 			System.out.println("Press enter to calibrate red...");
 			Button.ENTER.waitForPressAndRelease();
 			float[] red = new float[average.sampleSize()];
 			average.fetchSample(red, 0);
-			sauveur.setProperty("Red"+ red[0]+','+ red[1]+','+ red[2]);
+			sauveur.setProperty("Red", red[0]+","+ red[1]+","+ red[2]);
 			
 			System.out.println("Press enter to calibrate green...");
 			Button.ENTER.waitForPressAndRelease();
 			float[] green = new float[average.sampleSize()];
 			average.fetchSample(green, 0);
-			sauveur.setProperty("Green"+ green[0]+','+ green[1]+','+ green[2]);
+			sauveur.setProperty("Green", green[0]+","+ green[1]+","+ green[2]);
+			
 
 			System.out.println("Press enter to calibrate black...");
 			Button.ENTER.waitForPressAndRelease();
 			float[] black = new float[average.sampleSize()];
 			average.fetchSample(black, 0);
 			System.out.println("Black calibrated");
-			sauveur.setProperty("Black"+ black[0]+','+ black[1]+','+ black[2]);
+			sauveur.setProperty("Black", black[0]+","+ black[1]+","+ black[2]);
+			
+			System.out.println("Press enter to calibrate white...");
+			Button.ENTER.waitForPressAndRelease();
+			float[] white = new float[average.sampleSize()];
+			average.fetchSample(white, 0);
+			sauveur.setProperty("White", white[0]+","+ white[1]+","+ white[2]);
+			
+			
+			sauveur.store(out, "comments");
 			
 			while (again) {
 				float[] sample = new float[average.sampleSize()];
@@ -137,6 +157,13 @@ public static boolean goMessage() {
 					minscal = scalaire;
 					color = "black";
 				}
+				scalaire = TestColor.scalaire(sample, white);
+				//System.out.println(scalaire);
+				//Button.ENTER.waitForPressAndRelease();
+				if (scalaire < minscal) {
+					minscal = scalaire;
+					color = "white";
+				}
 				
 				System.out.println("The color is " + color + " \n");
 				System.out.println("Press ENTER to continue \n");
@@ -161,5 +188,6 @@ public static boolean goMessage() {
 				Math.pow(v1[1] - v2[1], 2.0) +
 				Math.pow(v1[2] - v2[2], 2.0));
 	}
+	
 
 }
