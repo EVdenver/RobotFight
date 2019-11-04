@@ -104,7 +104,7 @@ public class Actionneur {
 	}
 
 
-	private void forward() {
+	void forward() {
 		mLeftMotor.startSynchronization();
 		mLeftMotor.forward();
 		mRightMotor.forward();
