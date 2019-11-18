@@ -10,9 +10,9 @@ public class Actionneur {
 	private  EV3LargeRegulatedMotor mLeftMotor;
 	private  EV3LargeRegulatedMotor mRightMotor;
 	private EV3MediumRegulatedMotor mPincesMotor;
-	private boolean open=false;
+	private boolean open=true;
 	Delay d= new Delay();
-	private final static int SPEED = 100; //degrees/sec
+	private final static int SPEED = 500; //degrees/sec
 	private final static double WHEEL_RADIUS = 0.05; // en mètre 
 	private final static int ROTATION_FACTOR=222; //facteur modulant la relation temps/vitesse/angle(en celcius) qui permet au robot de tourner sur son propre axe
 	private boolean avance=true;
@@ -86,7 +86,7 @@ public class Actionneur {
 			mLeftMotor.startSynchronization();
 	        mLeftMotor.stop();
 	        mRightMotor.stop();
-			mRightMotor.endSynchronization();
+			mLeftMotor.endSynchronization();
 
 	    }
 	
@@ -104,7 +104,7 @@ public class Actionneur {
 	}
 
 
-	private void forward() {
+	void forward() {
 		mLeftMotor.startSynchronization();
 		mLeftMotor.forward();
 		mRightMotor.forward();
