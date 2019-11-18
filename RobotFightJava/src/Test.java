@@ -110,6 +110,7 @@ public class Test {
   
   
 	public static void rechercheTournante () {
+		a.closePince();
 		float trouver=es.getDistance(); //distance entre 0 et 1
 		double angleTotal=0;
 		if (trouver==0) trouver=100;
@@ -129,40 +130,15 @@ public class Test {
 	}
 	
 	
-	public static boolean rectifiePositionaAntiHorraire (double distanceMaintenant2) {
-		float trouver2;
-		double trouverAV;
-	//	do {
-			trouverAV=distanceMaintenant2;
-			a.rotate(15);
-			a.stop();
-			trouver2=es.getDistance(); //distance entre 0 et 1 
-			System.out.println("distance objet : "+trouver2);
-			Delay.msDelay(100);
-			distanceMaintenant2=trouver2;
-	//	} while(trouver2<trouverAV);
-	if (trouver2<trouverAV) return true;
-	else a.rotate(-15);
-	return(false);
-	}
-	
-	public static boolean rectifiePositionaHorraire (double distanceMaintenant2) {
-		float trouver2;
-		double trouverAV;
-		//do {
-			trouverAV=distanceMaintenant2;
-			a.rotate(-15);
-			a.stop();
-			trouver2=es.getDistance(); //distance entre 0 et 1 
-			System.out.println("distance objet : "+trouver2);
-			Delay.msDelay(500);
-			distanceMaintenant2=trouver2;
-	//	} while(trouver2<trouverAV);
-			
-			if (trouver2<trouverAV) return true;
-			else a.rotate(15);
-			return false;
-	//	a.rotate(5);
+	public static boolean rectifiePosition (int i) {
+		distanceMaintenant = es.getDistance();
+		a.rotate(15*i);
+		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrés
+		distanceAvant=distanceMaintenant;
+		distanceMaintenant = es.getDistance();
+		if (distanceMaintenant<distanceAvant) return true;
+		else a.rotate(-15*i);
+		return false;
 	}
 	
 	static public boolean isMur() {
@@ -179,6 +155,7 @@ public class Test {
 	static public void fonceUntilPush() {
 		a.forward();
 		while (!ts.isPressed() ) {
+			distanceMaintenant=es.getDistance();
 			if (isMur()) break;
 		}
 		a.stop();
@@ -190,28 +167,12 @@ public class Test {
 	
 	//a travailler
 	static public void recalibrage () {
-		
-		
-		
-		
-		
-		
 			System.out.println("recalibrage à faire");
-			if (!rectifiePositionaHorraire(distanceMaintenant))rectifiePositionaAntiHorraire(distanceMaintenant);
-			if (distanceAvant<=seuilDetectionPalet) {
-				System.out.println("palet en vue");
-				while (!ts.isPressed()) {
-					a.forward();
-				}
-				a.stop();
-				a.closePince();
-				Delay.msDelay(3_000);
-				trouver=true;
-			}
-			else return;
-		
-	
-		
+			if (rectifiePosition(1)) etat=faceAuPalet;
+			else if (rectifiePosition(-1)) etat=faceAuPalet;
+			else etat=aucunPaletEnVu;
+			isMur();
+			return;
 	}
 	
 	static public void avanceVersPalet() {
@@ -231,6 +192,10 @@ public class Test {
 		else etat=recalibrageAFaire;
 	}
 	
+	static public void mettreUnBut() {
+		// se diriger vers les buts à l'aide de la boussole et de la ligne blanche
+	}
+	
 	public static void rechercheSimple() {
 		
 		switch(etat) {
@@ -240,10 +205,14 @@ public class Test {
 		break;
 		case (faceAuPalet): fonceUntilPush();
 		break;
-		case(aucunPaletEnVu) : break;
-		case(dosAuMur) : break;
-		case(paletAttraper): break;
-		case(recalibrageAFaire) : break;
+		case(aucunPaletEnVu) : etat=chercheEnRond; 
+		break;
+		case(dosAuMur) : etat=chercheEnRond;
+		break;
+		case(paletAttraper): mettreUnBut();
+		break;
+		case(recalibrageAFaire) : recalibrage(); 
+		break;
 		}
 	
 	}
