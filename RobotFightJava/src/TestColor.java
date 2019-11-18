@@ -12,8 +12,12 @@ import lejos.utility.Delay;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
@@ -70,7 +74,7 @@ public static boolean goMessage() {
 	public static void main(String[] args) {
 		try {
 			Properties sauveur = new Properties();
-			OutputStream out=System.out ;
+			OutputStream out=new FileOutputStream("couleur"); 
 			
 			boolean again = true;
 			
@@ -93,6 +97,12 @@ public static boolean goMessage() {
 			float[] red = new float[average.sampleSize()];
 			average.fetchSample(red, 0);
 			sauveur.setProperty("Red", red[0]+","+ red[1]+","+ red[2]);
+			
+			System.out.println("Press enter to calibrate yellow...");
+			Button.ENTER.waitForPressAndRelease();
+			float[] yellow = new float[average.sampleSize()];
+			average.fetchSample(yellow, 0);
+			sauveur.setProperty("Yellow", yellow[0]+","+ yellow[1]+","+ yellow[2]);
 			
 			System.out.println("Press enter to calibrate green...");
 			Button.ENTER.waitForPressAndRelease();
@@ -124,10 +134,12 @@ public static boolean goMessage() {
 				average.fetchSample(sample, 0);
 				double minscal = Double.MAX_VALUE;
 				String color = "";
-				
+				System.out.println(TestColor.LaCouleur(sample));
+				/*
 				double scalaire = TestColor.scalaire(sample, blue);
 				//Button.ENTER.waitForPressAndRelease();
 				//System.out.println(scalaire);
+				
 				
 				if (scalaire < minscal) {
 					minscal = scalaire;
@@ -140,6 +152,13 @@ public static boolean goMessage() {
 				if (scalaire < minscal) {
 					minscal = scalaire;
 					color = "red";
+				}
+				scalaire = TestColor.scalaire(sample, yellow);
+				//System.out.println(scalaire);
+				//Button.ENTER.waitForPressAndRelease();
+				if (scalaire < minscal) {
+					minscal = scalaire;
+					color = "yellow";
 				}
 				
 				scalaire = TestColor.scalaire(sample, green);
@@ -168,7 +187,7 @@ public static boolean goMessage() {
 				System.out.println("The color is " + color + " \n");
 				System.out.println("Press ENTER to continue \n");
 				System.out.println("ESCAPE to exit");
-				Button.waitForAnyPress();
+				Button.waitForAnyPress();*/
 				if(Button.ESCAPE.isDown()) {
 					colorSensor.setFloodlight(false);
 					again = false;
@@ -187,6 +206,114 @@ public static boolean goMessage() {
 		return Math.sqrt (Math.pow(v1[0] - v2[0], 2.0) +
 				Math.pow(v1[1] - v2[1], 2.0) +
 				Math.pow(v1[2] - v2[2], 2.0));
+	}
+	
+	public static String LaCouleur(float [] sample) throws FileNotFoundException, IOException {
+	
+		boolean again = true;
+		while (again) {
+			Properties sauveur= new Properties();
+			InputStream  in= new FileInputStream("couleur");
+			sauveur.load(new FileInputStream("couleur"));
+			
+			 float[] blue= new float[3];
+			 System.out.println(sauveur.getProperty("Blue"));
+			 String[] tab= sauveur.getProperty("Blue").split(",");
+			 blue[0]=Float.parseFloat(tab[0]);
+			 blue[1]=Float.parseFloat(tab[1]);
+			 blue[2]=Float.parseFloat(tab[2]);
+				
+			 float[] red= new float[3];
+			 tab= sauveur.getProperty("Red").split(",");
+			 red[0]=Float.parseFloat(tab[0]);
+			 red[1]=Float.parseFloat(tab[1]);
+			 red[2]=Float.parseFloat(tab[2]);
+			 
+			 float[] yellow= new float[3];
+			 tab= sauveur.getProperty("Yellow").split(",");
+			 yellow[0]=Float.parseFloat(tab[0]);
+			 yellow[1]=Float.parseFloat(tab[1]);
+			 yellow[2]=Float.parseFloat(tab[2]);
+			 
+			 float[] green= new float[3];
+			 tab= sauveur.getProperty("Green").split(",");
+			 green[0]=Float.parseFloat(tab[0]);
+			 green[1]=Float.parseFloat(tab[1]);
+			 green[2]=Float.parseFloat(tab[2]);
+			 
+			 float[] black= new float[3];
+			 tab= sauveur.getProperty("Black").split(",");
+			 black[0]=Float.parseFloat(tab[0]);
+			 black[1]=Float.parseFloat(tab[1]);
+			 black[2]=Float.parseFloat(tab[2]);
+			 
+			 float[] white= new float[3];
+			 tab= sauveur.getProperty("White").split(",");
+			 white[0]=Float.parseFloat(tab[0]);
+			 white[1]=Float.parseFloat(tab[1]);
+			 white[2]=Float.parseFloat(tab[2]);
+			
+				
+			
+			
+			
+			System.out.println(sauveur.getProperty("Red"));
+			
+			double minscal = Double.MAX_VALUE;
+			String color = "";
+			
+			double scalaire = TestColor.scalaire(sample, blue);
+			//Button.ENTER.waitForPressAndRelease();
+			//System.out.println(scalaire);
+			if (scalaire < minscal) {
+				minscal = scalaire;
+				color = "blue";
+			}
+			
+			scalaire = TestColor.scalaire(sample, red);
+			//System.out.println(scalaire);
+			//Button.ENTER.waitForPressAndRelease();
+			if (scalaire < minscal) {
+				minscal = scalaire;
+				color = "red";
+			}
+			
+			scalaire = TestColor.scalaire(sample, green);
+			//System.out.println(scalaire);
+			//Button.ENTER.waitForPressAndRelease();
+			if (scalaire < minscal) {
+				minscal = scalaire;
+				color = "green";
+			}
+			
+			scalaire = TestColor.scalaire(sample, black);
+			//System.out.println(scalaire);
+			//Button.ENTER.waitForPressAndRelease();
+			if (scalaire < minscal) {
+				minscal = scalaire;
+				color = "black";
+			}
+			scalaire = TestColor.scalaire(sample, white);
+			//System.out.println(scalaire);
+			//Button.ENTER.waitForPressAndRelease();
+			if (scalaire < minscal) {
+				minscal = scalaire;
+				color = "white";
+			}
+			
+			System.out.println("The color is " + color + " \n");
+			System.out.println("Press ENTER to continue \n");
+			System.out.println("ESCAPE to exit");
+			in.close();
+			
+			
+		
+		
+		return color;
+		
+		}
+		return "inconnu ou gris";
+		
 	}
 	
 
