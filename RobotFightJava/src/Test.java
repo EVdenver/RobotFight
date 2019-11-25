@@ -13,6 +13,9 @@ public class Test {
 	static double distanceAvant = 0; 
 	final static double seuilDetectionPalet = 0.38;
 	final static double seuilArretMur = 0.2;
+	final static double largeurMax=2;
+	final static double longeurMax=1.7;
+
 	
 	static int etat=0;
 	final static int chercheEnRond=0;
@@ -22,7 +25,7 @@ public class Test {
 	final static int faceAuPalet=4;
 	final static int paletAttraper=5;
 	final static int recalibrageAFaire=6;
-	
+	final static int STOP=7;
 	static boolean trouver=false;
 	// 
 	 // se met à jour en continue et avance tant que la distance diminue
@@ -35,9 +38,12 @@ public class Test {
 		
 		while(!ts.isPressed()) {
 			System.out.println("etat"+etat);
+			System.out.println(es.getDistance());
+			Delay.msDelay(3000);
 			rechercheSimple();
 			
 			Delay.msDelay(3000);
+			if (etat==STOP) break;
 		}
 		
 	/*	
@@ -107,6 +113,58 @@ public class Test {
 		distanceMaintenant=es.getDistance();
 		return distanceAvant-distanceMaintenant;
 	}
+	
+	public static double calculDistanceMur() {
+		double x = 0;
+		double y = 0;
+		double alpha = 0;
+		double dist;
+		double sortieDeMur=0;
+		if (alpha>0 && alpha<=90) {
+			dist=(longeurMax-x)/Math.cos(alpha);
+			sortieDeMur=dist/Math.sin(alpha);
+			if (sortieDeMur>largeurMax) {
+				sortieDeMur-=largeurMax;
+				dist-=sortieDeMur/Math.sin(alpha);
+			}
+				
+					// enlever le second 
+		}
+		if (alpha>90 && alpha<=180) {
+			dist=(largeurMax-y)/Math.cos(alpha-90);
+			
+			sortieDeMur=dist/Math.sin(alpha-90);
+			if (sortieDeMur>longeurMax) {
+				sortieDeMur-=longeurMax;
+				dist-=sortieDeMur/Math.sin(alpha-90);
+			}
+			
+			
+		}
+		if (alpha>180 && alpha<=270) {
+			dist=(x)/Math.cos(alpha-180);
+			
+			sortieDeMur=dist/Math.sin(alpha-180);
+			if (sortieDeMur>largeurMax) {
+				sortieDeMur-=largeurMax;
+				dist-=sortieDeMur/Math.sin(alpha-180);
+			}
+			
+		}
+		if (alpha>270) {
+			dist=(y)/Math.cos(alpha-270);
+			
+			sortieDeMur=dist/Math.sin(alpha-270);
+			if (sortieDeMur>longeurMax) {
+				sortieDeMur-=longeurMax;
+				dist-=sortieDeMur/Math.sin(alpha-270);
+			}
+			
+		}
+		
+		return distanceAvant;
+		
+	}
   
   
 	public static void rechercheTournante () {
@@ -115,7 +173,7 @@ public class Test {
 		double angleTotal=0;
 		if (trouver==0) trouver=100;
 		System.out.println("distance objet : "+trouver);
-		while (trouver>distanceMur && angleTotal<360 ){
+		while (trouver>distanceMur  && angleTotal<360 ){
 			a.rotate(15);
 			angleTotal+=15;
 			a.stop();
@@ -145,7 +203,10 @@ public class Test {
 		if (distanceMaintenant<=seuilArretMur) {
 			System.out.println("mur detecte");
 			a.backward(0.2);
-			a.rotate(180);
+			int i=1;
+		//	if (isButOuest() && faceMurNord()) i*=-1;
+		//	if (isButEst() && faceMurSud()) i*=-1;
+			a.rotate(i*180);
 			etat=dosAuMur;
 			return true;
 		}
@@ -156,7 +217,7 @@ public class Test {
 		a.forward();
 		while (!ts.isPressed() ) {
 			distanceMaintenant=es.getDistance();
-			if (isMur()) break;
+			if (isMur()) return;
 		}
 		a.stop();
 		a.closePince();
@@ -194,6 +255,8 @@ public class Test {
 	
 	static public void mettreUnBut() {
 		// se diriger vers les buts à l'aide de la boussole et de la ligne blanche
+		etat=STOP;
+		
 	}
 	
 	public static void rechercheSimple() {
@@ -205,7 +268,7 @@ public class Test {
 		break;
 		case (faceAuPalet): fonceUntilPush();
 		break;
-		case(aucunPaletEnVu) : etat=chercheEnRond; 
+		case(aucunPaletEnVu) : etat=chercheEnRond; // à la fin de cherche en rond
 		break;
 		case(dosAuMur) : etat=chercheEnRond;
 		break;

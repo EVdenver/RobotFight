@@ -10,7 +10,7 @@ public class Actionneur {
 	private  EV3LargeRegulatedMotor mLeftMotor;
 	private  EV3LargeRegulatedMotor mRightMotor;
 	private EV3MediumRegulatedMotor mPincesMotor;
-	private boolean open=true;
+	private boolean open=false;
 	Delay d= new Delay();
 	private final static int SPEED = 500; //degrees/sec
 	private final static double WHEEL_RADIUS = 0.05; // en mètre 
