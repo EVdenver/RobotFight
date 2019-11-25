@@ -5,7 +5,7 @@ import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 
 public class Test {
-	static double distanceMur=2;
+	static double distanceMur=1;
 	static Actionneur a = new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B) ;
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
@@ -18,7 +18,6 @@ public class Test {
 	final static double largeurMax=2;
 	final static double longeurMax=1.7;
 
-	
 	static int etat=0;
 	final static int chercheEnRond=0;
 	final static int dosAuMur=1;
@@ -117,9 +116,9 @@ public class Test {
 	}
 	
 	public static double calculDistanceMur() {
-		double x = 0;
-		double y = 0;
-		double alpha = 0;
+		double x = b.getPos().getX();
+		double y = b.getPos().getY();
+		double alpha = b.getDir();
 		double dist=longeurMax;
 		if (alpha>0 && alpha<=90) dist=calculHypothenus(longeurMax-x, largeurMax, alpha);
 		if (alpha>90 && alpha<=180) dist=calculHypothenus(largeurMax-y, longeurMax, alpha-90);
@@ -149,8 +148,9 @@ public class Test {
 		double angleTotal=0;
 		if (trouver==0) trouver=100;
 		System.out.println("distance objet : "+trouver);
+	//	distanceMur=calculDistanceMur(); quand la boussole sera au point
 		while (trouver>distanceMur  && angleTotal<360 ){
-			a.rotate(15);
+			tourner(15);
 			angleTotal+=15;
 			a.stop();
 			trouver=es.getDistance(); //distance entre 0 et 1
@@ -161,15 +161,20 @@ public class Test {
 		return trouver;
 	}
 	
+	private static void tourner (int angle) {
+		a.rotate(angle);
+		b.setDir(angle);
+		System.out.println("angle "+b.getDir()+"°");
+	}
 	
 	public static boolean rectifiePosition (int i) {
 		distanceMaintenant = es.getDistance();
-		a.rotate(15*i);
+		tourner(15*i);
 		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrés
 		distanceAvant=distanceMaintenant;
 		distanceMaintenant = es.getDistance();
 		if (distanceMaintenant<distanceAvant) return true;
-		else a.rotate(-15*i);
+		else tourner(-15*i);
 		return false;
 	}
 	
@@ -181,7 +186,7 @@ public class Test {
 			int i=1;
 		//	if (isButOuest() && faceMurNord()) i*=-1;
 		//	if (isButEst() && faceMurSud()) i*=-1;
-			a.rotate(i*180);
+			tourner(i*180);
 			return true;
 		}
 		return false;
@@ -206,11 +211,12 @@ public class Test {
 		a.openPince();
 		distanceAvant = es.getDistance();
 		a.forward();
+		Delay.msDelay(100);
 		distanceMaintenant = es.getDistance();
 		while(distanceAvant > distanceMaintenant ) {
 			distanceAvant=distanceMaintenant;
-			distanceMaintenant = es.getDistance();
 			Delay.msDelay(100);
+			distanceMaintenant = es.getDistance();
 			if (isMur()) return false;
 		}
 		a.stop();
@@ -218,6 +224,11 @@ public class Test {
 	}
 	
 	static public void mettreUnBut() {
+		// la base ennemie est en carte, soit 0 soit 180
+	
+		tourner(-b.getDir());
+		a.forward();
+		Delay.msDelay(5_000);
 		// se diriger vers les buts à l'aide de la boussole et de la ligne blanche
 		etat=STOP;
 		
@@ -234,6 +245,7 @@ public class Test {
 			if (!avanceVersPalet()) etat=dosAuMur;
 			else if (distanceAvant<=seuilDetectionPalet) etat=faceAuPalet;
 			else etat=recalibrageAFaire;
+		System.out.println("distance"+distanceAvant);
 		break;
 		case (faceAuPalet): 
 			if(fonceUntilPush()) etat=paletAttraper ;
@@ -253,6 +265,5 @@ public class Test {
 			if(isMur()) etat=dosAuMur;
 		break;
 		}
-	
 	}
 }

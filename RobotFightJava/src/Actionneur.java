@@ -5,8 +5,6 @@ import lejos.robotics.RegulatedMotor;
 import lejos.utility.Delay;
 //blabla
 public class Actionneur {
-
-	private String tasoeur="elle bat le beurre";
 	private  EV3LargeRegulatedMotor mLeftMotor;
 	private  EV3LargeRegulatedMotor mRightMotor;
 	private EV3MediumRegulatedMotor mPincesMotor;
