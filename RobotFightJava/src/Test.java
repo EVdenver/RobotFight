@@ -13,6 +13,9 @@ public class Test {
 	static double distanceAvant = 0; 
 	final static double seuilDetectionPalet = 0.38;
 	final static double seuilArretMur = 0.2;
+	final static double largeurMax=2;
+	final static double longeurMax=1.7;
+
 	
 	static int etat=0;
 	final static int chercheEnRond=0;
@@ -22,7 +25,7 @@ public class Test {
 	final static int faceAuPalet=4;
 	final static int paletAttraper=5;
 	final static int recalibrageAFaire=6;
-	
+	final static int STOP=7;
 	static boolean trouver=false;
 	// 
 	 // se met à jour en continue et avance tant que la distance diminue
@@ -35,9 +38,12 @@ public class Test {
 		
 		while(!ts.isPressed()) {
 			System.out.println("etat"+etat);
+			System.out.println(es.getDistance());
+			Delay.msDelay(3000);
 			rechercheSimple();
 			
 			Delay.msDelay(3000);
+			if (etat==STOP) break;
 		}
 		
 	/*	
@@ -107,14 +113,41 @@ public class Test {
 		distanceMaintenant=es.getDistance();
 		return distanceAvant-distanceMaintenant;
 	}
+	
+	public static double calculDistanceMur() {
+		double x = 0;
+		double y = 0;
+		double alpha = 0;
+		double dist=longeurMax;
+		if (alpha>0 && alpha<=90) dist=calculHypothenus(longeurMax-x, largeurMax, alpha);
+		if (alpha>90 && alpha<=180) dist=calculHypothenus(largeurMax-y, longeurMax, alpha-90);
+		if (alpha>180 && alpha<=270) dist=calculHypothenus(x, largeurMax, alpha-180);
+		if (alpha>270) dist=calculHypothenus(y, longeurMax, alpha-270);			
+		return dist;
+	}
+	
+	private static double calculHypothenus(double distance1, double distance2, double alpha) {
+		double dist=(distance1)/Math.cos(alpha);
+		double sortieDeMur=dist/Math.sin(alpha);
+		if (sortieDeMur>distance2) {
+			sortieDeMur-=distance2;
+			dist-=sortieDeMur/Math.sin(alpha);
+		}
+		return dist;
+	}
+	
+
+	
+	
   
   
-	public static void rechercheTournante () {
-		float trouver=es.getDistance(); //distance entre 0 et 1
+	public static double rechercheTournante () {
+		a.closePince();
+		double trouver=es.getDistance(); //distance entre 0 et 1
 		double angleTotal=0;
 		if (trouver==0) trouver=100;
 		System.out.println("distance objet : "+trouver);
-		while (trouver>distanceMur && angleTotal<360 ){
+		while (trouver>distanceMur  && angleTotal<360 ){
 			a.rotate(15);
 			angleTotal+=15;
 			a.stop();
@@ -122,99 +155,52 @@ public class Test {
 			System.out.println("distance objet : "+trouver);
 			Delay.msDelay(100);
 		}
-		if (trouver<distanceMur) etat=detectionPalet;
-		else etat=aucunPaletEnVu;
 		System.out.println("distance "+trouver);
-		
+		return trouver;
 	}
 	
 	
-	public static boolean rectifiePositionaAntiHorraire (double distanceMaintenant2) {
-		float trouver2;
-		double trouverAV;
-	//	do {
-			trouverAV=distanceMaintenant2;
-			a.rotate(15);
-			a.stop();
-			trouver2=es.getDistance(); //distance entre 0 et 1 
-			System.out.println("distance objet : "+trouver2);
-			Delay.msDelay(100);
-			distanceMaintenant2=trouver2;
-	//	} while(trouver2<trouverAV);
-	if (trouver2<trouverAV) return true;
-	else a.rotate(-15);
-	return(false);
-	}
-	
-	public static boolean rectifiePositionaHorraire (double distanceMaintenant2) {
-		float trouver2;
-		double trouverAV;
-		//do {
-			trouverAV=distanceMaintenant2;
-			a.rotate(-15);
-			a.stop();
-			trouver2=es.getDistance(); //distance entre 0 et 1 
-			System.out.println("distance objet : "+trouver2);
-			Delay.msDelay(500);
-			distanceMaintenant2=trouver2;
-	//	} while(trouver2<trouverAV);
-			
-			if (trouver2<trouverAV) return true;
-			else a.rotate(15);
-			return false;
-	//	a.rotate(5);
+	public static boolean rectifiePosition (int i) {
+		distanceMaintenant = es.getDistance();
+		a.rotate(15*i);
+		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrés
+		distanceAvant=distanceMaintenant;
+		distanceMaintenant = es.getDistance();
+		if (distanceMaintenant<distanceAvant) return true;
+		else a.rotate(-15*i);
+		return false;
 	}
 	
 	static public boolean isMur() {
 		if (distanceMaintenant<=seuilArretMur) {
 			System.out.println("mur detecte");
+			a.stop();
 			a.backward(0.2);
-			a.rotate(180);
-			etat=dosAuMur;
+			int i=1;
+		//	if (isButOuest() && faceMurNord()) i*=-1;
+		//	if (isButEst() && faceMurSud()) i*=-1;
+			a.rotate(i*180);
 			return true;
 		}
 		return false;
 	}
 	
-	static public void fonceUntilPush() {
+	static public boolean fonceUntilPush() {
 		a.forward();
 		while (!ts.isPressed() ) {
-			if (isMur()) break;
+			distanceMaintenant=es.getDistance();
+			if (isMur()) return false;
 		}
 		a.stop();
 		a.closePince();
 		Delay.msDelay(3_000);
-		etat=paletAttraper;
+		return true;
+	
 	}
 	
 	
-	//a travailler
-	static public void recalibrage () {
-		
-		
-		
-		
-		
-		
-			System.out.println("recalibrage à faire");
-			if (!rectifiePositionaHorraire(distanceMaintenant))rectifiePositionaAntiHorraire(distanceMaintenant);
-			if (distanceAvant<=seuilDetectionPalet) {
-				System.out.println("palet en vue");
-				while (!ts.isPressed()) {
-					a.forward();
-				}
-				a.stop();
-				a.closePince();
-				Delay.msDelay(3_000);
-				trouver=true;
-			}
-			else return;
-		
 	
-		
-	}
-	
-	static public void avanceVersPalet() {
+	static public boolean avanceVersPalet() {
 		a.openPince();
 		distanceAvant = es.getDistance();
 		a.forward();
@@ -223,27 +209,47 @@ public class Test {
 			distanceAvant=distanceMaintenant;
 			distanceMaintenant = es.getDistance();
 			Delay.msDelay(100);
-			if (isMur()) break;
+			if (isMur()) return false;
 		}
 		a.stop();
-		System.out.println("augmentation de distance");
-		if (distanceAvant<=seuilDetectionPalet) etat=faceAuPalet;
-		else etat=recalibrageAFaire;
+		return true;
+	}
+	
+	static public void mettreUnBut() {
+		// se diriger vers les buts à l'aide de la boussole et de la ligne blanche
+		etat=STOP;
+		
 	}
 	
 	public static void rechercheSimple() {
 		
 		switch(etat) {
-		case (chercheEnRond) : rechercheTournante();
+		case (chercheEnRond) : 
+			if (rechercheTournante()<distanceMur) etat=detectionPalet;
+			else etat=aucunPaletEnVu;
 		break;
-		case (detectionPalet): avanceVersPalet();
+		case (detectionPalet): 
+			if (!avanceVersPalet()) etat=dosAuMur;
+			else if (distanceAvant<=seuilDetectionPalet) etat=faceAuPalet;
+			else etat=recalibrageAFaire;
 		break;
-		case (faceAuPalet): fonceUntilPush();
+		case (faceAuPalet): 
+			if(fonceUntilPush()) etat=paletAttraper ;
+			else etat=dosAuMur;
 		break;
-		case(aucunPaletEnVu) : break;
-		case(dosAuMur) : break;
-		case(paletAttraper): break;
-		case(recalibrageAFaire) : break;
+		case(aucunPaletEnVu) : etat=chercheEnRond; // à la fin de cherche en rond
+		break;
+		case(dosAuMur) : etat=chercheEnRond;
+		break;
+		case(paletAttraper): mettreUnBut(); // a instancier
+		break;
+		case(recalibrageAFaire) : 
+			System.out.println("recalibrage");
+			if (rectifiePosition(1)) etat=faceAuPalet;
+			else if (rectifiePosition(-1)) etat=faceAuPalet;
+			else etat=aucunPaletEnVu;
+			if(isMur()) etat=dosAuMur;
+		break;
 		}
 	
 	}
