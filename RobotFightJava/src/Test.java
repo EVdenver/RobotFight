@@ -167,9 +167,9 @@ public class Test {
 	}
   
   
-	public static void rechercheTournante () {
+	public static double rechercheTournante () {
 		a.closePince();
-		float trouver=es.getDistance(); //distance entre 0 et 1
+		double trouver=es.getDistance(); //distance entre 0 et 1
 		double angleTotal=0;
 		if (trouver==0) trouver=100;
 		System.out.println("distance objet : "+trouver);
@@ -181,10 +181,8 @@ public class Test {
 			System.out.println("distance objet : "+trouver);
 			Delay.msDelay(100);
 		}
-		if (trouver<distanceMur) etat=detectionPalet;
-		else etat=aucunPaletEnVu;
 		System.out.println("distance "+trouver);
-		
+		return trouver;
 	}
 	
 	
@@ -202,41 +200,33 @@ public class Test {
 	static public boolean isMur() {
 		if (distanceMaintenant<=seuilArretMur) {
 			System.out.println("mur detecte");
+			a.stop();
 			a.backward(0.2);
 			int i=1;
 		//	if (isButOuest() && faceMurNord()) i*=-1;
 		//	if (isButEst() && faceMurSud()) i*=-1;
 			a.rotate(i*180);
-			etat=dosAuMur;
 			return true;
 		}
 		return false;
 	}
 	
-	static public void fonceUntilPush() {
+	static public boolean fonceUntilPush() {
 		a.forward();
 		while (!ts.isPressed() ) {
 			distanceMaintenant=es.getDistance();
-			if (isMur()) return;
+			if (isMur()) return false;
 		}
 		a.stop();
 		a.closePince();
 		Delay.msDelay(3_000);
-		etat=paletAttraper;
+		return true;
+	
 	}
 	
 	
-	//a travailler
-	static public void recalibrage () {
-			System.out.println("recalibrage à faire");
-			if (rectifiePosition(1)) etat=faceAuPalet;
-			else if (rectifiePosition(-1)) etat=faceAuPalet;
-			else etat=aucunPaletEnVu;
-			isMur();
-			return;
-	}
 	
-	static public void avanceVersPalet() {
+	static public boolean avanceVersPalet() {
 		a.openPince();
 		distanceAvant = es.getDistance();
 		a.forward();
@@ -245,12 +235,10 @@ public class Test {
 			distanceAvant=distanceMaintenant;
 			distanceMaintenant = es.getDistance();
 			Delay.msDelay(100);
-			if (isMur()) break;
+			if (isMur()) return false;
 		}
 		a.stop();
-		System.out.println("augmentation de distance");
-		if (distanceAvant<=seuilDetectionPalet) etat=faceAuPalet;
-		else etat=recalibrageAFaire;
+		return true;
 	}
 	
 	static public void mettreUnBut() {
@@ -262,19 +250,31 @@ public class Test {
 	public static void rechercheSimple() {
 		
 		switch(etat) {
-		case (chercheEnRond) : rechercheTournante();
+		case (chercheEnRond) : 
+			if (rechercheTournante()<distanceMur) etat=detectionPalet;
+			else etat=aucunPaletEnVu;
 		break;
-		case (detectionPalet): avanceVersPalet();
+		case (detectionPalet): 
+			if (!avanceVersPalet()) etat=dosAuMur;
+			else if (distanceAvant<=seuilDetectionPalet) etat=faceAuPalet;
+			else etat=recalibrageAFaire;
 		break;
-		case (faceAuPalet): fonceUntilPush();
+		case (faceAuPalet): 
+			if(fonceUntilPush()) etat=paletAttraper ;
+			else etat=dosAuMur;
 		break;
 		case(aucunPaletEnVu) : etat=chercheEnRond; // à la fin de cherche en rond
 		break;
 		case(dosAuMur) : etat=chercheEnRond;
 		break;
-		case(paletAttraper): mettreUnBut();
+		case(paletAttraper): mettreUnBut(); // a instancier
 		break;
-		case(recalibrageAFaire) : recalibrage(); 
+		case(recalibrageAFaire) : 
+			System.out.println("recalibrage");
+			if (rectifiePosition(1)) etat=faceAuPalet;
+			else if (rectifiePosition(-1)) etat=faceAuPalet;
+			else etat=aucunPaletEnVu;
+			if(isMur()) etat=dosAuMur;
 		break;
 		}
 	
