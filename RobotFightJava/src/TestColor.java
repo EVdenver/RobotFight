@@ -4,6 +4,7 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.Font;
 import lejos.hardware.lcd.GraphicsLCD;
 import lejos.hardware.port.Port;
+import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.robotics.Color;
 import lejos.robotics.SampleProvider;
@@ -20,10 +21,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
-
+import lejos.hardware.port.Port;
+import lejos.hardware.sensor.EV3TouchSensor;
 
 
 public class TestColor {
+	private static Port port = LocalEV3.get().getPort("S1");
+	private static EV3ColorSensor colorSensor = new EV3ColorSensor(port);
 
 public static boolean goMessage() {
 		
@@ -75,13 +79,14 @@ public static boolean goMessage() {
 		try {
 			Properties sauveur = new Properties();
 			OutputStream out=new FileOutputStream("couleur"); 
+			boolean again= true;
 			
-			boolean again = true;
+			
 			
 			if (!goMessage()) System.exit(0);
 			
-			Port port = LocalEV3.get().getPort("S1");
-			EV3ColorSensor colorSensor = new EV3ColorSensor(port);
+			
+			
 			SampleProvider average = new MeanFilter(colorSensor.getRGBMode(), 1);
 			colorSensor.setFloodlight(Color.WHITE);
 			
@@ -124,18 +129,25 @@ public static boolean goMessage() {
 			average.fetchSample(white, 0);
 			sauveur.setProperty("White", white[0]+","+ white[1]+","+ white[2]);
 			
+			System.out.println("Press enter to calibrate grey...");
+			Button.ENTER.waitForPressAndRelease();
+			float[] grey = new float[average.sampleSize()];
+			average.fetchSample(grey, 0);
+			sauveur.setProperty("Grey", grey[0]+","+ grey[1]+","+ grey[2]);
 			
 			sauveur.store(out, "comments");
 			
-			while (again) {
+			/*while (again) {
 				float[] sample = new float[average.sampleSize()];
 				System.out.println("\nPress enter to detect a color...");
 				Button.ENTER.waitForPressAndRelease();
 				average.fetchSample(sample, 0);
-				double minscal = Double.MAX_VALUE;
-				String color = "";
-				System.out.println(TestColor.LaCouleur(sample));
-				/*
+				
+				
+				InputStream  in= new FileInputStream("couleur");
+				sauveur.load(new FileInputStream("couleur"));
+				System.out.println(TestColor.LaCouleur(sample, sauveur));
+				
 				double scalaire = TestColor.scalaire(sample, blue);
 				//Button.ENTER.waitForPressAndRelease();
 				//System.out.println(scalaire);
@@ -187,13 +199,13 @@ public static boolean goMessage() {
 				System.out.println("The color is " + color + " \n");
 				System.out.println("Press ENTER to continue \n");
 				System.out.println("ESCAPE to exit");
-				Button.waitForAnyPress();*/
+				Button.waitForAnyPress();
 				if(Button.ESCAPE.isDown()) {
 					colorSensor.setFloodlight(false);
 					again = false;
 				}
 			}
-			
+			*/
 			
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -202,17 +214,26 @@ public static boolean goMessage() {
 		}
 	}
 	
+	
+	
 	public static double scalaire(float[] v1, float[] v2) {
 		return Math.sqrt (Math.pow(v1[0] - v2[0], 2.0) +
 				Math.pow(v1[1] - v2[1], 2.0) +
 				Math.pow(v1[2] - v2[2], 2.0));
 	}
 	
-	public static String LaCouleur(float [] sample) throws FileNotFoundException, IOException {
+	public static float [] getEch() {
+		SampleProvider med= new MeanFilter(colorSensor.getRGBMode(),1);
+		float[] flat= new float[med.sampleSize()];
+		med.fetchSample(flat,0);
+		return flat;
+	}
 	
-		boolean again = true;
-		while (again) {
-			Properties sauveur= new Properties();
+	
+	public static String LaCouleur(float [] sample, Properties sauveur) throws FileNotFoundException, IOException {
+	
+		
+			
 			InputStream  in= new FileInputStream("couleur");
 			sauveur.load(new FileInputStream("couleur"));
 			
@@ -253,11 +274,16 @@ public static boolean goMessage() {
 			 white[1]=Float.parseFloat(tab[1]);
 			 white[2]=Float.parseFloat(tab[2]);
 			
+			 float[] grey= new float[3];
+			 tab= sauveur.getProperty("Grey").split(",");
+			 grey[0]=Float.parseFloat(tab[0]);
+			 grey[1]=Float.parseFloat(tab[1]);
+			 grey[2]=Float.parseFloat(tab[2]);
 				
 			
 			
 			
-			System.out.println(sauveur.getProperty("Red"));
+			//System.out.println(sauveur.getProperty("Red"));
 			
 			double minscal = Double.MAX_VALUE;
 			String color = "";
@@ -300,21 +326,29 @@ public static boolean goMessage() {
 				minscal = scalaire;
 				color = "white";
 			}
+			scalaire = TestColor.scalaire(sample, grey);
+			//System.out.println(scalaire);
+			//Button.ENTER.waitForPressAndRelease();
+			if (scalaire < minscal) {
+				minscal = scalaire;
+				color = "grey";
+			}
+			
 			
 			System.out.println("The color is " + color + " \n");
-			System.out.println("Press ENTER to continue \n");
-			System.out.println("ESCAPE to exit");
+			
 			in.close();
+			return color;
 			
-			
 		
 		
-		return color;
 		
-		}
-		return "inconnu ou gris";
+		
+		/*}*/
+		
 		
 	}
+	
 	
 
 }
