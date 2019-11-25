@@ -118,53 +118,27 @@ public class Test {
 		double x = 0;
 		double y = 0;
 		double alpha = 0;
-		double dist;
-		double sortieDeMur=0;
-		if (alpha>0 && alpha<=90) {
-			dist=(longeurMax-x)/Math.cos(alpha);
-			sortieDeMur=dist/Math.sin(alpha);
-			if (sortieDeMur>largeurMax) {
-				sortieDeMur-=largeurMax;
-				dist-=sortieDeMur/Math.sin(alpha);
-			}
-				
-					// enlever le second 
-		}
-		if (alpha>90 && alpha<=180) {
-			dist=(largeurMax-y)/Math.cos(alpha-90);
-			
-			sortieDeMur=dist/Math.sin(alpha-90);
-			if (sortieDeMur>longeurMax) {
-				sortieDeMur-=longeurMax;
-				dist-=sortieDeMur/Math.sin(alpha-90);
-			}
-			
-			
-		}
-		if (alpha>180 && alpha<=270) {
-			dist=(x)/Math.cos(alpha-180);
-			
-			sortieDeMur=dist/Math.sin(alpha-180);
-			if (sortieDeMur>largeurMax) {
-				sortieDeMur-=largeurMax;
-				dist-=sortieDeMur/Math.sin(alpha-180);
-			}
-			
-		}
-		if (alpha>270) {
-			dist=(y)/Math.cos(alpha-270);
-			
-			sortieDeMur=dist/Math.sin(alpha-270);
-			if (sortieDeMur>longeurMax) {
-				sortieDeMur-=longeurMax;
-				dist-=sortieDeMur/Math.sin(alpha-270);
-			}
-			
-		}
-		
-		return distanceAvant;
-		
+		double dist=longeurMax;
+		if (alpha>0 && alpha<=90) dist=calculHypothenus(longeurMax-x, largeurMax, alpha);
+		if (alpha>90 && alpha<=180) dist=calculHypothenus(largeurMax-y, longeurMax, alpha-90);
+		if (alpha>180 && alpha<=270) dist=calculHypothenus(x, largeurMax, alpha-180);
+		if (alpha>270) dist=calculHypothenus(y, longeurMax, alpha-270);			
+		return dist;
 	}
+	
+	private static double calculHypothenus(double distance1, double distance2, double alpha) {
+		double dist=(distance1)/Math.cos(alpha);
+		double sortieDeMur=dist/Math.sin(alpha);
+		if (sortieDeMur>distance2) {
+			sortieDeMur-=distance2;
+			dist-=sortieDeMur/Math.sin(alpha);
+		}
+		return dist;
+	}
+	
+
+	
+	
   
   
 	public static double rechercheTournante () {
