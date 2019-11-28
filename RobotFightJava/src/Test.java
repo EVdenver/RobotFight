@@ -1,9 +1,12 @@
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.Properties;
 
+import lejos.hardware.Button;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
@@ -11,6 +14,7 @@ import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 
 public class Test {
+	
 	static double distanceMur=2;
 	static Actionneur a = new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B) ;
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
@@ -35,26 +39,41 @@ public class Test {
 	final static int recalibrageAFaire=6;
 	final static int STOP=7;
 	static boolean trouver=false;
-	//
-	// se met à jour en continue et avance tant que la distance diminue
-	// methode qui dit s'il y a besoin d'un décalage en fct de la distance ; si trop court vas tout droit sinon recalage
-
+  
 	public static void main(String[] args) throws IOException {
-		//Couleur code Nicolas
+	  InputStream in= new FileInputStream("couleur");
 		Properties sauveur= new Properties();
-		OutputStream out= new FileOutputStream("couleur");
-		float[] blue = new float[5];
+		sauveur.load(in);
+		boolean again= true;
+		while(again) {
+		float[] tab= TestColor.getEch();
+		System.out.println(TestColor.LaCouleur(tab, sauveur));
+		Delay.msDelay(2000);
+		if (Button.ENTER.isDown()){
+			again=false;
+		}
+		}
+		/*float[] blue = new float[5];
+		float[] red= new float[5];
 		blue[0]=0;
 		blue[1]=1;
 		blue[2]=2;
+		red[0]=3;
+		red[1]=4;
+		red[2]=5;
 		sauveur.setProperty("Blue", blue[0]+ ","+ blue[1]+","+ blue[2]);
+		sauveur.setProperty("Red", red[0]+ ","+ red[1]+","+ red[2]);
 		sauveur.store(out, "comments");
 		sauveur.load(new FileInputStream("couleur"));
-		//System.out.println(sauveur.getProperty("Blue"));
-
-		
-		//Partie Charlotte
-		while(!ts.isPressed()) {
+		System.out.println(sauveur.getProperty("Red"));
+		float r0=Float.parseFloat((sauveur.getProperty("Red")).substring(0,3));
+		float r1=Float.parseFloat((sauveur.getProperty("Red")).substring(4,7));
+		float r2=Float.parseFloat((sauveur.getProperty("Red")).substring(8,11));
+		System.out.println("r0= "+r0);
+		System.out.println("r1= "+r1);
+		System.out.println("r2= "+r2);
+		//TestColor col= new TestColor();*/
+    while(!ts.isPressed()) {
 			System.out.println("etat"+etat);
 			System.out.println(es.getDistance());
 			Delay.msDelay(3000);
@@ -98,7 +117,18 @@ public class Test {
 				System.out.println("stop");
 				Delay.msDelay(10000);
 			}*/
+  }
+	
+	private static Reader FileInputStream(String string) {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+	//public String brunble (double sammple, double base) {
+		
+	//}
+	//System.out.println(sauveur.getProperty("Blue"));
+		
 	//public String brunble (double sammple, double base){}
 
 	/**
@@ -113,7 +143,7 @@ public class Test {
 				Math.pow(v1[2] - v2[2], 2.0));
 	}
 	/**
-	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est r�duite
+	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est réduite
 	 * @return
 	 */
 	public static double differentielDistance () { // est-ce non
@@ -166,7 +196,7 @@ public class Test {
 	public static boolean rectifiePosition (int i) {
 		distanceMaintenant = es.getDistance();
 		a.rotate(15*i);
-		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrés
+		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrÃ©s
 		distanceAvant=distanceMaintenant;
 		distanceMaintenant = es.getDistance();
 		if (distanceMaintenant<distanceAvant) return true;
@@ -217,7 +247,7 @@ public class Test {
 	}
 
 	static public void mettreUnBut() {
-		// se diriger vers les buts à l'aide de la boussole et de la ligne blanche
+		// se diriger vers les buts Ã  l'aide de la boussole et de la ligne blanche
 		etat=STOP;
 
 	}
@@ -238,7 +268,7 @@ public class Test {
 			if(fonceUntilPush()) etat=paletAttraper ;
 			else etat=dosAuMur;
 		break;
-		case(aucunPaletEnVu) : etat=chercheEnRond; // à la fin de cherche en rond
+		case(aucunPaletEnVu) : etat=chercheEnRond; // Ã  la fin de cherche en rond
 		break;
 		case(dosAuMur) : etat=chercheEnRond;
 		break;
