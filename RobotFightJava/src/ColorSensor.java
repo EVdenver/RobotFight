@@ -5,7 +5,11 @@ import lejos.robotics.Color;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.filter.MeanFilter;
 
-public class ColorSensor
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.Writer;
+
+public class ColorSensor 
 {
     private static float[] path_color;
     private static SampleProvider average;
@@ -22,6 +26,20 @@ public class ColorSensor
 		path_color = new float[average.sampleSize()];
 		average.fetchSample(path_color, 0);
     }
+   /* 
+    public void saveColor () {
+    	BufferedWriter sauveur = new BufferedWriter( new FileWriter("ColorSave.txt"));
+    	float[] red= TestColor.getRed();
+    	sauveur.write("r :"+ red[0].TestColor);
+    	sauveur.newLine();
+    	sauveur.write("v :"+ green[0].TestColor);
+    	sauveur.newLine();
+    	sauveur.write("b:"+ blue[0].TestColor);
+    	sauveur.newLine();
+    	sauveur.write("n : "+ black[0].TestColor);
+    	
+    pas bon pour l'instant 
+    }*/	
 
     public boolean onPath()
     {
