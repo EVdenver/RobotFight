@@ -3,6 +3,8 @@ import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
+import java.util.ArrayList;
+
 
 public class Test {
 	static double distanceMur=1;
@@ -27,6 +29,7 @@ public class Test {
 	final static int paletAttraper=5;
 	final static int recalibrageAFaire=6;
 	final static int STOP=7;
+	private static final String ArrayList = null;
 	static boolean trouver=false;
 	// 
 	 // se met à jour en continue et avance tant que la distance diminue
@@ -36,9 +39,19 @@ public class Test {
 	
 	public static void main(String[] args) {
 		
+	//	for (int i=0;i<180;i+=15)	a.rotate(15);
+	//	a.rotate(90)
+	//	a.rotate(270);
+//	Delay.msDelay(5000);
+	//	
 		
-		while(!ts.isPressed()) {
-			System.out.println("etat"+etat);
+//	tourner(360);
+		
+		
+		
+		
+			while(!ts.isPressed()) {
+			System.out.println("etat "+etat);
 			System.out.println(es.getDistance());
 			Delay.msDelay(3000);
 			rechercheSimple();
@@ -47,7 +60,7 @@ public class Test {
 			if (etat==STOP) break;
 		}
 		
-	/*	
+			/* 				
 		while(!trouver) {
 			rechercheSimple();
 			distanceAvant=0;
@@ -138,34 +151,78 @@ public class Test {
 	}
 	
 
-	
-	
-  
-  
 	public static double rechercheTournante () {
 		a.closePince();
-		double trouver=es.getDistance(); //distance entre 0 et 1
+		double angleMax=360;
+		ArrayList<Double> tabList= new ArrayList<Double>();
+		double trouver;
+	//	double trouver=es.getDistance(); //distance entre 0 et 1
 		double angleTotal=0;
-		if (trouver==0) trouver=100;
-		System.out.println("distance objet : "+trouver);
+	//	if (trouver==0) trouver=100;
+	//	System.out.println("distance objet : "+trouver);
+	//	tabList.add(trouver);
 	//	distanceMur=calculDistanceMur(); quand la boussole sera au point
-		while (trouver>distanceMur  && angleTotal<360 ){
-			tourner(15);
+		while (angleTotal<angleMax ){
+		//	a.stop();
+			trouver=es.getDistance();
+			if (trouver==0) trouver=100;
+			tabList.add(trouver);
+			a.rotate(15);
+			b.setDir(15);
 			angleTotal+=15;
-			a.stop();
-			trouver=es.getDistance(); //distance entre 0 et 1
-			System.out.println("distance objet : "+trouver);
-			Delay.msDelay(100);
+	//		
+		//	System.out.println("angle "+b.getDir()+"°");
+		//	Delay.msDelay(1_000);
+		//	System.out.println("distance objet : "+trouver);
 		}
+		System.out.println(tabList.size()+" distances mesurées"); // 25
+		
+		Delay.msDelay(10_000);
+		
+		trouver=distanceMin(tabList);
+		System.out.println("distances min a indice "+tabList.indexOf(trouver)); 
+		int i=tabList.size()-tabList.indexOf(trouver); // nbr de retour en arrière pour arriver à la plus petite distance
+		tourner((15*i)%360);
+		
+		
+		Delay.msDelay(10_000);
+//		angleMax/tabList.size()*indexMin;
+		
 		System.out.println("distance "+trouver);
 		return trouver;
 	}
 	
-	private static void tourner (int angle) {
-		a.rotate(angle);
-		b.setDir(angle);
-		System.out.println("angle "+b.getDir()+"°");
+	private static double distanceMin (ArrayList<Double> list) {
+		double res=100;
+		for (Double d : list) {
+			if (d>seuilDetectionPalet) res=d<res?d:res;
+		}
+		return res;
 	}
+	
+	private static void tourner (int angle) {
+		int dir=angle>0?1:-1;
+		if (dir==-1)angle*=-1;
+		System.out.println("direction "+dir);
+		System.out.println("angle "+angle);
+		if (angle<=15) a.rotate(dir*angle);
+		else {
+			int i=0;
+			for (;i<angle;i+=15) {
+				a.rotate(dir*15);
+			//	Delay.msDelay(10);
+	//			System.out.println("angle "+i);
+			}
+			System.out.println("rotation termine, reste "+(angle-i));
+			a.rotate(dir*(angle-i));
+		}
+		b.setDir(dir*angle);
+//		
+	//	Delay.msDelay(1_000);
+
+	}
+	
+
 	
 	public static boolean rectifiePosition (int i) {
 		distanceMaintenant = es.getDistance();
