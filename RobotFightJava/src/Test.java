@@ -36,14 +36,24 @@ public class Test {
 	final static int STOP=7;
 	static boolean trouver=false;
 	//
-	 // se met à jour en continue et avance tant que la distance diminue
+	// se met à jour en continue et avance tant que la distance diminue
 	// methode qui dit s'il y a besoin d'un décalage en fct de la distance ; si trop court vas tout droit sinon recalage
 
+	public static void main(String[] args) throws IOException {
+		//Couleur code Nicolas
+		Properties sauveur= new Properties();
+		OutputStream out= new FileOutputStream("couleur");
+		float[] blue = new float[5];
+		blue[0]=0;
+		blue[1]=1;
+		blue[2]=2;
+		sauveur.setProperty("Blue", blue[0]+ ","+ blue[1]+","+ blue[2]);
+		sauveur.store(out, "comments");
+		sauveur.load(new FileInputStream("couleur"));
+		//System.out.println(sauveur.getProperty("Blue"));
 
-
-	public static void main(String[] args) {
-
-
+		
+		//Partie Charlotte
 		while(!ts.isPressed()) {
 			System.out.println("etat"+etat);
 			System.out.println(es.getDistance());
@@ -54,28 +64,19 @@ public class Test {
 			if (etat==STOP) break;
 		}
 
-	/*
+		/*
 		while(!trouver) {
 			rechercheSimple();
 			distanceAvant=0;
 			distanceMaintenant=0;
 		}*/
-
-		; //distance entre 0 et 1
-	//	System.out.println("distance objet : "+es.getDistance());
-
-	//
-
-
-
-	/*	0.321
-
+		//distance entre 0 et 1
+		//	System.out.println("distance objet : "+es.getDistance());
+		/*	0.321
 		while(!ts.isPressed()){
 			a.forward(0.4);
 			a.stop();
-
 			if (trouver>0.3) trouver=es.getDistance(); //distance entre 0 et 1
-
 			System.out.println("distance objet : "+trouver);
 			Delay.msDelay(1000);
 			if (trouver>0.3 && !(trouver>1)) {
@@ -85,17 +86,9 @@ public class Test {
 			}
 			else a.closePince();
 			}
-
-
-
 		a.rotate(-40);
 		a.forward(2);
 		boolean tourner=true;
-
-
-
-
-
 		for (int i=0;i<3;i++) {
 				a.rotate(10);
 				System.out.println("rotate");
@@ -105,14 +98,22 @@ public class Test {
 				System.out.println("stop");
 				Delay.msDelay(10000);
 			}*/
-
-
-
 	}
-
+	//public String brunble (double sammple, double base){}
 
 	/**
-	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est réduite
+	 * @author Nicolas
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public static double scalaire(float[] v1, float[] v2) {
+		return Math.sqrt (Math.pow(v1[0] - v2[0], 2.0) +
+				Math.pow(v1[1] - v2[1], 2.0) +
+				Math.pow(v1[2] - v2[2], 2.0));
+	}
+	/**
+	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est r�duite
 	 * @return
 	 */
 	public static double differentielDistance () { // est-ce non
@@ -144,11 +145,6 @@ public class Test {
 		return dist;
 	}
 
-
-
-
-
-
 	public static double rechercheTournante () {
 		a.closePince();
 		double trouver=es.getDistance(); //distance entre 0 et 1
@@ -167,7 +163,6 @@ public class Test {
 		return trouver;
 	}
 
-
 	public static boolean rectifiePosition (int i) {
 		distanceMaintenant = es.getDistance();
 		a.rotate(15*i);
@@ -185,8 +180,8 @@ public class Test {
 			a.stop();
 			a.backward(0.2);
 			int i=1;
-		//	if (isButOuest() && faceMurNord()) i*=-1;
-		//	if (isButEst() && faceMurSud()) i*=-1;
+			//	if (isButOuest() && faceMurNord()) i*=-1;
+			//	if (isButEst() && faceMurSud()) i*=-1;
 			a.rotate(i*180);
 			return true;
 		}
@@ -205,8 +200,6 @@ public class Test {
 		return true;
 
 	}
-
-
 
 	static public boolean avanceVersPalet() {
 		a.openPince();
@@ -253,10 +246,10 @@ public class Test {
 		break;
 		case(recalibrageAFaire) :
 			System.out.println("recalibrage");
-			if (rectifiePosition(1)) etat=faceAuPalet;
-			else if (rectifiePosition(-1)) etat=faceAuPalet;
-			else etat=aucunPaletEnVu;
-			if(isMur()) etat=dosAuMur;
+		if (rectifiePosition(1)) etat=faceAuPalet;
+		else if (rectifiePosition(-1)) etat=faceAuPalet;
+		else etat=aucunPaletEnVu;
+		if(isMur()) etat=dosAuMur;
 		break;
 		}
 
