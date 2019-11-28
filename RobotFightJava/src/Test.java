@@ -1,9 +1,12 @@
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.Properties;
 
+import lejos.hardware.Button;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
@@ -11,21 +14,52 @@ import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 
 public class Test {
+	
+	
 	public static void main(String[] args) throws IOException {
+		InputStream in= new FileInputStream("couleur");
 		Properties sauveur= new Properties();
-		OutputStream out= new FileOutputStream("couleur");
-		float[] blue = new float[5];
+		sauveur.load(in);
+		boolean again= true;
+		while(again) {
+		float[] tab= TestColor.getEch();
+		System.out.println(TestColor.LaCouleur(tab, sauveur));
+		Delay.msDelay(2000);
+		if (Button.ENTER.isDown()){
+			again=false;
+		}
+		}
+		/*float[] blue = new float[5];
+		float[] red= new float[5];
 		blue[0]=0;
 		blue[1]=1;
 		blue[2]=2;
+		red[0]=3;
+		red[1]=4;
+		red[2]=5;
 		sauveur.setProperty("Blue", blue[0]+ ","+ blue[1]+","+ blue[2]);
+		sauveur.setProperty("Red", red[0]+ ","+ red[1]+","+ red[2]);
 		sauveur.store(out, "comments");
 		sauveur.load(new FileInputStream("couleur"));
-		//System.out.println(sauveur.getProperty("Blue"));
-		
+		System.out.println(sauveur.getProperty("Red"));
+		float r0=Float.parseFloat((sauveur.getProperty("Red")).substring(0,3));
+		float r1=Float.parseFloat((sauveur.getProperty("Red")).substring(4,7));
+		float r2=Float.parseFloat((sauveur.getProperty("Red")).substring(8,11));
+		System.out.println("r0= "+r0);
+		System.out.println("r1= "+r1);
+		System.out.println("r2= "+r2);
+		//TestColor col= new TestColor();
+		*/
 	}
 	
-	public String brunble (double sammple, double base)
+	private static Reader FileInputStream(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	//public String brunble (double sammple, double base) {
+		
+	//}
 	
 	public static double scalaire(float[] v1, float[] v2) {
 		return Math.sqrt (Math.pow(v1[0] - v2[0], 2.0) +
