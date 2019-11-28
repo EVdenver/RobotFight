@@ -10,8 +10,8 @@ public class Boussole {
 	//Constructor
 	/**
 	 * @author darkf
-	 * Constructeur par défaut, initialise les 4 points cardinaux et établi la base du Robot comme étant la position 0
-	 * Et la direction à l'Ouest (Direction de la base ennemie)
+	 * Constructeur par dï¿½faut, initialise les 4 points cardinaux et ï¿½tabli la base du Robot comme ï¿½tant la position 0
+	 * Et la direction ï¿½ l'Ouest (Direction de la base ennemie)
 	 */
 	public Boussole() {
 		card.put("Nord",90);
@@ -29,7 +29,7 @@ public class Boussole {
 	 * @param angle angle de base vers lequel le robot porte son regard lors de l'initialisation de la boussole
 	 */
 	public Boussole(int angle, int x, int y) {
-		super();
+		this();
 		dir = angle;
 		pos.setX(x);
 		pos.setY(y);
@@ -49,10 +49,18 @@ public class Boussole {
 	}
 	
 	
+	public Position getPos() {
+		return pos;
+	}
+
+	public void setPos(Position pos) {
+		this.pos = pos;
+	}
+
 	/**
 	 * @author darkf
-	 * @param dir La direction sur laquelle doit se fixer le robot (si elle est présente dans les cardinalité)
-	 * @return l'angle de déplacement nécessaire pour que le regard se tourne dans la direction voulue
+	 * @param dir La direction sur laquelle doit se fixer le robot (si elle est prï¿½sente dans les cardinalitï¿½)
+	 * @return l'angle de dï¿½placement nï¿½cessaire pour que le regard se tourne dans la direction voulue
 	 */
 	public int setDir(String dir) {
 		if(card.containsKey(dir)) {
@@ -60,7 +68,7 @@ public class Boussole {
 			this.dir = card.get(dir);
 			return tmp - this.dir;
 		}else {
-			throw new IllegalArgumentException("La cardinalité voulu n'éxiste pas");
+			throw new IllegalArgumentException("La cardinalitï¿½ voulu n'ï¿½xiste pas");
 		}
 	}
 }

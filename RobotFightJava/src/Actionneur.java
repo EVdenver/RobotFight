@@ -5,16 +5,14 @@ import lejos.robotics.RegulatedMotor;
 import lejos.utility.Delay;
 //blabla
 public class Actionneur {
-
-	private String tasoeur="elle bat le beurre";
 	private  EV3LargeRegulatedMotor mLeftMotor;
 	private  EV3LargeRegulatedMotor mRightMotor;
 	private EV3MediumRegulatedMotor mPincesMotor;
-	private boolean open=false;
+	private boolean open=true;
 	Delay d= new Delay();
-	private final static int SPEED = 500; //degrees/sec
+	private final static int SPEED = 400; //degrees/sec
 	private final static double WHEEL_RADIUS = 0.05; // en mètre 
-	private final static int ROTATION_FACTOR=222; //facteur modulant la relation temps/vitesse/angle(en celcius) qui permet au robot de tourner sur son propre axe
+	private final static int ROTATION_FACTOR=180; //facteur modulant la relation temps/vitesse/angle(en celcius) qui permet au robot de tourner sur son propre axe
 	private boolean avance=true;
 	
 	public Actionneur(Port left_port, Port right_port, Port pinces_port) {
@@ -30,7 +28,7 @@ public class Actionneur {
 	public void openPince() { //synchrone
 		if(!open){
 //		mPincesMotor.rotate(700); 
-		mPincesMotor.rotate(700, true); // asynchrone
+		mPincesMotor.rotate(800, true); // asynchrone
 		open=true;
 		}
 		
@@ -39,7 +37,7 @@ public class Actionneur {
 	public void closePince() { 
 		if(open) {
 			//mPincesMotor.rotate(-700);
-			mPincesMotor.rotate(-700, true);
+			mPincesMotor.rotate(-800, true);
 			open=false;
 		}
 		
@@ -92,15 +90,13 @@ public class Actionneur {
 	
 	
 
-	public int rotate (double angle) { // 90 faire test, combien de temps = combien de degré
+	public boolean rotate (double angle) { // 90 faire test, combien de temps = combien de degré
 	double time=Math.abs(angle/SPEED*ROTATION_FACTOR);
-	long timeStampBefore = System.currentTimeMillis();
 	if (angle>0) rotateCounterClockwise();
 	else rotateClockwise();
 	Delay.msDelay((long) (time*10)); // en ms	problème calcul temp	
 	stop();
-	long timeStampAfter = System.currentTimeMillis();
-	return 0;	
+	return true;	
 	}
 
 
