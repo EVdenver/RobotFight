@@ -1,10 +1,17 @@
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 
+ * @author darkf
+ * La boussole du Robot lui permettant de se d�placer sur la table
+ */
 public class Boussole {
-	
+	//Les points cardinaux de la boussole
 	Map<String,Integer> card = new HashMap<>();
+	//La direction dans laquelle il regarde
 	int dir;
+	//La position du robot
 	Position pos;
 	
 	//Constructor
@@ -18,8 +25,6 @@ public class Boussole {
 		card.put("Sud", 270);
 		card.put("Est", 0);
 		card.put("Ouest",180);
-		card.put("Base", 0);
-		dir = card.get("Ouest");
 		pos = new Position();
 	}
 	
@@ -27,6 +32,8 @@ public class Boussole {
 	 * @author darkf
 	 * @see Boussole.Boussole()
 	 * @param angle angle de base vers lequel le robot porte son regard lors de l'initialisation de la boussole
+	 * @param x position en abcisse du robot
+	 * @param y position en ordonn�es du robot
 	 */
 	public Boussole(int angle, int x, int y) {
 		this();
@@ -36,6 +43,10 @@ public class Boussole {
 	}
 	
 	//Methods
+	/**
+	 * @author darkf
+	 * @return dir la direction dans laquelle regarde le robot
+	 */
 	public int getDir() {
 		return this.dir;
 	}
@@ -70,6 +81,11 @@ public class Boussole {
 		}else {
 			throw new IllegalArgumentException("La cardinalit� voulu n'�xiste pas");
 		}
+	}
+	
+	public void setPosition(int x, int y) {
+		pos.setX(x);
+		pos.setY(y);
 	}
 }
 

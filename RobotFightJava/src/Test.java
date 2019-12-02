@@ -21,8 +21,14 @@ public class Test {
 	static Actionneur a = new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B) ;
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
-	static Boussole b = new Boussole(180,0,0);
-	static Carte c = new Carte();
+	//Position abcisse du robot
+	static int x = 0;
+	//Position ordonnées du robot
+	static int y = 0;
+	//Direction du regard du robot au début
+	static int positionDepart = 180;
+	static Boussole b = new Boussole(positionDepart,x,y);
+	static Carte c = new Carte("Est","Ouest");
 	static double distanceMaintenant = 0;
 	static double distanceAvant = 0;
 	final static double seuilDetectionPalet = 0.38;
