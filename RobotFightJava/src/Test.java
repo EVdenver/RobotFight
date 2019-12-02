@@ -1,4 +1,5 @@
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,14 +22,11 @@ public class Test {
 	static Actionneur a = new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B) ;
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
-	//Position abcisse du robot
-	static int x = 0;
-	//Position ordonn�es du robot
-	static int y = 0;
-	//Direction du regard du robot au d�but
-	static int positionDepart = 180;
-	static Boussole b = new Boussole(positionDepart,x,y);
-	static Carte c = new Carte("Est","Ouest");
+
+	
+	static Boussole b = new Boussole(180);
+	static Carte c = new Carte();
+
 	static double distanceMaintenant = 0;
 	static double distanceAvant = 0; 
 	static double distanceAParcourir = 0; 
@@ -49,44 +47,16 @@ public class Test {
 	final static int STOP=7;
 	private static final String ArrayList = null;
 	static boolean trouver=false;
-  
+	
+	static String couleur;
+	static Properties sauveur;
+	
 	public static void main(String[] args) throws IOException {
-
+		chargementProperties();
+		couleur=TestColor.LaCouleur(TestColor.getEch(), sauveur);
 		
-		/*
-		InputStream in= new FileInputStream("couleur");
-		Properties sauveur= new Properties();
-		sauveur.load(in);
-		boolean again= true;
-		while(again) {
-		float[] tab= TestColor.getEch();
-		System.out.println(TestColor.LaCouleur(tab, sauveur));
-		Delay.msDelay(2000);
-		if (Button.ENTER.isDown()){
-			again=false;
-		}
-		}
-		float[] blue = new float[5];
-		float[] red= new float[5];
-		blue[0]=0;
-		blue[1]=1;
-		blue[2]=2;
-		red[0]=3;
-		red[1]=4;
-		red[2]=5;
-		sauveur.setProperty("Blue", blue[0]+ ","+ blue[1]+","+ blue[2]);
-		sauveur.setProperty("Red", red[0]+ ","+ red[1]+","+ red[2]);
-		sauveur.store(out, "comments");
-		sauveur.load(new FileInputStream("couleur"));
-		System.out.println(sauveur.getProperty("Red"));
-		float r0=Float.parseFloat((sauveur.getProperty("Red")).substring(0,3));
-		float r1=Float.parseFloat((sauveur.getProperty("Red")).substring(4,7));
-		float r2=Float.parseFloat((sauveur.getProperty("Red")).substring(8,11));
-		System.out.println("r0= "+r0);
-		System.out.println("r1= "+r1);
-		System.out.println("r2= "+r2);
-		//TestColor col= new TestColor();*/
     while(!ts.isPressed()) {
+
 			System.out.println("etat"+etat);
 			System.out.println(es.getDistance());
 			Delay.msDelay(3000);
@@ -94,8 +64,10 @@ public class Test {
 
 			Delay.msDelay(3000);
 			if (etat==STOP) break;
-		}
+		}*/
 
+		
+		
 		/*
 
 		while(!trouver) {
@@ -130,7 +102,11 @@ public class Test {
 				a.stop();
 				System.out.println("stop");
 				Delay.msDelay(10000);
-			}*/
+			}
+		while( !ts.isPressed()) {
+			a.forward(100);
+			System.out.println(recalibrationColor.LaCouleur(recalibrationColor.getEch(), recalibrationColor.getProperties()));
+		}*/
   }
 	
 	private static Reader FileInputStream(String string) {
@@ -144,7 +120,17 @@ public class Test {
 	//System.out.println(sauveur.getProperty("Blue"));
 		
 	//public String brunble (double sammple, double base){}
-
+	
+	/**
+	 * @author shyva
+	 * @throws IOException 
+	 */
+	public static void chargementProperties () throws IOException {
+		 InputStream in= new FileInputStream("couleur");
+		  Properties sauveur= new Properties();
+		sauveur.load(in);
+	}
+	
 	/**
 	 * @author Nicolas
 	 * @param v1
@@ -157,7 +143,7 @@ public class Test {
 				Math.pow(v1[2] - v2[2], 2.0));
 	}
 	/**
-	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est réduite
+	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est rÃ©duite
 	 * @return
 	 */
 	public static double differentielDistance () { // est-ce non
@@ -210,12 +196,12 @@ public class Test {
 			//b.setDir(15);
 			//angleTotal+=15;
 	//		
-		//	System.out.println("angle "+b.getDir()+"°");
+		//	System.out.println("angle "+b.getDir()+"Â°");
 		//	Delay.msDelay(1_000);
 		//	System.out.println("distance objet : "+trouver);
 		}
 		
-		System.out.println(tabList.size()+" distances mesurées"); // 25
+		System.out.println(tabList.size()+" distances mesurÃ©es"); // 25
 		
 		
 		
@@ -270,7 +256,7 @@ public class Test {
 	public static boolean rectifiePosition (int i) {
 		distanceMaintenant = es.getDistance();
 		tourner(15*i);
-		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrés
+		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrÃ©s
 		distanceAvant=distanceMaintenant;
 		distanceMaintenant = es.getDistance();
 		if (distanceMaintenant<distanceAvant) return true;
@@ -329,7 +315,7 @@ public class Test {
 		tourner(-b.getDir());
 		a.forward();
 		Delay.msDelay(5_000);
-		// se diriger vers les buts à l'aide de la boussole et de la ligne blanche
+		// se diriger vers les buts Ã  l'aide de la boussole et de la ligne blanche
 
 		etat=STOP;
 
@@ -355,7 +341,7 @@ public class Test {
 			if(fonceUntilPush()) etat=paletAttraper ;
 			else etat=dosAuMur;
 		break;
-		case(aucunPaletEnVu) : etat=chercheEnRond; // Ã  la fin de cherche en rond
+		case(aucunPaletEnVu) : etat=chercheEnRond; // ÃÂ  la fin de cherche en rond
 		break;
 		case(dosAuMur) : etat=chercheEnRond;
 		break;
@@ -371,4 +357,6 @@ public class Test {
 		}
 
 	}
+	
+	
 }
