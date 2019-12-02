@@ -8,9 +8,11 @@ import java.io.Reader;
 import java.util.Properties;
 
 import lejos.hardware.Button;
+import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 import java.util.ArrayList;
@@ -22,9 +24,9 @@ public class Test {
 	static Actionneur a = new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B) ;
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
-
+	static ColorimetrieSensor cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1"));
 	
-	static Boussole b = new Boussole(180);
+	static Boussole b = new Boussole(180,0,0);
 	static Carte c = new Carte();
 
 	static double distanceMaintenant = 0;
@@ -52,8 +54,9 @@ public class Test {
 	static Properties sauveur;
 	
 	public static void main(String[] args) throws IOException {
-		chargementProperties();
-		couleur=TestColor.LaCouleur(TestColor.getEch(), sauveur);
+
+		sauveur=cs.getProperties();
+		couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
 		
     while(!ts.isPressed()) {
 
@@ -64,7 +67,7 @@ public class Test {
 
 			Delay.msDelay(3000);
 			if (etat==STOP) break;
-		}*/
+		}
 
 		
 		
@@ -125,11 +128,7 @@ public class Test {
 	 * @author shyva
 	 * @throws IOException 
 	 */
-	public static void chargementProperties () throws IOException {
-		 InputStream in= new FileInputStream("couleur");
-		  Properties sauveur= new Properties();
-		sauveur.load(in);
-	}
+	
 	
 	/**
 	 * @author Nicolas
@@ -283,7 +282,7 @@ public class Test {
 	static public boolean fonceUntilPush() {
 		a.forward();
 		while (!ts.isPressed() ) {
-			//TODO Implémentation des couleurs et du changement de case ici
+			//TODO Implï¿½mentation des couleurs et du changement de case ici
 			distanceMaintenant=es.getDistance();
 			if (isMur()) return false;
 		}
