@@ -27,6 +27,7 @@ public class Test {
 	static double distanceAvant = 0; 
 	static double distanceAParcourir = 0; 
 	final static double seuilDetectionPalet = 0.38;
+	final static double marge = 0.05;
 	final static double seuilArretMur = 0.2;
 	final static double largeurMax=2;
 	final static double longeurMax=1.7;
@@ -44,7 +45,10 @@ public class Test {
 	static boolean trouver=false;
   
 	public static void main(String[] args) throws IOException {
-	  InputStream in= new FileInputStream("couleur");
+
+		
+		/*
+		InputStream in= new FileInputStream("couleur");
 		Properties sauveur= new Properties();
 		sauveur.load(in);
 		boolean again= true;
@@ -56,7 +60,7 @@ public class Test {
 			again=false;
 		}
 		}
-		/*float[] blue = new float[5];
+		float[] blue = new float[5];
 		float[] red= new float[5];
 		blue[0]=0;
 		blue[1]=1;
@@ -190,11 +194,11 @@ public class Test {
 	//	System.out.println("distance objet : "+trouver);
 	//	tabList.add(trouver);
 	//	distanceMur=calculDistanceMur(); quand la boussole sera au point
-		a.rotate(360);
+		tourner(360);
 		while (a.isMoving()){
 		//	a.stop();
 			trouver=es.getDistance();
-			//if (trouver==0) trouver=100;
+			if (trouver==0) trouver=100;
 			tabList.add(trouver);
 			//a.rotate(15);
 			//b.setDir(15);
@@ -207,15 +211,17 @@ public class Test {
 		
 		System.out.println(tabList.size()+" distances mesurées"); // 25
 		
-	//	Delay.msDelay(10_000);
+		
+		
+		Delay.msDelay(5_000);
 		
 		trouver=distanceMin(tabList);
-		System.out.println("distances min a indice "+tabList.indexOf(trouver)); 
-		int i=tabList.indexOf(trouver); // nbr de retour en arrière pour arriver à la plus petite distance
+		int i=tabList.indexOf(trouver);
+		System.out.println("distances min "+trouver+"a indice "+i); 
 		tourner(360/tabList.size()*i);
 		
-		
-//		Delay.msDelay(10_000);
+		System.out.println("je me suis recaler de"+360/tabList.size()*i+" degrees"); 
+		Delay.msDelay(10_000);
 //		angleMax/tabList.size()*indexMin;
 		
 		System.out.println("distance "+trouver);
@@ -231,6 +237,7 @@ public class Test {
 	}
 	
 	private static void tourner (int angle) {
+		a.setSpeed(300);
 		int dir=angle>0?1:-1;
 		if (dir==-1)angle*=-1;
 		System.out.println("direction "+dir);
@@ -243,11 +250,11 @@ public class Test {
 			//	Delay.msDelay(10);
 	//			System.out.println("angle "+i);
 			}
-			System.out.println("rotation termine, reste "+(angle-i));
+		//	System.out.println("rotation termine, reste "+(angle-i));
 			a.rotate(dir*(angle-i));
 		}
 		b.setDir(dir*angle);
-//		
+		a.setSpeed(500);
 	//	Delay.msDelay(1_000);
 
 	}
@@ -266,8 +273,9 @@ public class Test {
 	}
 
 	static public boolean isMur() {
+		distanceMaintenant=es.getDistance();
 		if (distanceMaintenant<=seuilArretMur) {
-			System.out.println("mur detecte");
+			System.out.println("mur detecte, distance "+distanceMaintenant);
 			a.stop();
 			a.backward(0.2);
 			int i=1;
@@ -297,11 +305,11 @@ public class Test {
 		a.openPince();
 		distanceAvant = es.getDistance();
 		a.forward();
-		Delay.msDelay(100);
+		Delay.msDelay(1000);
 		distanceMaintenant = es.getDistance();
 		while(distanceAvant > distanceMaintenant ) {
 			distanceAvant=distanceMaintenant;
-			Delay.msDelay(100);
+			Delay.msDelay(1000);
 			distanceMaintenant = es.getDistance();
 			if (isMur()) return false;
 		}
@@ -333,7 +341,7 @@ public class Test {
 		break;
 		case (detectionPalet):
 			if (!avanceVersPalet()) etat=dosAuMur;
-			else if (distanceAvant<=seuilDetectionPalet) etat=faceAuPalet;
+			else if (distanceAvant<=seuilDetectionPalet+marge) etat=faceAuPalet;
 			else etat=recalibrageAFaire;
 		System.out.println("distance"+distanceAvant);
 		break;
