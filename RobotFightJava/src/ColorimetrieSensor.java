@@ -23,9 +23,16 @@ import java.io.OutputStream;
 import java.util.Properties;
 import lejos.hardware.port.Port;
 
-public class recalibrationColor {
-	private static Port port = LocalEV3.get().getPort("S1");
-	private static EV3ColorSensor colorSensor = new EV3ColorSensor(port);
+public class ColorimetrieSensor {
+	private static Port port;
+	private static EV3ColorSensor colorSensor;
+	
+	public ColorimetrieSensor(Port port ) {
+		this.port=port;
+		this.colorSensor=new EV3ColorSensor(port);
+		
+	}
+
 
 
 	public void calibration() {
