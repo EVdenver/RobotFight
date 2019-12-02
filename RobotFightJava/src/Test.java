@@ -1,4 +1,5 @@
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,27 +8,34 @@ import java.io.Reader;
 import java.util.Properties;
 
 import lejos.hardware.Button;
+import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
+import java.util.ArrayList;
+
 
 public class Test {
-	
-	static double distanceMur=2;
+
+	static double distanceMur=1;
 	static Actionneur a = new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B) ;
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
+	static ColorimetrieSensor cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1"));
 	static Boussole b = new Boussole(180);
 	static Carte c = new Carte();
+
 	static double distanceMaintenant = 0;
-	static double distanceAvant = 0;
+	static double distanceAvant = 0; 
+	static double distanceAParcourir = 0; 
 	final static double seuilDetectionPalet = 0.38;
+	final static double marge = 0.05;
 	final static double seuilArretMur = 0.2;
 	final static double largeurMax=2;
 	final static double longeurMax=1.7;
-
 
 	static int etat=0;
 	final static int chercheEnRond=0;
@@ -38,112 +46,27 @@ public class Test {
 	final static int paletAttraper=5;
 	final static int recalibrageAFaire=6;
 	final static int STOP=7;
+	private static final String ArrayList = null;
 	static boolean trouver=false;
-  
+	
+	static String couleur;
+	static Properties sauveur;
+	
 	public static void main(String[] args) throws IOException {
-	  InputStream in= new FileInputStream("couleur");
-		Properties sauveur= new Properties();
-		sauveur.load(in);
-		boolean again= true;
-		while(again) {
-		float[] tab= TestColor.getEch();
-		System.out.println(TestColor.LaCouleur(tab, sauveur));
-		Delay.msDelay(2000);
-		if (Button.ENTER.isDown()){
-			again=false;
-		}
-		}
-		/*float[] blue = new float[5];
-		float[] red= new float[5];
-		blue[0]=0;
-		blue[1]=1;
-		blue[2]=2;
-		red[0]=3;
-		red[1]=4;
-		red[2]=5;
-		sauveur.setProperty("Blue", blue[0]+ ","+ blue[1]+","+ blue[2]);
-		sauveur.setProperty("Red", red[0]+ ","+ red[1]+","+ red[2]);
-		sauveur.store(out, "comments");
-		sauveur.load(new FileInputStream("couleur"));
-		System.out.println(sauveur.getProperty("Red"));
-		float r0=Float.parseFloat((sauveur.getProperty("Red")).substring(0,3));
-		float r1=Float.parseFloat((sauveur.getProperty("Red")).substring(4,7));
-		float r2=Float.parseFloat((sauveur.getProperty("Red")).substring(8,11));
-		System.out.println("r0= "+r0);
-		System.out.println("r1= "+r1);
-		System.out.println("r2= "+r2);
-		//TestColor col= new TestColor();*/
+		sauveur=cs.getProperties();
+		couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
+		
     while(!ts.isPressed()) {
-			System.out.println("etat"+etat);
-			System.out.println(es.getDistance());
-			Delay.msDelay(3000);
-			rechercheSimple();
-
-			Delay.msDelay(3000);
+			System.out.println("Etat "+etat);			
+			recherchePrincipale();
 			if (etat==STOP) break;
-		}
-
-		/*
-		while(!trouver) {
-			rechercheSimple();
-			distanceAvant=0;
-			distanceMaintenant=0;
-		}*/
-		//distance entre 0 et 1
-		//	System.out.println("distance objet : "+es.getDistance());
-		/*	0.321
-		while(!ts.isPressed()){
-			a.forward(0.4);
-			a.stop();
-			if (trouver>0.3) trouver=es.getDistance(); //distance entre 0 et 1
-			System.out.println("distance objet : "+trouver);
-			Delay.msDelay(1000);
-			if (trouver>0.3 && !(trouver>1)) {
-				rectifiePositionaHorraire(a,es,trouver);
-				rectifiePositionaAntiHorraire(a, es, trouver);
-
-			}
-			else a.closePince();
-			}
-		a.rotate(-40);
-		a.forward(2);
-		boolean tourner=true;
-		for (int i=0;i<3;i++) {
-				a.rotate(10);
-				System.out.println("rotate");
-				a.forward(0.2);
-				System.out.println("avance");
-				a.stop();
-				System.out.println("stop");
-				Delay.msDelay(10000);
-			}*/
+		}	
   }
 	
-	private static Reader FileInputStream(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	//public String brunble (double sammple, double base) {
-		
-	//}
-	//System.out.println(sauveur.getProperty("Blue"));
-		
-	//public String brunble (double sammple, double base){}
 
 	/**
-	 * @author Nicolas
-	 * @param v1
-	 * @param v2
-	 * @return
-	 */
-	public static double scalaire(float[] v1, float[] v2) {
-		return Math.sqrt (Math.pow(v1[0] - v2[0], 2.0) +
-				Math.pow(v1[1] - v2[1], 2.0) +
-				Math.pow(v1[2] - v2[2], 2.0));
-	}
-	/**
-	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est réduite
+	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est rÃ©duite
+	 * @author charlotte
 	 * @return
 	 */
 	public static double differentielDistance () { // est-ce non
@@ -153,10 +76,14 @@ public class Test {
 		return distanceAvant-distanceMaintenant;
 	}
 
+	/**
+	 * @author charlotte
+	 * @return
+	 */
 	public static double calculDistanceMur() {
-		double x = 0;
-		double y = 0;
-		double alpha = 0;
+		double x = b.getPos().getX();
+		double y = b.getPos().getY();
+		double alpha = b.getDir();
 		double dist=longeurMax;
 		if (alpha>0 && alpha<=90) dist=calculHypothenus(longeurMax-x, largeurMax, alpha);
 		if (alpha>90 && alpha<=180) dist=calculHypothenus(largeurMax-y, longeurMax, alpha-90);
@@ -165,6 +92,13 @@ public class Test {
 		return dist;
 	}
 
+	/**
+	 * @author charlotte
+	 * @param distance1
+	 * @param distance2
+	 * @param alpha
+	 * @return
+	 */
 	private static double calculHypothenus(double distance1, double distance2, double alpha) {
 		double dist=(distance1)/Math.cos(alpha);
 		double sortieDeMur=dist/Math.sin(alpha);
@@ -175,105 +109,197 @@ public class Test {
 		return dist;
 	}
 
+	/**
+	 * @author charlotte
+	 * @return
+	 */
 	public static double rechercheTournante () {
 		a.closePince();
-		double trouver=es.getDistance(); //distance entre 0 et 1
-		double angleTotal=0;
-		if (trouver==0) trouver=100;
-		System.out.println("distance objet : "+trouver);
-		while (trouver>distanceMur  && angleTotal<360 ){
-			a.rotate(15);
-			angleTotal+=15;
-			a.stop();
-			trouver=es.getDistance(); //distance entre 0 et 1
-			System.out.println("distance objet : "+trouver);
-			Delay.msDelay(100);
+		int angleMax=360;
+		ArrayList<Double> tabList= new ArrayList<Double>();
+		double trouver;
+		tourner(angleMax);
+		while (a.isMoving()){
+			trouver=es.getDistance();
+			if (trouver==0) trouver=100;
+			tabList.add(trouver);
 		}
+		System.out.println(tabList.size()+" distances mesurees"); // 300
+		trouver=distanceMin(tabList);
+		int i=tabList.indexOf(trouver);
+		System.out.println("distances min "+trouver+"a indice "+i); 
+		tourner(360/tabList.size()*i);
+		System.out.println("je me suis recaler de"+360/tabList.size()*i+" degrees"); 		
 		System.out.println("distance "+trouver);
 		return trouver;
 	}
+	
+	private static double distanceMin (ArrayList<Double> list) {
+		double res=Double.MAX_VALUE;
+		for (Double d : list) {
+			if (d>seuilDetectionPalet-marge) res=d<res?d:res;
+		}
+		return res;
+	}
+	
+	/**
+	 * @author charlotte
+	 * @param angle
+	 */
+	private static void tourner (int angle) {
+		a.setSpeed(300);
+		int dir=angle>0?1:-1;
+		if (dir==-1)angle*=-1;
+	//	System.out.println("direction "+dir);
+	//	System.out.println("angle "+angle);
+		if (angle<=15) a.rotate(dir*angle);
+		else {
+			int i=0;
+			for (;i<angle;i+=15) {
+				a.rotate(dir*15);
+			}
+			a.rotate(dir*(angle-i));
+		}
+		b.setDir(dir*angle);
+		a.setSpeed(500);
+	//	Delay.msDelay(1_000);
 
+	}
+	
+
+	/**
+	 * @author charlotte
+	 * @param i
+	 * @return
+	 */
 	public static boolean rectifiePosition (int i) {
 		distanceMaintenant = es.getDistance();
-		a.rotate(15*i);
+		tourner(15*i);
 		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrÃ©s
 		distanceAvant=distanceMaintenant;
 		distanceMaintenant = es.getDistance();
 		if (distanceMaintenant<distanceAvant) return true;
-		else a.rotate(-15*i);
+		else tourner(-15*i);
 		return false;
 	}
 
+	/**
+	 * @author charlotte
+	 * @return
+	 */
 	static public boolean isMur() {
+		distanceMaintenant=es.getDistance();
 		if (distanceMaintenant<=seuilArretMur) {
-			System.out.println("mur detecte");
+			System.out.println("mur detecte, distance "+distanceMaintenant);
 			a.stop();
 			a.backward(0.2);
 			int i=1;
-			//	if (isButOuest() && faceMurNord()) i*=-1;
-			//	if (isButEst() && faceMurSud()) i*=-1;
-			a.rotate(i*180);
+		//	if (isButOuest() && faceMurNord()) i*=-1;
+		//	if (isButEst() && faceMurSud()) i*=-1;
+			tourner(i*180);
+      //a.rotate(i*180);
 			return true;
 		}
 		return false;
 	}
-
-	static public boolean fonceUntilPush() {
+/**
+ * @author charlotte
+ * @return
+ * @throws FileNotFoundException
+ * @throws IOException
+ */
+	static public boolean fonceUntilPush() throws FileNotFoundException, IOException {
 		a.forward();
 		while (!ts.isPressed() ) {
-			//TODO Impl�mentation des couleurs et du changement de case ici
+			//TODO Impl�mentation des couleurs et du changement de case ici
+			/**
+			 * @author charlotte 
+			 * j'ai rajouter cette ligne ; elle te renvoit la couleur en string
+			 */
+			couleur=cs.LaCouleur(TestColor.getEch(), sauveur); 
+
 			distanceMaintenant=es.getDistance();
 			if (isMur()) return false;
 		}
 		a.stop();
 		a.closePince();
-		Delay.msDelay(3_000);
 		return true;
-
 	}
-
-	static public boolean avanceVersPalet() {
+/**
+ * @author charlotte
+ * @return
+ * @throws FileNotFoundException
+ * @throws IOException
+ */
+	static public boolean avanceVersPalet() throws FileNotFoundException, IOException {
 		a.openPince();
 		distanceAvant = es.getDistance();
 		a.forward();
+		Delay.msDelay(1000);
 		distanceMaintenant = es.getDistance();
 		while(distanceAvant > distanceMaintenant ) {
 			distanceAvant=distanceMaintenant;
+			Delay.msDelay(1000);
 			distanceMaintenant = es.getDistance();
-			Delay.msDelay(100);
+			/**
+			 * @author charlotte 
+			 * VINCENT ICI AUSSI LES COULEURS CHANGENT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			 */
+			couleur=cs.LaCouleur(TestColor.getEch(), sauveur); 
+
 			if (isMur()) return false;
 		}
 		a.stop();
 		return true;
 	}
 
-	static public void mettreUnBut() {
-		// se diriger vers les buts Ã  l'aide de la boussole et de la ligne blanche
-		etat=STOP;
+	/**
+	 * @author charlotte
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 */
+	static public void mettreUnBut() throws FileNotFoundException, IOException {
+		// la base ennemie est en carte, soit 0 soit 180
+	// VINCENT
+		tourner(-b.getDir()); // pour le moment
+		
+		while (!couleur.equals("white")) {
+			a.forward();
+			couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
+		}
+		
+		a.forward(0.1);
+		a.openPince();
 
+		tourner(180);
 	}
 
-	public static void rechercheSimple() {
+	public static void recherchePrincipale() throws FileNotFoundException, IOException {
 
 		switch(etat) {
-		case (chercheEnRond) :
-			if (rechercheTournante()<distanceMur) etat=detectionPalet;
-			else etat=aucunPaletEnVu;
+		case (chercheEnRond) : 
+		distanceAParcourir=rechercheTournante();
+		etat=detectionPalet;
+		//	if (rechercheTournante()<distanceMur) etat=detectionPalet;
+		//	else etat=aucunPaletEnVu;
+
 		break;
 		case (detectionPalet):
 			if (!avanceVersPalet()) etat=dosAuMur;
-			else if (distanceAvant<=seuilDetectionPalet) etat=faceAuPalet;
+			else if (distanceAvant<=seuilDetectionPalet+marge) etat=faceAuPalet;
 			else etat=recalibrageAFaire;
+		System.out.println("distance"+distanceAvant);
 		break;
 		case (faceAuPalet):
 			if(fonceUntilPush()) etat=paletAttraper ;
 			else etat=dosAuMur;
 		break;
-		case(aucunPaletEnVu) : etat=chercheEnRond; // Ã  la fin de cherche en rond
+		case(aucunPaletEnVu) : etat=chercheEnRond; // ÃÂ  la fin de cherche en rond
 		break;
 		case(dosAuMur) : etat=chercheEnRond;
 		break;
-		case(paletAttraper): mettreUnBut(); // a instancier
+		case(paletAttraper): mettreUnBut(); 
+			etat=chercheEnRond;
 		break;
 		case(recalibrageAFaire) :
 			System.out.println("recalibrage");
@@ -285,4 +311,6 @@ public class Test {
 		}
 
 	}
+	
+	
 }
