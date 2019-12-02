@@ -1,40 +1,51 @@
-
+/**
+ * 
+ * @author darkf
+ *
+ */
 public class Palet {
-	private Position p;
+	private int id;
 	private boolean ramasse;
 	private boolean estPresent;
 	
-	public Palet() {
-		p = new Position();
-		setRamasse(false);
-		setEstPresent(true);
-	}
-	
-	public Palet(Position p) {
-		this();
-		setP(p);
-	}
-
-	public Position getP() {
-		return p;
+	/**
+	 * @author darkf
+	 * @param id
+	 */
+	public Palet(int id) {
+		this.ramasse = false;
+		this.estPresent = true;
+		this.id = id;
 	}
 
-	public void setP(Position p) {
-		this.p = p;
-	}
-
+	/**
+	 * @author darkf
+	 * @return
+	 */
 	public boolean isRamasse() {
 		return ramasse;
 	}
 
+	/**
+	 * @author darkf
+	 * @param ramasse
+	 */
 	public void setRamasse(boolean ramasse) {
 		this.ramasse = ramasse;
 	}
 
+	/**
+	 * @author darkf
+	 * @return
+	 */
 	public boolean isEstPresent() {
 		return estPresent;
 	}
 
+	/**
+	 * @author darkf
+	 * @param estPresent
+	 */
 	public void setEstPresent(boolean estPresent) {
 		this.estPresent = estPresent;
 	}

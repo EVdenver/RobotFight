@@ -1,42 +1,67 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * 
+ * @author darkf
+ *
+ */
 public class Carte {
-	private Base baseA;
-	private Base baseE;
-	private int nbPalet;
-	private Palet[] tabP = new Palet[9];
+	private List<Case> cases = new LinkedList<Case>();
+	private List<Palet> palets = new ArrayList<Palet>();
 	
-	
-	public Base getBaseA() {return baseA;}
-
-	public void setBaseA(Base baseA) {this.baseA = baseA;}
-
-	public Base getBaseE() {return baseE;}
-
-	public void setBaseE(Base baseE) {this.baseE = baseE;}
-
-	public int getNbPalet() {return nbPalet;}
-
-	public void setNbPalet(int nbPalet) {this.nbPalet = nbPalet;}
-
-	public Palet getTabP(int i) {return tabP[i];}
-
-	public void setTabP(Palet tabP,int i) {this.tabP[i] = tabP;}
-
 	public Carte() {
-		baseA = new Base();
-		baseE = new Base();
-		setNbPalet(9);
-		for (int i = 0; i < tabP.length; i++) {
-			setTabP(new Palet(),i);
+		for (int i = 0; i < 9; i++) {
+			palets.add(new Palet(i+1));
 		}
+		Map<String,String> tmp = new HashMap<String,String>();
+		tmp.put("Nord", "");
+		tmp.put("Sud", "");
+		tmp.put("Est", "Blanc");
+		tmp.put("Ouest", "");
+		cases.add(new Case("A",tmp));
+		for (int i = 0; i < 4; i++) {
+			if(i == 0) {
+				tmp.put("Sud", "");
+				tmp.put("Nord", "Jaune");
+			}else if(i == 1) {
+				tmp.put("Sud", "Jaune");
+				tmp.put("Nord", "Noir");
+			}else if(i == 2) {
+				tmp.put("Sud", "Noir");
+				tmp.put("Nord", "Rouge");
+			}else if(i == 3) {
+				tmp.put("Sud", "Rouge");
+				tmp.put("Nord", "");
+			}
+			for (int j = 0; j < 4; j++) {
+				if(j == 0) {
+					tmp.put("Est", "Vert");
+					tmp.put("Ouest", "Blanc");
+				}else if(j == 1) {
+					tmp.put("Est", "Noir");
+					tmp.put("Ouest", "Vert");
+				}else if(j == 2) {
+					tmp.put("Est", "Bleu");
+					tmp.put("Ouest", "Noir");
+				}else if(j == 3) {
+					tmp.put("Est", "Blanc");
+					tmp.put("Ouest", "Bleu");
+				}
+				cases.add(new Case(String.valueOf((4*i+j)+1),tmp));
+			}
+		}
+		tmp.put("Sud", "");
+		tmp.put("Est", "");
+		tmp.put("Ouest", "Blanc");
+		cases.add(new Case("E", tmp));
 	}
 	
-	public Carte(Position[] posP,Position posA, Position posE, String dirA,String dirE) {
-		baseA = new Base(posA,dirA);
-		baseE = new Base(posE,dirE);
-		setNbPalet(9);
-		for (int i = 0; i < posP.length; i++) {
-			setTabP(new Palet(posP[1]),i);
-		}
+	public void enleverPalet(int id) {
+		
 	}
+	
 }

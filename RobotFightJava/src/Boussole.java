@@ -3,10 +3,9 @@ import java.util.Map;
 
 public class Boussole {
 	
-	Map<String,Integer> card = new HashMap<>();
-	int dir;
-	Position pos;
-	
+	private Map<String,Integer> card = new HashMap<>();
+	private int dir;
+	private String pos;
 	//Constructor
 	/**
 	 * @author darkf
@@ -18,9 +17,7 @@ public class Boussole {
 		card.put("Sud", 270);
 		card.put("Est", 0);
 		card.put("Ouest",180);
-		card.put("Base", 0);
-		dir = card.get("Ouest");
-		pos = new Position();
+		this.pos = "A";
 	}
 	
 	/**
@@ -28,16 +25,26 @@ public class Boussole {
 	 * @see Boussole.Boussole()
 	 * @param angle angle de base vers lequel le robot porte son regard lors de l'initialisation de la boussole
 	 */
-	public Boussole(int angle, int x, int y) {
+	public Boussole(int angle) {
 		super();
 		dir = angle;
-		pos.setX(x);
-		pos.setY(y);
 	}
 	
 	//Methods
+	/**
+	 * @author darkf
+	 * @return
+	 */
 	public int getDir() {
 		return this.dir;
+	}
+	
+	/**
+	 * @author darkf
+	 * @param newPos
+	 */
+	public void setPos(String newPos) {
+		this.pos = newPos;
 	}
 	
 	/**
