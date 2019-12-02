@@ -13,6 +13,12 @@ public class Carte {
 	private List<Case> cases = new LinkedList<Case>();
 	private List<Palet> palets = new ArrayList<Palet>();
 	
+	/**
+	 * @author darkf
+	 * Constructeur par defaut. 
+	 * Initialise la liste des 9 palets numerote de 1 a 9
+	 * Initialise les 18 cases en fonction de leur mur Est Ouest Nord Sud ainsi que leur nom A,E ou de 1 a 16
+	 */
 	public Carte() {
 		for (int i = 0; i < 9; i++) {
 			palets.add(new Palet(i+1));

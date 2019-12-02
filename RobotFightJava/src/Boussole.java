@@ -33,7 +33,7 @@ public class Boussole {
 	//Methods
 	/**
 	 * @author darkf
-	 * @return
+	 * @return la direction du champ visuel du robot
 	 */
 	public int getDir() {
 		return this.dir;
@@ -41,7 +41,7 @@ public class Boussole {
 	
 	/**
 	 * @author darkf
-	 * @param newPos
+	 * @param newPos la nouvelle case sur laquelle se trouve le robot
 	 */
 	public void setPos(String newPos) {
 		this.pos = newPos;

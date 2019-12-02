@@ -12,8 +12,9 @@ public class Case {
 	
 	/**
 	 * @author darkf
-	 * @param href
-	 * @param murs
+	 * @param href le nom de la case
+	 * @param murs les couleurs associes a chaque mur
+	 * Constructeur
 	 */
 	public Case(String href,Map<String,String> murs) {
 		// TODO Auto-generated constructor stub

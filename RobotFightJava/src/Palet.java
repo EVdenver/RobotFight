@@ -10,7 +10,7 @@ public class Palet {
 	
 	/**
 	 * @author darkf
-	 * @param id
+	 * @param id Le numéro du palet
 	 */
 	public Palet(int id) {
 		this.ramasse = false;
@@ -20,7 +20,7 @@ public class Palet {
 
 	/**
 	 * @author darkf
-	 * @return
+	 * @return true si le palet est ramasser false sinon
 	 */
 	public boolean isRamasse() {
 		return ramasse;
@@ -28,7 +28,7 @@ public class Palet {
 
 	/**
 	 * @author darkf
-	 * @param ramasse
+	 * @param ramasse indique le nouvel etat du palet
 	 */
 	public void setRamasse(boolean ramasse) {
 		this.ramasse = ramasse;
@@ -36,7 +36,7 @@ public class Palet {
 
 	/**
 	 * @author darkf
-	 * @return
+	 * @return true si le palet est à l'endroit attendu false sinon
 	 */
 	public boolean isEstPresent() {
 		return estPresent;
@@ -44,7 +44,7 @@ public class Palet {
 
 	/**
 	 * @author darkf
-	 * @param estPresent
+	 * @param estPresent etabli la nouvelle position du palet
 	 */
 	public void setEstPresent(boolean estPresent) {
 		this.estPresent = estPresent;
