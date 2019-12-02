@@ -15,6 +15,7 @@ public class Test {
 	static Carte c = new Carte();
 	static double distanceMaintenant = 0;
 	static double distanceAvant = 0; 
+	static double distanceAParcourir = 0; 
 	final static double seuilDetectionPalet = 0.38;
 	final static double seuilArretMur = 0.2;
 	final static double largeurMax=2;
@@ -162,30 +163,32 @@ public class Test {
 	//	System.out.println("distance objet : "+trouver);
 	//	tabList.add(trouver);
 	//	distanceMur=calculDistanceMur(); quand la boussole sera au point
-		while (angleTotal<angleMax ){
+		a.rotate(360);
+		while (a.isMoving()){
 		//	a.stop();
 			trouver=es.getDistance();
-			if (trouver==0) trouver=100;
+			//if (trouver==0) trouver=100;
 			tabList.add(trouver);
-			a.rotate(15);
-			b.setDir(15);
-			angleTotal+=15;
+			//a.rotate(15);
+			//b.setDir(15);
+			//angleTotal+=15;
 	//		
 		//	System.out.println("angle "+b.getDir()+"°");
 		//	Delay.msDelay(1_000);
 		//	System.out.println("distance objet : "+trouver);
 		}
+		
 		System.out.println(tabList.size()+" distances mesurées"); // 25
 		
-		Delay.msDelay(10_000);
+	//	Delay.msDelay(10_000);
 		
 		trouver=distanceMin(tabList);
 		System.out.println("distances min a indice "+tabList.indexOf(trouver)); 
-		int i=tabList.size()-tabList.indexOf(trouver); // nbr de retour en arrière pour arriver à la plus petite distance
-		tourner((15*i)%360);
+		int i=tabList.indexOf(trouver); // nbr de retour en arrière pour arriver à la plus petite distance
+		tourner(360/tabList.size()*i);
 		
 		
-		Delay.msDelay(10_000);
+//		Delay.msDelay(10_000);
 //		angleMax/tabList.size()*indexMin;
 		
 		System.out.println("distance "+trouver);
@@ -193,7 +196,7 @@ public class Test {
 	}
 	
 	private static double distanceMin (ArrayList<Double> list) {
-		double res=100;
+		double res=Double.MAX_VALUE;
 		for (Double d : list) {
 			if (d>seuilDetectionPalet) res=d<res?d:res;
 		}
@@ -295,8 +298,10 @@ public class Test {
 		
 		switch(etat) {
 		case (chercheEnRond) : 
-			if (rechercheTournante()<distanceMur) etat=detectionPalet;
-			else etat=aucunPaletEnVu;
+		distanceAParcourir=rechercheTournante();
+		etat=detectionPalet;
+		//	if (rechercheTournante()<distanceMur) etat=detectionPalet;
+		//	else etat=aucunPaletEnVu;
 		break;
 		case (detectionPalet): 
 			if (!avanceVersPalet()) etat=dosAuMur;

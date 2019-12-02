@@ -88,6 +88,9 @@ public class Actionneur {
 
 	    }
 	
+	public boolean isMoving () {
+		return (mLeftMotor.isMoving() && mRightMotor.isMoving());
+	}
 	
 
 	public boolean rotate (double angle) { // 90 faire test, combien de temps = combien de degré
