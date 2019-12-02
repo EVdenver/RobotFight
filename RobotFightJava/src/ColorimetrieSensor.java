@@ -24,24 +24,20 @@ import java.util.Properties;
 import lejos.hardware.port.Port;
 
 public class ColorimetrieSensor {
-	private static Port port;
+	
 	private static EV3ColorSensor colorSensor;
 	
+	
 	public ColorimetrieSensor(Port port ) {
-		this.port=port;
 		this.colorSensor=new EV3ColorSensor(port);
 		
 	}
-
-
 
 	public void calibration() {
 		try {
 			Properties sauveur = new Properties();
 			OutputStream out=new FileOutputStream("couleur"); 
 			boolean again= true;
-
-
 
 			SampleProvider average = new MeanFilter(colorSensor.getRGBMode(), 1);
 			colorSensor.setFloodlight(Color.WHITE);
@@ -51,7 +47,6 @@ public class ColorimetrieSensor {
 			float[] blue = new float[average.sampleSize()];
 			average.fetchSample(blue, 0);
 			sauveur.setProperty("Blue", blue[0]+ ","+ blue[1]+","+ blue[2]);
-
 
 			System.out.println("Press enter to calibrate red...");
 			Button.ENTER.waitForPressAndRelease();
@@ -119,13 +114,9 @@ public class ColorimetrieSensor {
 		med.fetchSample(flat,0);
 		return flat;
 	}
+	
 // auteur nicolas
-	public static String LaCouleur(float [] sample, Properties sauveur) throws FileNotFoundException, IOException {
-
-
-
-		InputStream  in= new FileInputStream("couleur");
-		sauveur.load(new FileInputStream("couleur"));
+	public static String laCouleur(float [] sample, Properties sauveur) throws FileNotFoundException, IOException {
 
 		float[] blue= new float[3];
 		System.out.println(sauveur.getProperty("Blue"));
@@ -227,7 +218,6 @@ public class ColorimetrieSensor {
 
 		System.out.println("The color is " + color + " \n");
 
-		in.close();
 		return color;
 	}
 }

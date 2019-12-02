@@ -47,6 +47,7 @@ public class Test {
 	final static int paletAttraper=5;
 	final static int recalibrageAFaire=6;
 	final static int STOP=7;
+	final static int firstPalet=8;
 	private static final String ArrayList = null;
 	static boolean trouver=false;
 	
@@ -54,14 +55,19 @@ public class Test {
 	static Properties sauveur;
 	
 	public static void main(String[] args) throws IOException {
-		sauveur=cs.getProperties();
-		couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
+		
+		cs.calibration();
+		
+	/*	sauveur=cs.getProperties();
+		couleur=ColorimetrieSensor.laCouleur(TestColor.getEch(), sauveur);
 		
     while(!ts.isPressed()) {
 			System.out.println("Etat "+etat);			
 			recherchePrincipale();
 			if (etat==STOP) break;
-		}	
+		}	*/
+  
+  
   }
 	
 
@@ -217,7 +223,7 @@ public class Test {
 			 * @author charlotte 
 			 * j'ai rajouter cette ligne ; elle te renvoit la couleur en string
 			 */
-			couleur=cs.LaCouleur(TestColor.getEch(), sauveur); 
+			couleur=cs.laCouleur(TestColor.getEch(), sauveur); 
 
 			distanceMaintenant=es.getDistance();
 			if (isMur()) return false;
@@ -246,7 +252,7 @@ public class Test {
 			 * @author charlotte 
 			 * VINCENT ICI AUSSI LES COULEURS CHANGENT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			 */
-			couleur=cs.LaCouleur(TestColor.getEch(), sauveur); 
+			couleur=cs.laCouleur(TestColor.getEch(), sauveur); 
 
 			if (isMur()) return false;
 		}
@@ -266,7 +272,7 @@ public class Test {
 		
 		while (!couleur.equals("white")) {
 			a.forward();
-			couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
+			couleur=cs.laCouleur(TestColor.getEch(), sauveur);
 		}
 		
 		a.forward(0.1);
@@ -274,10 +280,19 @@ public class Test {
 
 		tourner(180);
 	}
+	
+	public static void debutAutomate () throws FileNotFoundException, IOException {
+		a.openPince();
+		fonceUntilPush();
+		mettreUnBut();
+	}
 
 	public static void recherchePrincipale() throws FileNotFoundException, IOException {
 
 		switch(etat) {
+		case (firstPalet):
+			etat=chercheEnRond;
+			break;
 		case (chercheEnRond) : 
 		distanceAParcourir=rechercheTournante();
 		etat=detectionPalet;
