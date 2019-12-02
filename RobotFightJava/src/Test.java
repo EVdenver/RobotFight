@@ -25,8 +25,7 @@ public class Test {
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
 	static ColorimetrieSensor cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1"));
-	
-	static Boussole b = new Boussole(180,0,0);
+	static Boussole b = new Boussole(180);
 	static Carte c = new Carte();
 
 	static double distanceMaintenant = 0;
