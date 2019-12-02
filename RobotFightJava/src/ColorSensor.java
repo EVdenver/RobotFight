@@ -5,7 +5,11 @@ import lejos.robotics.Color;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.filter.MeanFilter;
 
-public class ColorSensor
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.Writer;
+
+public class ColorSensor 
 {
     private static float[] path_color;
     private static SampleProvider average;
@@ -22,7 +26,7 @@ public class ColorSensor
 		path_color = new float[average.sampleSize()];
 		average.fetchSample(path_color, 0);
     }
-
+  
     public boolean onPath()
     {
     	float[] sample = new float[average.sampleSize()];
