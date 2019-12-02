@@ -113,7 +113,7 @@ public class recalibrationColor {
 		return flat;
 	}
 // auteur nicolas
-	public String LaCouleur(float [] sample, Properties sauveur) throws FileNotFoundException, IOException {
+	public static String LaCouleur(float [] sample, Properties sauveur) throws FileNotFoundException, IOException {
 
 
 
