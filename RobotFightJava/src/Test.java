@@ -1,4 +1,5 @@
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,22 +13,28 @@ import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
+import java.util.ArrayList;
+
 
 public class Test {
-	
-	static double distanceMur=2;
+
+	static double distanceMur=1;
 	static Actionneur a = new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B) ;
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
-	static Boussole b = new Boussole(180,0,0);
+
+	
+	static Boussole b = new Boussole(180);
 	static Carte c = new Carte();
+
 	static double distanceMaintenant = 0;
-	static double distanceAvant = 0;
+	static double distanceAvant = 0; 
+	static double distanceAParcourir = 0; 
 	final static double seuilDetectionPalet = 0.38;
+	final static double marge = 0.05;
 	final static double seuilArretMur = 0.2;
 	final static double largeurMax=2;
 	final static double longeurMax=1.7;
-
 
 	static int etat=0;
 	final static int chercheEnRond=0;
@@ -38,42 +45,18 @@ public class Test {
 	final static int paletAttraper=5;
 	final static int recalibrageAFaire=6;
 	final static int STOP=7;
+	private static final String ArrayList = null;
 	static boolean trouver=false;
-  
+	
+	static String couleur;
+	static Properties sauveur;
+	
 	public static void main(String[] args) throws IOException {
-	  InputStream in= new FileInputStream("couleur");
-		Properties sauveur= new Properties();
-		sauveur.load(in);
-		boolean again= true;
-		while(again) {
-		float[] tab= TestColor.getEch();
-		System.out.println(TestColor.LaCouleur(tab, sauveur));
-		Delay.msDelay(2000);
-		if (Button.ENTER.isDown()){
-			again=false;
-		}
-		}
-		/*float[] blue = new float[5];
-		float[] red= new float[5];
-		blue[0]=0;
-		blue[1]=1;
-		blue[2]=2;
-		red[0]=3;
-		red[1]=4;
-		red[2]=5;
-		sauveur.setProperty("Blue", blue[0]+ ","+ blue[1]+","+ blue[2]);
-		sauveur.setProperty("Red", red[0]+ ","+ red[1]+","+ red[2]);
-		sauveur.store(out, "comments");
-		sauveur.load(new FileInputStream("couleur"));
-		System.out.println(sauveur.getProperty("Red"));
-		float r0=Float.parseFloat((sauveur.getProperty("Red")).substring(0,3));
-		float r1=Float.parseFloat((sauveur.getProperty("Red")).substring(4,7));
-		float r2=Float.parseFloat((sauveur.getProperty("Red")).substring(8,11));
-		System.out.println("r0= "+r0);
-		System.out.println("r1= "+r1);
-		System.out.println("r2= "+r2);
-		//TestColor col= new TestColor();*/
+		chargementProperties();
+		couleur=TestColor.LaCouleur(TestColor.getEch(), sauveur);
+		
     while(!ts.isPressed()) {
+
 			System.out.println("etat"+etat);
 			System.out.println(es.getDistance());
 			Delay.msDelay(3000);
@@ -81,9 +64,12 @@ public class Test {
 
 			Delay.msDelay(3000);
 			if (etat==STOP) break;
-		}
+		}*/
 
+		
+		
 		/*
+
 		while(!trouver) {
 			rechercheSimple();
 			distanceAvant=0;
@@ -116,7 +102,11 @@ public class Test {
 				a.stop();
 				System.out.println("stop");
 				Delay.msDelay(10000);
-			}*/
+			}
+		while( !ts.isPressed()) {
+			a.forward(100);
+			System.out.println(recalibrationColor.LaCouleur(recalibrationColor.getEch(), recalibrationColor.getProperties()));
+		}*/
   }
 	
 	private static Reader FileInputStream(String string) {
@@ -130,7 +120,17 @@ public class Test {
 	//System.out.println(sauveur.getProperty("Blue"));
 		
 	//public String brunble (double sammple, double base){}
-
+	
+	/**
+	 * @author shyva
+	 * @throws IOException 
+	 */
+	public static void chargementProperties () throws IOException {
+		 InputStream in= new FileInputStream("couleur");
+		  Properties sauveur= new Properties();
+		sauveur.load(in);
+	}
+	
 	/**
 	 * @author Nicolas
 	 * @param v1
@@ -143,7 +143,7 @@ public class Test {
 				Math.pow(v1[2] - v2[2], 2.0));
 	}
 	/**
-	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est réduite
+	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est rÃ©duite
 	 * @return
 	 */
 	public static double differentielDistance () { // est-ce non
@@ -154,9 +154,9 @@ public class Test {
 	}
 
 	public static double calculDistanceMur() {
-		double x = 0;
-		double y = 0;
-		double alpha = 0;
+		double x = b.getPos().getX();
+		double y = b.getPos().getY();
+		double alpha = b.getDir();
 		double dist=longeurMax;
 		if (alpha>0 && alpha<=90) dist=calculHypothenus(longeurMax-x, largeurMax, alpha);
 		if (alpha>90 && alpha<=180) dist=calculHypothenus(largeurMax-y, longeurMax, alpha-90);
@@ -177,42 +177,104 @@ public class Test {
 
 	public static double rechercheTournante () {
 		a.closePince();
-		double trouver=es.getDistance(); //distance entre 0 et 1
+		double angleMax=360;
+		ArrayList<Double> tabList= new ArrayList<Double>();
+		double trouver;
+	//	double trouver=es.getDistance(); //distance entre 0 et 1
 		double angleTotal=0;
-		if (trouver==0) trouver=100;
-		System.out.println("distance objet : "+trouver);
-		while (trouver>distanceMur  && angleTotal<360 ){
-			a.rotate(15);
-			angleTotal+=15;
-			a.stop();
-			trouver=es.getDistance(); //distance entre 0 et 1
-			System.out.println("distance objet : "+trouver);
-			Delay.msDelay(100);
+	//	if (trouver==0) trouver=100;
+	//	System.out.println("distance objet : "+trouver);
+	//	tabList.add(trouver);
+	//	distanceMur=calculDistanceMur(); quand la boussole sera au point
+		tourner(360);
+		while (a.isMoving()){
+		//	a.stop();
+			trouver=es.getDistance();
+			if (trouver==0) trouver=100;
+			tabList.add(trouver);
+			//a.rotate(15);
+			//b.setDir(15);
+			//angleTotal+=15;
+	//		
+		//	System.out.println("angle "+b.getDir()+"Â°");
+		//	Delay.msDelay(1_000);
+		//	System.out.println("distance objet : "+trouver);
 		}
+		
+		System.out.println(tabList.size()+" distances mesurÃ©es"); // 25
+		
+		
+		
+		Delay.msDelay(5_000);
+		
+		trouver=distanceMin(tabList);
+		int i=tabList.indexOf(trouver);
+		System.out.println("distances min "+trouver+"a indice "+i); 
+		tourner(360/tabList.size()*i);
+		
+		System.out.println("je me suis recaler de"+360/tabList.size()*i+" degrees"); 
+		Delay.msDelay(10_000);
+//		angleMax/tabList.size()*indexMin;
+		
 		System.out.println("distance "+trouver);
 		return trouver;
 	}
+	
+	private static double distanceMin (ArrayList<Double> list) {
+		double res=Double.MAX_VALUE;
+		for (Double d : list) {
+			if (d>seuilDetectionPalet) res=d<res?d:res;
+		}
+		return res;
+	}
+	
+	private static void tourner (int angle) {
+		a.setSpeed(300);
+		int dir=angle>0?1:-1;
+		if (dir==-1)angle*=-1;
+		System.out.println("direction "+dir);
+		System.out.println("angle "+angle);
+		if (angle<=15) a.rotate(dir*angle);
+		else {
+			int i=0;
+			for (;i<angle;i+=15) {
+				a.rotate(dir*15);
+			//	Delay.msDelay(10);
+	//			System.out.println("angle "+i);
+			}
+		//	System.out.println("rotation termine, reste "+(angle-i));
+			a.rotate(dir*(angle-i));
+		}
+		b.setDir(dir*angle);
+		a.setSpeed(500);
+	//	Delay.msDelay(1_000);
 
+	}
+	
+
+	
 	public static boolean rectifiePosition (int i) {
 		distanceMaintenant = es.getDistance();
-		a.rotate(15*i);
+		tourner(15*i);
 		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrÃ©s
 		distanceAvant=distanceMaintenant;
 		distanceMaintenant = es.getDistance();
 		if (distanceMaintenant<distanceAvant) return true;
-		else a.rotate(-15*i);
+		else tourner(-15*i);
 		return false;
 	}
 
 	static public boolean isMur() {
+		distanceMaintenant=es.getDistance();
 		if (distanceMaintenant<=seuilArretMur) {
-			System.out.println("mur detecte");
+			System.out.println("mur detecte, distance "+distanceMaintenant);
 			a.stop();
 			a.backward(0.2);
 			int i=1;
-			//	if (isButOuest() && faceMurNord()) i*=-1;
-			//	if (isButEst() && faceMurSud()) i*=-1;
-			a.rotate(i*180);
+		//	if (isButOuest() && faceMurNord()) i*=-1;
+		//	if (isButEst() && faceMurSud()) i*=-1;
+			tourner(i*180);
+      //a.rotate(i*180);
 			return true;
 		}
 		return false;
@@ -236,11 +298,12 @@ public class Test {
 		a.openPince();
 		distanceAvant = es.getDistance();
 		a.forward();
+		Delay.msDelay(1000);
 		distanceMaintenant = es.getDistance();
 		while(distanceAvant > distanceMaintenant ) {
 			distanceAvant=distanceMaintenant;
+			Delay.msDelay(1000);
 			distanceMaintenant = es.getDistance();
-			Delay.msDelay(100);
 			if (isMur()) return false;
 		}
 		a.stop();
@@ -248,7 +311,13 @@ public class Test {
 	}
 
 	static public void mettreUnBut() {
+		// la base ennemie est en carte, soit 0 soit 180
+	
+		tourner(-b.getDir());
+		a.forward();
+		Delay.msDelay(5_000);
 		// se diriger vers les buts Ã  l'aide de la boussole et de la ligne blanche
+
 		etat=STOP;
 
 	}
@@ -256,20 +325,24 @@ public class Test {
 	public static void rechercheSimple() {
 
 		switch(etat) {
-		case (chercheEnRond) :
-			if (rechercheTournante()<distanceMur) etat=detectionPalet;
-			else etat=aucunPaletEnVu;
+		case (chercheEnRond) : 
+		distanceAParcourir=rechercheTournante();
+		etat=detectionPalet;
+		//	if (rechercheTournante()<distanceMur) etat=detectionPalet;
+		//	else etat=aucunPaletEnVu;
+
 		break;
 		case (detectionPalet):
 			if (!avanceVersPalet()) etat=dosAuMur;
-			else if (distanceAvant<=seuilDetectionPalet) etat=faceAuPalet;
+			else if (distanceAvant<=seuilDetectionPalet+marge) etat=faceAuPalet;
 			else etat=recalibrageAFaire;
+		System.out.println("distance"+distanceAvant);
 		break;
 		case (faceAuPalet):
 			if(fonceUntilPush()) etat=paletAttraper ;
 			else etat=dosAuMur;
 		break;
-		case(aucunPaletEnVu) : etat=chercheEnRond; // Ã  la fin de cherche en rond
+		case(aucunPaletEnVu) : etat=chercheEnRond; // ÃÂ  la fin de cherche en rond
 		break;
 		case(dosAuMur) : etat=chercheEnRond;
 		break;
@@ -285,4 +358,6 @@ public class Test {
 		}
 
 	}
+	
+	
 }
