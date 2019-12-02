@@ -221,6 +221,7 @@ public class Test {
 	static public boolean fonceUntilPush() {
 		a.forward();
 		while (!ts.isPressed() ) {
+			//TODO Implémentation des couleurs et du changement de case ici
 			distanceMaintenant=es.getDistance();
 			if (isMur()) return false;
 		}
