@@ -1,4 +1,5 @@
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ public class Test {
 	static Actionneur a = new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B) ;
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
+	
 	static Boussole b = new Boussole(180,0,0);
 	static Carte c = new Carte();
 	static double distanceMaintenant = 0;
@@ -41,41 +43,18 @@ public class Test {
 	final static int STOP=7;
 	private static final String ArrayList = null;
 	static boolean trouver=false;
-  
+	
+	static String couleur;
+	static Properties sauveur;
+	
 	public static void main(String[] args) throws IOException {
-	  InputStream in= new FileInputStream("couleur");
-		Properties sauveur= new Properties();
-		sauveur.load(in);
-		boolean again= true;
-		while(again) {
-		float[] tab= TestColor.getEch();
-		System.out.println(TestColor.LaCouleur(tab, sauveur));
-		Delay.msDelay(2000);
-		if (Button.ENTER.isDown()){
-			again=false;
-		}
-		}
-		/*float[] blue = new float[5];
-		float[] red= new float[5];
-		blue[0]=0;
-		blue[1]=1;
-		blue[2]=2;
-		red[0]=3;
-		red[1]=4;
-		red[2]=5;
-		sauveur.setProperty("Blue", blue[0]+ ","+ blue[1]+","+ blue[2]);
-		sauveur.setProperty("Red", red[0]+ ","+ red[1]+","+ red[2]);
-		sauveur.store(out, "comments");
-		sauveur.load(new FileInputStream("couleur"));
-		System.out.println(sauveur.getProperty("Red"));
-		float r0=Float.parseFloat((sauveur.getProperty("Red")).substring(0,3));
-		float r1=Float.parseFloat((sauveur.getProperty("Red")).substring(4,7));
-		float r2=Float.parseFloat((sauveur.getProperty("Red")).substring(8,11));
-		System.out.println("r0= "+r0);
-		System.out.println("r1= "+r1);
-		System.out.println("r2= "+r2);
-		//TestColor col= new TestColor();*/
-    while(!ts.isPressed()) {
+		chargementProperties();
+		couleur=TestColor.LaCouleur(TestColor.getEch(), sauveur);
+	
+			
+  
+		
+		/* while(!ts.isPressed()) {
 			System.out.println("etat"+etat);
 			System.out.println(es.getDistance());
 			Delay.msDelay(3000);
@@ -83,8 +62,10 @@ public class Test {
 
 			Delay.msDelay(3000);
 			if (etat==STOP) break;
-		}
+		}*/
 
+		
+		
 		/*
 
 		while(!trouver) {
@@ -119,7 +100,11 @@ public class Test {
 				a.stop();
 				System.out.println("stop");
 				Delay.msDelay(10000);
-			}*/
+			}
+		while( !ts.isPressed()) {
+			a.forward(100);
+			System.out.println(recalibrationColor.LaCouleur(recalibrationColor.getEch(), recalibrationColor.getProperties()));
+		}*/
   }
 	
 	private static Reader FileInputStream(String string) {
@@ -133,7 +118,17 @@ public class Test {
 	//System.out.println(sauveur.getProperty("Blue"));
 		
 	//public String brunble (double sammple, double base){}
-
+	
+	/**
+	 * @author shyva
+	 * @throws IOException 
+	 */
+	public static void chargementProperties () throws IOException {
+		 InputStream in= new FileInputStream("couleur");
+		  Properties sauveur= new Properties();
+		sauveur.load(in);
+	}
+	
 	/**
 	 * @author Nicolas
 	 * @param v1
@@ -351,4 +346,6 @@ public class Test {
 		}
 
 	}
+	
+	
 }

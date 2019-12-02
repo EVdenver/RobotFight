@@ -10,7 +10,7 @@ public class Actionneur {
 	private EV3MediumRegulatedMotor mPincesMotor;
 	private boolean open=true;
 	Delay d= new Delay();
-	private final static int SPEED = 400; //degrees/sec
+	private final static int SPEED = 100; //degrees/sec
 	private final static double WHEEL_RADIUS = 0.05; // en mètre 
 	private final static int ROTATION_FACTOR=180; //facteur modulant la relation temps/vitesse/angle(en celcius) qui permet au robot de tourner sur son propre axe
 	private boolean avance=true;
