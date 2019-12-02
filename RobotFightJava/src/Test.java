@@ -22,12 +22,16 @@ public class Test {
 	static Actionneur a = new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B) ;
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
+
 	
-	static Boussole b = new Boussole(180,0,0);
+	static Boussole b = new Boussole(180);
 	static Carte c = new Carte();
+
 	static double distanceMaintenant = 0;
-	static double distanceAvant = 0;
+	static double distanceAvant = 0; 
+	static double distanceAParcourir = 0; 
 	final static double seuilDetectionPalet = 0.38;
+	final static double marge = 0.05;
 	final static double seuilArretMur = 0.2;
 	final static double largeurMax=2;
 	final static double longeurMax=1.7;
@@ -50,11 +54,9 @@ public class Test {
 	public static void main(String[] args) throws IOException {
 		chargementProperties();
 		couleur=TestColor.LaCouleur(TestColor.getEch(), sauveur);
-	
-			
-  
 		
-		/* while(!ts.isPressed()) {
+    while(!ts.isPressed()) {
+
 			System.out.println("etat"+etat);
 			System.out.println(es.getDistance());
 			Delay.msDelay(3000);
@@ -141,7 +143,7 @@ public class Test {
 				Math.pow(v1[2] - v2[2], 2.0));
 	}
 	/**
-	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est réduite
+	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est rÃ©duite
 	 * @return
 	 */
 	public static double differentielDistance () { // est-ce non
@@ -184,29 +186,33 @@ public class Test {
 	//	System.out.println("distance objet : "+trouver);
 	//	tabList.add(trouver);
 	//	distanceMur=calculDistanceMur(); quand la boussole sera au point
-		while (angleTotal<angleMax ){
+		tourner(360);
+		while (a.isMoving()){
 		//	a.stop();
 			trouver=es.getDistance();
 			if (trouver==0) trouver=100;
 			tabList.add(trouver);
-			a.rotate(15);
-			b.setDir(15);
-			angleTotal+=15;
+			//a.rotate(15);
+			//b.setDir(15);
+			//angleTotal+=15;
 	//		
-		//	System.out.println("angle "+b.getDir()+"°");
+		//	System.out.println("angle "+b.getDir()+"Â°");
 		//	Delay.msDelay(1_000);
 		//	System.out.println("distance objet : "+trouver);
 		}
-		System.out.println(tabList.size()+" distances mesurées"); // 25
 		
-		Delay.msDelay(10_000);
+		System.out.println(tabList.size()+" distances mesurÃ©es"); // 25
+		
+		
+		
+		Delay.msDelay(5_000);
 		
 		trouver=distanceMin(tabList);
-		System.out.println("distances min a indice "+tabList.indexOf(trouver)); 
-		int i=tabList.size()-tabList.indexOf(trouver); // nbr de retour en arrière pour arriver à la plus petite distance
-		tourner((15*i)%360);
+		int i=tabList.indexOf(trouver);
+		System.out.println("distances min "+trouver+"a indice "+i); 
+		tourner(360/tabList.size()*i);
 		
-		
+		System.out.println("je me suis recaler de"+360/tabList.size()*i+" degrees"); 
 		Delay.msDelay(10_000);
 //		angleMax/tabList.size()*indexMin;
 		
@@ -215,7 +221,7 @@ public class Test {
 	}
 	
 	private static double distanceMin (ArrayList<Double> list) {
-		double res=100;
+		double res=Double.MAX_VALUE;
 		for (Double d : list) {
 			if (d>seuilDetectionPalet) res=d<res?d:res;
 		}
@@ -223,6 +229,7 @@ public class Test {
 	}
 	
 	private static void tourner (int angle) {
+		a.setSpeed(300);
 		int dir=angle>0?1:-1;
 		if (dir==-1)angle*=-1;
 		System.out.println("direction "+dir);
@@ -235,11 +242,11 @@ public class Test {
 			//	Delay.msDelay(10);
 	//			System.out.println("angle "+i);
 			}
-			System.out.println("rotation termine, reste "+(angle-i));
+		//	System.out.println("rotation termine, reste "+(angle-i));
 			a.rotate(dir*(angle-i));
 		}
 		b.setDir(dir*angle);
-//		
+		a.setSpeed(500);
 	//	Delay.msDelay(1_000);
 
 	}
@@ -249,7 +256,7 @@ public class Test {
 	public static boolean rectifiePosition (int i) {
 		distanceMaintenant = es.getDistance();
 		tourner(15*i);
-		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrés
+		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrÃ©s
 		distanceAvant=distanceMaintenant;
 		distanceMaintenant = es.getDistance();
 		if (distanceMaintenant<distanceAvant) return true;
@@ -258,8 +265,9 @@ public class Test {
 	}
 
 	static public boolean isMur() {
+		distanceMaintenant=es.getDistance();
 		if (distanceMaintenant<=seuilArretMur) {
-			System.out.println("mur detecte");
+			System.out.println("mur detecte, distance "+distanceMaintenant);
 			a.stop();
 			a.backward(0.2);
 			int i=1;
@@ -289,11 +297,11 @@ public class Test {
 		a.openPince();
 		distanceAvant = es.getDistance();
 		a.forward();
-		Delay.msDelay(100);
+		Delay.msDelay(1000);
 		distanceMaintenant = es.getDistance();
 		while(distanceAvant > distanceMaintenant ) {
 			distanceAvant=distanceMaintenant;
-			Delay.msDelay(100);
+			Delay.msDelay(1000);
 			distanceMaintenant = es.getDistance();
 			if (isMur()) return false;
 		}
@@ -307,7 +315,7 @@ public class Test {
 		tourner(-b.getDir());
 		a.forward();
 		Delay.msDelay(5_000);
-		// se diriger vers les buts à l'aide de la boussole et de la ligne blanche
+		// se diriger vers les buts Ã  l'aide de la boussole et de la ligne blanche
 
 		etat=STOP;
 
@@ -316,13 +324,16 @@ public class Test {
 	public static void rechercheSimple() {
 
 		switch(etat) {
-		case (chercheEnRond) :
-			if (rechercheTournante()<distanceMur) etat=detectionPalet;
-			else etat=aucunPaletEnVu;
+		case (chercheEnRond) : 
+		distanceAParcourir=rechercheTournante();
+		etat=detectionPalet;
+		//	if (rechercheTournante()<distanceMur) etat=detectionPalet;
+		//	else etat=aucunPaletEnVu;
+
 		break;
 		case (detectionPalet):
 			if (!avanceVersPalet()) etat=dosAuMur;
-			else if (distanceAvant<=seuilDetectionPalet) etat=faceAuPalet;
+			else if (distanceAvant<=seuilDetectionPalet+marge) etat=faceAuPalet;
 			else etat=recalibrageAFaire;
 		System.out.println("distance"+distanceAvant);
 		break;
@@ -330,7 +341,7 @@ public class Test {
 			if(fonceUntilPush()) etat=paletAttraper ;
 			else etat=dosAuMur;
 		break;
-		case(aucunPaletEnVu) : etat=chercheEnRond; // Ã  la fin de cherche en rond
+		case(aucunPaletEnVu) : etat=chercheEnRond; // ÃÂ  la fin de cherche en rond
 		break;
 		case(dosAuMur) : etat=chercheEnRond;
 		break;
