@@ -54,95 +54,20 @@ public class Test {
 	static Properties sauveur;
 	
 	public static void main(String[] args) throws IOException {
-
 		sauveur=cs.getProperties();
 		couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
 		
     while(!ts.isPressed()) {
-
-			System.out.println("etat"+etat);
-			System.out.println(es.getDistance());
-			Delay.msDelay(3000);
-			rechercheSimple();
-
-			Delay.msDelay(3000);
+			System.out.println("Etat "+etat);			
+			recherchePrincipale();
 			if (etat==STOP) break;
-		}
-
-		
-		
-		/*
-
-		while(!trouver) {
-			rechercheSimple();
-			distanceAvant=0;
-			distanceMaintenant=0;
-		}*/
-		//distance entre 0 et 1
-		//	System.out.println("distance objet : "+es.getDistance());
-		/*	0.321
-		while(!ts.isPressed()){
-			a.forward(0.4);
-			a.stop();
-			if (trouver>0.3) trouver=es.getDistance(); //distance entre 0 et 1
-			System.out.println("distance objet : "+trouver);
-			Delay.msDelay(1000);
-			if (trouver>0.3 && !(trouver>1)) {
-				rectifiePositionaHorraire(a,es,trouver);
-				rectifiePositionaAntiHorraire(a, es, trouver);
-
-			}
-			else a.closePince();
-			}
-		a.rotate(-40);
-		a.forward(2);
-		boolean tourner=true;
-		for (int i=0;i<3;i++) {
-				a.rotate(10);
-				System.out.println("rotate");
-				a.forward(0.2);
-				System.out.println("avance");
-				a.stop();
-				System.out.println("stop");
-				Delay.msDelay(10000);
-			}
-		while( !ts.isPressed()) {
-			a.forward(100);
-			System.out.println(recalibrationColor.LaCouleur(recalibrationColor.getEch(), recalibrationColor.getProperties()));
-		}*/
+		}	
   }
 	
-	private static Reader FileInputStream(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	//public String brunble (double sammple, double base) {
-		
-	//}
-	//System.out.println(sauveur.getProperty("Blue"));
-		
-	//public String brunble (double sammple, double base){}
-	
-	/**
-	 * @author shyva
-	 * @throws IOException 
-	 */
-	
-	
-	/**
-	 * @author Nicolas
-	 * @param v1
-	 * @param v2
-	 * @return
-	 */
-	public static double scalaire(float[] v1, float[] v2) {
-		return Math.sqrt (Math.pow(v1[0] - v2[0], 2.0) +
-				Math.pow(v1[1] - v2[1], 2.0) +
-				Math.pow(v1[2] - v2[2], 2.0));
-	}
 	/**
 	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est rÃ©duite
+	 * @author charlotte
 	 * @return
 	 */
 	public static double differentielDistance () { // est-ce non
@@ -152,6 +77,10 @@ public class Test {
 		return distanceAvant-distanceMaintenant;
 	}
 
+	/**
+	 * @author charlotte
+	 * @return
+	 */
 	public static double calculDistanceMur() {
 		double x = b.getPos().getX();
 		double y = b.getPos().getY();
@@ -164,6 +93,13 @@ public class Test {
 		return dist;
 	}
 
+	/**
+	 * @author charlotte
+	 * @param distance1
+	 * @param distance2
+	 * @param alpha
+	 * @return
+	 */
 	private static double calculHypothenus(double distance1, double distance2, double alpha) {
 		double dist=(distance1)/Math.cos(alpha);
 		double sortieDeMur=dist/Math.sin(alpha);
@@ -174,47 +110,27 @@ public class Test {
 		return dist;
 	}
 
+	/**
+	 * @author charlotte
+	 * @return
+	 */
 	public static double rechercheTournante () {
 		a.closePince();
-		double angleMax=360;
+		int angleMax=360;
 		ArrayList<Double> tabList= new ArrayList<Double>();
 		double trouver;
-	//	double trouver=es.getDistance(); //distance entre 0 et 1
-		double angleTotal=0;
-	//	if (trouver==0) trouver=100;
-	//	System.out.println("distance objet : "+trouver);
-	//	tabList.add(trouver);
-	//	distanceMur=calculDistanceMur(); quand la boussole sera au point
-		tourner(360);
+		tourner(angleMax);
 		while (a.isMoving()){
-		//	a.stop();
 			trouver=es.getDistance();
 			if (trouver==0) trouver=100;
 			tabList.add(trouver);
-			//a.rotate(15);
-			//b.setDir(15);
-			//angleTotal+=15;
-	//		
-		//	System.out.println("angle "+b.getDir()+"Â°");
-		//	Delay.msDelay(1_000);
-		//	System.out.println("distance objet : "+trouver);
 		}
-		
-		System.out.println(tabList.size()+" distances mesurÃ©es"); // 25
-		
-		
-		
-		Delay.msDelay(5_000);
-		
+		System.out.println(tabList.size()+" distances mesurees"); // 300
 		trouver=distanceMin(tabList);
 		int i=tabList.indexOf(trouver);
 		System.out.println("distances min "+trouver+"a indice "+i); 
 		tourner(360/tabList.size()*i);
-		
-		System.out.println("je me suis recaler de"+360/tabList.size()*i+" degrees"); 
-		Delay.msDelay(10_000);
-//		angleMax/tabList.size()*indexMin;
-		
+		System.out.println("je me suis recaler de"+360/tabList.size()*i+" degrees"); 		
 		System.out.println("distance "+trouver);
 		return trouver;
 	}
@@ -222,26 +138,27 @@ public class Test {
 	private static double distanceMin (ArrayList<Double> list) {
 		double res=Double.MAX_VALUE;
 		for (Double d : list) {
-			if (d>seuilDetectionPalet) res=d<res?d:res;
+			if (d>seuilDetectionPalet-marge) res=d<res?d:res;
 		}
 		return res;
 	}
 	
+	/**
+	 * @author charlotte
+	 * @param angle
+	 */
 	private static void tourner (int angle) {
 		a.setSpeed(300);
 		int dir=angle>0?1:-1;
 		if (dir==-1)angle*=-1;
-		System.out.println("direction "+dir);
-		System.out.println("angle "+angle);
+	//	System.out.println("direction "+dir);
+	//	System.out.println("angle "+angle);
 		if (angle<=15) a.rotate(dir*angle);
 		else {
 			int i=0;
 			for (;i<angle;i+=15) {
 				a.rotate(dir*15);
-			//	Delay.msDelay(10);
-	//			System.out.println("angle "+i);
 			}
-		//	System.out.println("rotation termine, reste "+(angle-i));
 			a.rotate(dir*(angle-i));
 		}
 		b.setDir(dir*angle);
@@ -251,7 +168,11 @@ public class Test {
 	}
 	
 
-	
+	/**
+	 * @author charlotte
+	 * @param i
+	 * @return
+	 */
 	public static boolean rectifiePosition (int i) {
 		distanceMaintenant = es.getDistance();
 		tourner(15*i);
@@ -263,6 +184,10 @@ public class Test {
 		return false;
 	}
 
+	/**
+	 * @author charlotte
+	 * @return
+	 */
 	static public boolean isMur() {
 		distanceMaintenant=es.getDistance();
 		if (distanceMaintenant<=seuilArretMur) {
@@ -278,22 +203,36 @@ public class Test {
 		}
 		return false;
 	}
-
-	static public boolean fonceUntilPush() {
+/**
+ * @author charlotte
+ * @return
+ * @throws FileNotFoundException
+ * @throws IOException
+ */
+	static public boolean fonceUntilPush() throws FileNotFoundException, IOException {
 		a.forward();
 		while (!ts.isPressed() ) {
 			//TODO Impl�mentation des couleurs et du changement de case ici
+			/**
+			 * @author charlotte 
+			 * j'ai rajouter cette ligne ; elle te renvoit la couleur en string
+			 */
+			couleur=cs.LaCouleur(TestColor.getEch(), sauveur); 
+
 			distanceMaintenant=es.getDistance();
 			if (isMur()) return false;
 		}
 		a.stop();
 		a.closePince();
-		Delay.msDelay(3_000);
 		return true;
-
 	}
-
-	static public boolean avanceVersPalet() {
+/**
+ * @author charlotte
+ * @return
+ * @throws FileNotFoundException
+ * @throws IOException
+ */
+	static public boolean avanceVersPalet() throws FileNotFoundException, IOException {
 		a.openPince();
 		distanceAvant = es.getDistance();
 		a.forward();
@@ -303,25 +242,40 @@ public class Test {
 			distanceAvant=distanceMaintenant;
 			Delay.msDelay(1000);
 			distanceMaintenant = es.getDistance();
+			/**
+			 * @author charlotte 
+			 * VINCENT ICI AUSSI LES COULEURS CHANGENT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			 */
+			couleur=cs.LaCouleur(TestColor.getEch(), sauveur); 
+
 			if (isMur()) return false;
 		}
 		a.stop();
 		return true;
 	}
 
-	static public void mettreUnBut() {
+	/**
+	 * @author charlotte
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 */
+	static public void mettreUnBut() throws FileNotFoundException, IOException {
 		// la base ennemie est en carte, soit 0 soit 180
-	
-		tourner(-b.getDir());
-		a.forward();
-		Delay.msDelay(5_000);
-		// se diriger vers les buts Ã  l'aide de la boussole et de la ligne blanche
+	// VINCENT
+		tourner(-b.getDir()); // pour le moment
+		
+		while (!couleur.equals("white")) {
+			a.forward();
+			couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
+		}
+		
+		a.forward(0.1);
+		a.openPince();
 
-		etat=STOP;
-
+		tourner(180);
 	}
 
-	public static void rechercheSimple() {
+	public static void recherchePrincipale() throws FileNotFoundException, IOException {
 
 		switch(etat) {
 		case (chercheEnRond) : 
@@ -345,7 +299,8 @@ public class Test {
 		break;
 		case(dosAuMur) : etat=chercheEnRond;
 		break;
-		case(paletAttraper): mettreUnBut(); // a instancier
+		case(paletAttraper): mettreUnBut(); 
+			etat=chercheEnRond;
 		break;
 		case(recalibrageAFaire) :
 			System.out.println("recalibrage");
