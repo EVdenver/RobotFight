@@ -124,8 +124,7 @@ public class ColorimetrieSensor {
 
 
 
-		InputStream  in= new FileInputStream("couleur");
-		sauveur.load(new FileInputStream("couleur"));
+		
 
 		float[] blue= new float[3];
 		System.out.println(sauveur.getProperty("Blue"));
@@ -227,7 +226,7 @@ public class ColorimetrieSensor {
 
 		System.out.println("The color is " + color + " \n");
 
-		in.close();
+		
 		return color;
 	}
 }
