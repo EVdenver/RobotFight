@@ -18,13 +18,14 @@ import lejos.utility.Delay;
 import java.util.ArrayList;
 
 
-public class Test {
+public class Test  {
 
 	static double distanceMur=1;
 	static Actionneur a = new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B) ;
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
-	static ColorimetrieSensor cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1"));
+	
+	static ColorimetrieSensor cs;
 	
 	static Boussole b = new Boussole(180,0,0);
 	static Carte c = new Carte();
@@ -56,16 +57,16 @@ public class Test {
 	
 	public static void main(String[] args) throws IOException {
 		
-		cs.calibration();
-		
-	/*	sauveur=cs.getProperties();
-		couleur=ColorimetrieSensor.laCouleur(TestColor.getEch(), sauveur);
+	//	cs.calibration();
+	//	cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1")); 
+		cs = new ColorimetrieSensor(SensorPort.S1);
+		couleur=cs.laCouleur();
 		
     while(!ts.isPressed()) {
 			System.out.println("Etat "+etat);			
 			recherchePrincipale();
 			if (etat==STOP) break;
-		}	*/
+		}	
   
   
   }
@@ -223,7 +224,7 @@ public class Test {
 			 * @author charlotte 
 			 * j'ai rajouter cette ligne ; elle te renvoit la couleur en string
 			 */
-			couleur=cs.laCouleur(TestColor.getEch(), sauveur); 
+			couleur=cs.laCouleur(); 
 
 			distanceMaintenant=es.getDistance();
 			if (isMur()) return false;
@@ -252,7 +253,7 @@ public class Test {
 			 * @author charlotte 
 			 * VINCENT ICI AUSSI LES COULEURS CHANGENT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			 */
-			couleur=cs.laCouleur(TestColor.getEch(), sauveur); 
+			couleur=cs.laCouleur(); 
 
 			if (isMur()) return false;
 		}
@@ -272,7 +273,7 @@ public class Test {
 		
 		while (!couleur.equals("white")) {
 			a.forward();
-			couleur=cs.laCouleur(TestColor.getEch(), sauveur);
+			couleur=cs.laCouleur();
 		}
 		
 		a.forward(0.1);
