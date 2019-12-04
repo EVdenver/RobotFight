@@ -28,7 +28,7 @@ public class Test  {
 	
 	static ColorimetrieSensor cs;
 	
-	static Boussole b = new Boussole(180);
+	static Boussole b = new Boussole(90);
 
 	static Carte c = new Carte();
 
@@ -58,21 +58,24 @@ public class Test  {
 	static Properties sauveur;
 	
 	public static void main(String[] args) throws IOException {
-	//	cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1")); 
-	//	cs.calibration();
+		//	cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1")); 
+		//	cs.calibration();
 
-		
-			cs = new ColorimetrieSensor(SensorPort.S1);
-		couleur=cs.laCouleur();
-		
-    while(!ts.isPressed()) {
+		int newPos = c.getDirE();
+		a.rotate(b.setDir(newPos));
+		Delay.msDelay(1000);
+
+		/*cs = new ColorimetrieSensor(SensorPort.S1);
+		//couleur=cs.laCouleur();
+
+		while(!ts.isPressed()) {
 			System.out.println("Etat "+etat);			
 			recherchePrincipale();
 			if (etat==STOP) break;
-		}	
-  
-  
-  }
+		}	*/
+
+
+	}
 	
 
 	/**
@@ -228,7 +231,7 @@ public class Test  {
 			 * @author charlotte 
 			 * j'ai rajouter cette ligne ; elle te renvoit la couleur en string
 			 */
-			couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
+			//couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
 			Case[] caseAdj = c.getCasesAdj(b.getPos());
 			distanceMaintenant=es.getDistance();
 			if (isMur()) return false;
@@ -263,7 +266,7 @@ public class Test  {
 			 * @author charlotte 
 			 * VINCENT ICI AUSSI LES COULEURS CHANGENT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			 */
-			couleur=cs.laCouleur(); 
+			//couleur=cs.laCouleur(); 
 
 			if (isMur()) return false;
 		}
@@ -283,7 +286,7 @@ public class Test  {
 		
 		while (!couleur.equals("white")) {
 			a.forward();
-			couleur=cs.laCouleur();
+			//couleur=cs.laCouleur();
 		}
 		
 		a.forward(0.1);

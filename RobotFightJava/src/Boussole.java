@@ -58,9 +58,6 @@ public class Boussole {
 	 * @author darkf
 	 * @param angle L'angle que le regard du robot doit effectuer
 	 */
-	public void setDir(int angle) {
-		this.dir = (this.dir + angle)%360;
-	}
 	
 	
 	public String getPos() {
@@ -72,14 +69,10 @@ public class Boussole {
 	 * @param dir La direction sur laquelle doit se fixer le robot (si elle est presente dans les cardinalite)
 	 * @return l'angle de deplacement necessaire pour que le regard se tourne dans la direction voulue
 	 */
-	public int setDir(String dir) {
-		if(card.containsKey(dir)) {
-			int tmp = this.dir;
-			this.dir = card.get(dir);
-			return tmp - this.dir;
-		}else {
-			throw new IllegalArgumentException("La cardinalite voulu n'existe pas");
-		}
+	public int setDir(int angle) {
+		int tmp = this.dir;
+		this.dir = (this.dir + angle)%360;
+		return tmp - this.dir;
 	}
 }
 

@@ -65,6 +65,14 @@ public class Carte {
 		cases.add(new Case("E", tmp));
 	}
 	
+	public List<Case> getCases() {
+		return cases;
+	}
+
+	public List<Palet> getPalets() {
+		return palets;
+	}
+
 	public Case getCase(String n) {
 		for (int i = 0; i < cases.size(); i++) {
 			Case tmp = cases.get(i);
