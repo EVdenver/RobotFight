@@ -18,14 +18,18 @@ import lejos.utility.Delay;
 import java.util.ArrayList;
 
 
-public class Test {
+public class Test  {
 
 	static double distanceMur=1;
 	static Actionneur a = new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B) ;
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
-	static ColorimetrieSensor cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1"));
+
+	
+	static ColorimetrieSensor cs;
+	
 	static Boussole b = new Boussole(180);
+
 	static Carte c = new Carte();
 
 	static double distanceMaintenant = 0;
@@ -37,7 +41,7 @@ public class Test {
 	final static double largeurMax=2;
 	final static double longeurMax=1.7;
 
-	static int etat=0;
+	static int etat=8;
 	final static int chercheEnRond=0;
 	final static int dosAuMur=1;
 	final static int detectionPalet=2;
@@ -46,6 +50,7 @@ public class Test {
 	final static int paletAttraper=5;
 	final static int recalibrageAFaire=6;
 	final static int STOP=7;
+	final static int firstPalet=8;
 	private static final String ArrayList = null;
 	static boolean trouver=false;
 	
@@ -53,14 +58,20 @@ public class Test {
 	static Properties sauveur;
 	
 	public static void main(String[] args) throws IOException {
-		sauveur=cs.getProperties();
-		couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
+	//	cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1")); 
+	//	cs.calibration();
+
+		
+			cs = new ColorimetrieSensor(SensorPort.S1);
+		couleur=cs.laCouleur();
 		
     while(!ts.isPressed()) {
 			System.out.println("Etat "+etat);			
 			recherchePrincipale();
 			if (etat==STOP) break;
 		}	
+  
+  
   }
 	
 
@@ -80,7 +91,8 @@ public class Test {
 	 * @author charlotte
 	 * @return
 	 */
-	/*public static double calculDistanceMur() {
+
+/*	public static double calculDistanceMur() {
 		double x = b.getPos().getX();
 		double y = b.getPos().getY();
 		double alpha = b.getDir();
@@ -90,7 +102,7 @@ public class Test {
 		if (alpha>180 && alpha<=270) dist=calculHypothenus(x, largeurMax, alpha-180);
 		if (alpha>270) dist=calculHypothenus(y, longeurMax, alpha-270);
 		return dist;
-	}*/
+	} */
 
 	/**
 	 * @author charlotte
@@ -251,7 +263,7 @@ public class Test {
 			 * @author charlotte 
 			 * VINCENT ICI AUSSI LES COULEURS CHANGENT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			 */
-			couleur=cs.LaCouleur(TestColor.getEch(), sauveur); 
+			couleur=cs.laCouleur(); 
 
 			if (isMur()) return false;
 		}
@@ -271,18 +283,29 @@ public class Test {
 		
 		while (!couleur.equals("white")) {
 			a.forward();
-			couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
+			couleur=cs.laCouleur();
 		}
 		
 		a.forward(0.1);
 		a.openPince();
-
+		a.backward(0.8);
+		
 		tourner(180);
+	}
+	
+	public static void debutAutomate () throws FileNotFoundException, IOException {
+		a.openPince();
+		fonceUntilPush();
+		mettreUnBut();
 	}
 
 	public static void recherchePrincipale() throws FileNotFoundException, IOException {
 
 		switch(etat) {
+		case (firstPalet):
+			debutAutomate ();
+			etat=chercheEnRond;
+			break;
 		case (chercheEnRond) : 
 		distanceAParcourir=rechercheTournante();
 		etat=detectionPalet;
