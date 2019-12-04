@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +9,7 @@ import java.util.Map;
  *
  */
 public class Carte {
-	private List<Case> cases = new LinkedList<Case>();
+	private List<Case> cases = new ArrayList<Case>();
 	private List<Palet> palets = new ArrayList<Palet>();
 	
 	/**
@@ -64,6 +63,66 @@ public class Carte {
 		tmp.put("Est", "");
 		tmp.put("Ouest", "Blanc");
 		cases.add(new Case("E", tmp));
+	}
+	
+	public Case getCase(String n) {
+		for (int i = 0; i < cases.size(); i++) {
+			Case tmp = cases.get(i);
+			if(tmp.getId().equals(n)) {
+				return tmp;
+			}
+		}
+		throw new IllegalArgumentException();
+	}
+	
+	public Case[] getCasesAdj(String n) {
+		Case[] res = new Case[4]; 
+		for (int i = 0; i < cases.size(); i++) {
+			Case tmp = cases.get(i);
+			if(tmp.getId().equals(n)) {
+				if (!tmp.getColorMur("Nord").equals("")) {
+					res[0] = cases.get(i+4);
+				}
+				if (!tmp.getColorMur("Sud").equals("")) {
+					res[1] = cases.get(i-4);
+				}
+				if(!tmp.getColorMur("Est").equals("")) {
+					res[2] = cases.get(i+1);
+				}
+				if(!tmp.getColorMur("Ouest").equals("")) {
+					res[2] = cases.get(i-1);
+				}
+			}
+		}
+		return res;
+	}
+	
+	public int getDirE() {
+		Case tmp = new Case();
+		for (int i = 0; i < cases.size(); i++) {
+			if(cases.get(i).getId().equals("E")){
+				tmp = cases.get(i);
+			}
+		}
+		if(tmp.getMur("Blanc").equals("Est")) {
+			return 180;
+		}else {
+			return 0;
+		}
+	}
+	
+	public int getDirA() {
+		Case tmp = new Case();
+		for (int i = 0; i < cases.size(); i++) {
+			if(cases.get(i).getId().equals("A")){
+				tmp = cases.get(i);
+			}
+		}
+		if(tmp.getMur("Blanc").equals("Est")) {
+			return 180;
+		}else {
+			return 0;
+		}
 	}
 	
 	public void enleverPalet(int id) {
