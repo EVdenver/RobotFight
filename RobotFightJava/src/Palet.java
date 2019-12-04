@@ -1,40 +1,51 @@
-
+/**
+ * 
+ * @author darkf
+ *
+ */
 public class Palet {
-	private Position p;
+	private int id;
 	private boolean ramasse;
 	private boolean estPresent;
 	
-	public Palet() {
-		p = new Position();
-		setRamasse(false);
-		setEstPresent(true);
-	}
-	
-	public Palet(Position p) {
-		this();
-		setP(p);
-	}
-
-	public Position getP() {
-		return p;
+	/**
+	 * @author darkf
+	 * @param id Le numéro du palet
+	 */
+	public Palet(int id) {
+		this.ramasse = false;
+		this.estPresent = true;
+		this.id = id;
 	}
 
-	public void setP(Position p) {
-		this.p = p;
-	}
-
+	/**
+	 * @author darkf
+	 * @return true si le palet est ramasser false sinon
+	 */
 	public boolean isRamasse() {
 		return ramasse;
 	}
 
+	/**
+	 * @author darkf
+	 * @param ramasse indique le nouvel etat du palet
+	 */
 	public void setRamasse(boolean ramasse) {
 		this.ramasse = ramasse;
 	}
 
+	/**
+	 * @author darkf
+	 * @return true si le palet est à l'endroit attendu false sinon
+	 */
 	public boolean isEstPresent() {
 		return estPresent;
 	}
 
+	/**
+	 * @author darkf
+	 * @param estPresent etabli la nouvelle position du palet
+	 */
 	public void setEstPresent(boolean estPresent) {
 		this.estPresent = estPresent;
 	}
