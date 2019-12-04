@@ -63,12 +63,8 @@ public class Boussole {
 	}
 	
 	
-	public Position getPos() {
+	public String getPos() {
 		return pos;
-	}
-
-	public void setPos(Position pos) {
-		this.pos = pos;
 	}
 
 	/**
@@ -84,11 +80,6 @@ public class Boussole {
 		}else {
 			throw new IllegalArgumentException("La cardinalite voulu n'existe pas");
 		}
-	}
-	
-	public void setPosition(int x, int y) {
-		pos.setX(x);
-		pos.setY(y);
 	}
 }
 

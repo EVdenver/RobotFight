@@ -91,6 +91,7 @@ public class Test  {
 	 * @author charlotte
 	 * @return
 	 */
+
 /*	public static double calculDistanceMur() {
 		double x = b.getPos().getX();
 		double y = b.getPos().getY();
@@ -186,7 +187,7 @@ public class Test  {
 	public static boolean rectifiePosition (int i) {
 		distanceMaintenant = es.getDistance();
 		tourner(15*i);
-		Delay.msDelay(100); // mesure du temps pour bouger de 15 degrÃ©s
+		Delay.msDelay(100); // mesure du temps pour bouger de 15 degres
 		distanceAvant=distanceMaintenant;
 		distanceMaintenant = es.getDistance();
 		if (distanceMaintenant<distanceAvant) return true;
@@ -222,13 +223,13 @@ public class Test  {
 	static public boolean fonceUntilPush() throws FileNotFoundException, IOException {
 		a.forward();
 		while (!ts.isPressed() ) {
-			//TODO Impl�mentation des couleurs et du changement de case ici
+			//TODO Implementation des couleurs et du changement de case ici
 			/**
 			 * @author charlotte 
 			 * j'ai rajouter cette ligne ; elle te renvoit la couleur en string
 			 */
-			couleur=cs.laCouleur(); 
-
+			couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
+			Case[] caseAdj = c.getCasesAdj(b.getPos());
 			distanceMaintenant=es.getDistance();
 			if (isMur()) return false;
 		}
@@ -236,6 +237,12 @@ public class Test  {
 		a.closePince();
 		return true;
 	}
+	
+	/*static public void changerPos(String couleur,Case[] caseAdj) {
+		if (b.getDir() <= 90 && b.getDir() >= 0) {
+			b.setPos(caseAdj[2].);
+		}
+	}*/
 /**
  * @author charlotte
  * @return
