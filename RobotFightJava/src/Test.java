@@ -39,7 +39,7 @@ public class Test  {
 	final static double largeurMax=2;
 	final static double longeurMax=1.7;
 
-	static int etat=0;
+	static int etat=8;
 	final static int chercheEnRond=0;
 	final static int dosAuMur=1;
 	final static int detectionPalet=2;
@@ -56,17 +56,17 @@ public class Test  {
 	static Properties sauveur;
 	
 	public static void main(String[] args) throws IOException {
-		
-	//	cs.calibration();
 	//	cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1")); 
-		cs = new ColorimetrieSensor(SensorPort.S1);
+	//	cs.calibration();
+		a.backward(0.8);
+/*		cs = new ColorimetrieSensor(SensorPort.S1);
 		couleur=cs.laCouleur();
 		
     while(!ts.isPressed()) {
 			System.out.println("Etat "+etat);			
 			recherchePrincipale();
 			if (etat==STOP) break;
-		}	
+		}	*/
   
   
   }
@@ -278,7 +278,8 @@ public class Test  {
 		
 		a.forward(0.1);
 		a.openPince();
-
+		a.backward(0.5);
+		
 		tourner(180);
 	}
 	
@@ -292,6 +293,7 @@ public class Test  {
 
 		switch(etat) {
 		case (firstPalet):
+			debutAutomate ();
 			etat=chercheEnRond;
 			break;
 		case (chercheEnRond) : 

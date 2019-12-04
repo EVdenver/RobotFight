@@ -21,7 +21,7 @@ public class Actionneur {
 		mPincesMotor = new EV3MediumRegulatedMotor(pinces_port);
 		mLeftMotor.setSpeed(SPEED);
 		mRightMotor.setSpeed(SPEED);
-		mPincesMotor.setSpeed(SPEED);
+		mPincesMotor.setSpeed(10000);
 		mLeftMotor.synchronizeWith(new RegulatedMotor[] {mRightMotor});
 	}
 
