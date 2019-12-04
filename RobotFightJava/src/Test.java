@@ -28,7 +28,7 @@ public class Test  {
 	
 	static ColorimetrieSensor cs;
 	
-	static Boussole b = new Boussole(180,0,0);
+	static Boussole b = new Boussole(180);
 
 	static Carte c = new Carte();
 
@@ -60,15 +60,16 @@ public class Test  {
 	public static void main(String[] args) throws IOException {
 	//	cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1")); 
 	//	cs.calibration();
-		a.backward(0.8);
-/*		cs = new ColorimetrieSensor(SensorPort.S1);
+
+		
+			cs = new ColorimetrieSensor(SensorPort.S1);
 		couleur=cs.laCouleur();
 		
     while(!ts.isPressed()) {
 			System.out.println("Etat "+etat);			
 			recherchePrincipale();
 			if (etat==STOP) break;
-		}	*/
+		}	
   
   
   }
@@ -90,7 +91,7 @@ public class Test  {
 	 * @author charlotte
 	 * @return
 	 */
-	public static double calculDistanceMur() {
+/*	public static double calculDistanceMur() {
 		double x = b.getPos().getX();
 		double y = b.getPos().getY();
 		double alpha = b.getDir();
@@ -100,7 +101,7 @@ public class Test  {
 		if (alpha>180 && alpha<=270) dist=calculHypothenus(x, largeurMax, alpha-180);
 		if (alpha>270) dist=calculHypothenus(y, longeurMax, alpha-270);
 		return dist;
-	}
+	} */
 
 	/**
 	 * @author charlotte
@@ -280,7 +281,7 @@ public class Test  {
 		
 		a.forward(0.1);
 		a.openPince();
-		a.backward(0.5);
+		a.backward(0.8);
 		
 		tourner(180);
 	}
