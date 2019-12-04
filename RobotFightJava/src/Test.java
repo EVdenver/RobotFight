@@ -28,7 +28,7 @@ public class Test  {
 	
 	static ColorimetrieSensor cs;
 	
-	static Boussole b = new Boussole(180,0,0);
+	static Boussole b = new Boussole(180);
 
 	static Carte c = new Carte();
 
@@ -41,7 +41,7 @@ public class Test  {
 	final static double largeurMax=2;
 	final static double longeurMax=1.7;
 
-	static int etat=0;
+	static int etat=8;
 	final static int chercheEnRond=0;
 	final static int dosAuMur=1;
 	final static int detectionPalet=2;
@@ -58,10 +58,11 @@ public class Test  {
 	static Properties sauveur;
 	
 	public static void main(String[] args) throws IOException {
-		
-	//	cs.calibration();
 	//	cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1")); 
-		cs = new ColorimetrieSensor(SensorPort.S1);
+	//	cs.calibration();
+
+		
+			cs = new ColorimetrieSensor(SensorPort.S1);
 		couleur=cs.laCouleur();
 		
     while(!ts.isPressed()) {
@@ -90,7 +91,7 @@ public class Test  {
 	 * @author charlotte
 	 * @return
 	 */
-	public static double calculDistanceMur() {
+/*	public static double calculDistanceMur() {
 		double x = b.getPos().getX();
 		double y = b.getPos().getY();
 		double alpha = b.getDir();
@@ -100,7 +101,7 @@ public class Test  {
 		if (alpha>180 && alpha<=270) dist=calculHypothenus(x, largeurMax, alpha-180);
 		if (alpha>270) dist=calculHypothenus(y, longeurMax, alpha-270);
 		return dist;
-	}
+	} */
 
 	/**
 	 * @author charlotte
@@ -280,7 +281,8 @@ public class Test  {
 		
 		a.forward(0.1);
 		a.openPince();
-
+		a.backward(0.8);
+		
 		tourner(180);
 	}
 	
@@ -294,6 +296,7 @@ public class Test  {
 
 		switch(etat) {
 		case (firstPalet):
+			debutAutomate ();
 			etat=chercheEnRond;
 			break;
 		case (chercheEnRond) : 
