@@ -24,24 +24,20 @@ import java.util.Properties;
 import lejos.hardware.port.Port;
 
 public class ColorimetrieSensor {
-	private static Port port;
-	private static EV3ColorSensor colorSensor;
 	
-	public ColorimetrieSensor(Port port ) {
-		this.port=port;
+	private static EV3ColorSensor colorSensor;
+	private static Properties sauveur;
+	
+	public ColorimetrieSensor(Port port ) throws IOException {
 		this.colorSensor=new EV3ColorSensor(port);
-		
+		sauveur=getProperties();
 	}
-
-
 
 	public void calibration() {
 		try {
-			Properties sauveur = new Properties();
+			sauveur = new Properties();
 			OutputStream out=new FileOutputStream("couleur"); 
 			boolean again= true;
-
-
 
 			SampleProvider average = new MeanFilter(colorSensor.getRGBMode(), 1);
 			colorSensor.setFloodlight(Color.WHITE);
@@ -51,7 +47,6 @@ public class ColorimetrieSensor {
 			float[] blue = new float[average.sampleSize()];
 			average.fetchSample(blue, 0);
 			sauveur.setProperty("Blue", blue[0]+ ","+ blue[1]+","+ blue[2]);
-
 
 			System.out.println("Press enter to calibrate red...");
 			Button.ENTER.waitForPressAndRelease();
@@ -101,11 +96,11 @@ public class ColorimetrieSensor {
 	// auteur nicolas
 	public static Properties getProperties() throws IOException {
 		InputStream in= new FileInputStream("couleur");
-		Properties sauveur= new Properties();
+		sauveur= new Properties();
 		sauveur.load(in);
 		return sauveur;
-
 	}
+	
 	//auteur nicolas
 	public static double scalaire(float[] v1, float[] v2) {
 		return Math.sqrt (Math.pow(v1[0] - v2[0], 2.0) +
@@ -119,13 +114,13 @@ public class ColorimetrieSensor {
 		med.fetchSample(flat,0);
 		return flat;
 	}
+	
 // auteur nicolas
-	public static String LaCouleur(float [] sample, Properties sauveur) throws FileNotFoundException, IOException {
+	public static String laCouleur() throws FileNotFoundException, IOException {
 
 
-
+		float [] sample=getEch();
 		
-
 		float[] blue= new float[3];
 		System.out.println(sauveur.getProperty("Blue"));
 		String[] tab= sauveur.getProperty("Blue").split(",");
@@ -177,7 +172,7 @@ public class ColorimetrieSensor {
 		double minscal = Double.MAX_VALUE;
 		String color = "";
 
-		double scalaire = TestColor.scalaire(sample, blue);
+		double scalaire = scalaire(sample, blue);
 		//Button.ENTER.waitForPressAndRelease();
 		//System.out.println(scalaire);
 		if (scalaire < minscal) {
@@ -185,7 +180,7 @@ public class ColorimetrieSensor {
 			color = "blue";
 		}
 
-		scalaire = TestColor.scalaire(sample, red);
+		scalaire = scalaire(sample, red);
 		//System.out.println(scalaire);
 		//Button.ENTER.waitForPressAndRelease();
 		if (scalaire < minscal) {
@@ -193,7 +188,7 @@ public class ColorimetrieSensor {
 			color = "red";
 		}
 
-		scalaire = TestColor.scalaire(sample, green);
+		scalaire = scalaire(sample, green);
 		//System.out.println(scalaire);
 		//Button.ENTER.waitForPressAndRelease();
 		if (scalaire < minscal) {
@@ -201,21 +196,21 @@ public class ColorimetrieSensor {
 			color = "green";
 		}
 
-		scalaire = TestColor.scalaire(sample, black);
+		scalaire = scalaire(sample, black);
 		//System.out.println(scalaire);
 		//Button.ENTER.waitForPressAndRelease();
 		if (scalaire < minscal) {
 			minscal = scalaire;
 			color = "black";
 		}
-		scalaire = TestColor.scalaire(sample, white);
+		scalaire = scalaire(sample, white);
 		//System.out.println(scalaire);
 		//Button.ENTER.waitForPressAndRelease();
 		if (scalaire < minscal) {
 			minscal = scalaire;
 			color = "white";
 		}
-		scalaire = TestColor.scalaire(sample, grey);
+		scalaire = scalaire(sample, grey);
 		//System.out.println(scalaire);
 		//Button.ENTER.waitForPressAndRelease();
 		if (scalaire < minscal) {
@@ -226,7 +221,6 @@ public class ColorimetrieSensor {
 
 		System.out.println("The color is " + color + " \n");
 
-		
 		return color;
 	}
 }
