@@ -63,7 +63,6 @@ public class Boussole {
 	public String getPos() {
 		return pos;
 	}
-
 	/**
 	 * @author darkf
 	 * @param dir La direction sur laquelle doit se fixer le robot (si elle est presente dans les cardinalite)

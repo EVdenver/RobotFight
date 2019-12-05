@@ -25,9 +25,9 @@ public class Test  {
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
 
-	
+
 	static ColorimetrieSensor cs;
-	
+
 	static Boussole b = new Boussole(0);
 
 	static Carte c = new Carte(0,180);
@@ -53,16 +53,17 @@ public class Test  {
 	final static int firstPalet=8;
 	private static final String ArrayList = null;
 	static boolean trouver=false;
-	
+
 	static String couleur;
 	static Properties sauveur;
-	
+
 	public static void main(String[] args) throws IOException {
 		//	cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1")); 
 		//	cs.calibration();
 
+
 		cs = new ColorimetrieSensor(SensorPort.S1);
-		//couleur=cs.laCouleur();
+		couleur=cs.laCouleur();
 
 		while(!Button.ESCAPE.isDown()) {
 			System.out.println("Etat "+etat);			
@@ -139,7 +140,8 @@ public class Test  {
 		trouver=distanceMin(tabList);
 		int i=tabList.indexOf(trouver);
 		System.out.println("distances min "+trouver+"a indice "+i); 
-		tourner(360/tabList.size()*i+10);
+		tourner(360/tabList.size()*i); 
+	//	a ce niveau recalibrer
 		System.out.println("je me suis recaler de"+360/tabList.size()*i+" degrees"); 		
 		System.out.println("distance "+trouver);
 		return trouver;
@@ -277,7 +279,9 @@ public class Test  {
 	 */
 	static public void mettreUnBut() throws FileNotFoundException, IOException {
 		// la base ennemie est en carte, soit 0 soit 180
-		// VINCENT
+	// VINCENT
+		//tourner(-b.getDir()); // pour le moment
+		tourner(b.setDir(c.getBaseE()));
 		
 		tourner(b.setDir(c.getBaseE())); // pour le moment
 		System.out.println(b.setDir(c.getBaseE()));
@@ -291,7 +295,7 @@ public class Test  {
 		a.forward(0.1);
 		a.openPince();
 		a.backward(0.8);
-
+		a.closePince();
 		tourner(180);
 	}
 	
