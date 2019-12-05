@@ -71,7 +71,7 @@ public class Boussole {
 	 */
 	public int setDir(int angle) {
 		int tmp = this.dir;
-		this.dir = (this.dir + angle)%360;
+		this.dir = angle;
 		return tmp - this.dir;
 	}
 }

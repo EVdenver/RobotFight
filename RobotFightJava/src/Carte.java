@@ -11,6 +11,7 @@ import java.util.Map;
 public class Carte {
 	private List<Case> cases = new ArrayList<Case>();
 	private List<Palet> palets = new ArrayList<Palet>();
+	private int baseE,baseA;
 	
 	/**
 	 * @author darkf
@@ -18,16 +19,13 @@ public class Carte {
 	 * Initialise la liste des 9 palets numerote de 1 a 9
 	 * Initialise les 18 cases en fonction de leur mur Est Ouest Nord Sud ainsi que leur nom A,E ou de 1 a 16
 	 */
-	public Carte() {
+	public Carte(int e, int a) {
+		baseE = e;
+		baseA = a;
 		for (int i = 0; i < 9; i++) {
 			palets.add(new Palet(i+1));
 		}
 		Map<String,String> tmp = new HashMap<String,String>();
-		tmp.put("Nord", "");
-		tmp.put("Sud", "");
-		tmp.put("Est", "Blanc");
-		tmp.put("Ouest", "");
-		cases.add(new Case("A",tmp));
 		for (int i = 0; i < 4; i++) {
 			if(i == 0) {
 				tmp.put("Sud", "");
@@ -59,12 +57,16 @@ public class Carte {
 				cases.add(new Case(String.valueOf((4*i+j)+1),tmp));
 			}
 		}
-		tmp.put("Sud", "");
-		tmp.put("Est", "");
-		tmp.put("Ouest", "Blanc");
-		cases.add(new Case("E", tmp));
 	}
 	
+	public int getBaseE() {
+		return baseE;
+	}
+
+	public int getBaseA() {
+		return baseA;
+	}
+
 	public List<Case> getCases() {
 		return cases;
 	}

@@ -28,9 +28,9 @@ public class Test  {
 	
 	static ColorimetrieSensor cs;
 	
-	static Boussole b = new Boussole(90);
+	static Boussole b = new Boussole(0);
 
-	static Carte c = new Carte();
+	static Carte c = new Carte(0,180);
 
 	static double distanceMaintenant = 0;
 	static double distanceAvant = 0; 
@@ -61,20 +61,16 @@ public class Test  {
 		//	cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1")); 
 		//	cs.calibration();
 
-		int newPos = c.getDirE();
-		a.rotate(b.setDir(newPos));
-		Delay.msDelay(1000);
-
-		/*cs = new ColorimetrieSensor(SensorPort.S1);
+		cs = new ColorimetrieSensor(SensorPort.S1);
 		//couleur=cs.laCouleur();
 
-		while(!ts.isPressed()) {
+		while(!Button.ESCAPE.isDown()) {
 			System.out.println("Etat "+etat);			
 			recherchePrincipale();
 			if (etat==STOP) break;
-		}	*/
-
-
+		}
+		/*a.setSpeed(500);
+		a.forward(2);*/
 	}
 	
 
@@ -143,7 +139,7 @@ public class Test  {
 		trouver=distanceMin(tabList);
 		int i=tabList.indexOf(trouver);
 		System.out.println("distances min "+trouver+"a indice "+i); 
-		tourner(360/tabList.size()*i);
+		tourner(360/tabList.size()*i+10);
 		System.out.println("je me suis recaler de"+360/tabList.size()*i+" degrees"); 		
 		System.out.println("distance "+trouver);
 		return trouver;
@@ -231,7 +227,7 @@ public class Test  {
 			 * @author charlotte 
 			 * j'ai rajouter cette ligne ; elle te renvoit la couleur en string
 			 */
-			//couleur=cs.LaCouleur(TestColor.getEch(), sauveur);
+			couleur=cs.laCouleur();
 			Case[] caseAdj = c.getCasesAdj(b.getPos());
 			distanceMaintenant=es.getDistance();
 			if (isMur()) return false;
@@ -266,7 +262,7 @@ public class Test  {
 			 * @author charlotte 
 			 * VINCENT ICI AUSSI LES COULEURS CHANGENT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			 */
-			//couleur=cs.laCouleur(); 
+			couleur=cs.laCouleur(); 
 
 			if (isMur()) return false;
 		}
@@ -281,18 +277,21 @@ public class Test  {
 	 */
 	static public void mettreUnBut() throws FileNotFoundException, IOException {
 		// la base ennemie est en carte, soit 0 soit 180
-	// VINCENT
-		tourner(-b.getDir()); // pour le moment
+		// VINCENT
 		
+		tourner(b.setDir(c.getBaseE())); // pour le moment
+		System.out.println(b.setDir(c.getBaseE()));
+		Delay.msDelay(2000);
+
 		while (!couleur.equals("white")) {
 			a.forward();
-			//couleur=cs.laCouleur();
+			couleur=cs.laCouleur();
 		}
-		
+
 		a.forward(0.1);
 		a.openPince();
 		a.backward(0.8);
-		
+
 		tourner(180);
 	}
 	
@@ -306,7 +305,7 @@ public class Test  {
 
 		switch(etat) {
 		case (firstPalet):
-			debutAutomate ();
+			debutAutomate();
 			etat=chercheEnRond;
 			break;
 		case (chercheEnRond) : 
