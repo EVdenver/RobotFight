@@ -110,8 +110,8 @@ public class Test  {
 	 * @param angle l'angle sur lequel le robot doit se fixer
 	 * @return l'angle de deplacement necessaire pour que le regard se tourne dans la direction voulue
 	 */
-	public int setDiff(int angle) {
-		return b.getDir()-angle;
+	public static int getDiff(int angle) {
+		return angle - b.getDir();
 	}
 
 	/**
@@ -290,11 +290,12 @@ public class Test  {
 	static public boolean mettreUnBut() throws FileNotFoundException, IOException {
 		// la base ennemie est en carte, soit 0 soit 180
 		// VINCENT
+		Button.ENTER.waitForPressAndRelease();
+		Delay.msDelay(2000);
 		//tourner(-b.getDir()); // pour le moment
-		System.out.println(b.setDir(c.getBaseE()));
-		tourner(b.setDir(c.getBaseE())); // pour le moment
+		System.out.println("Angle:" +getDiff(c.getBaseE()));
+		tourner(getDiff(c.getBaseE())); // pour le moment
 
-		System.out.println(b.setDir(c.getBaseE()));
 		Button.ENTER.waitForPressAndRelease();
 		Delay.msDelay(2000);
 
@@ -315,6 +316,8 @@ public class Test  {
 	public static void debutAutomate () throws FileNotFoundException, IOException {
 		a.openPince();
 		fonceUntilPush();
+		tourner(10);
+		a.forward(0.5);
 		mettreUnBut();
 	}
 
