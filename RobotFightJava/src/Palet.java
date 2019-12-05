@@ -49,8 +49,4 @@ public class Palet {
 	public void setEstPresent(boolean estPresent) {
 		this.estPresent = estPresent;
 	}
-	
-	public String toString() {
-		return "position : "+p.getX()+";"+p.getY()+".";
-	}
 }
