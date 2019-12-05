@@ -67,7 +67,8 @@ public class Test  {
 
 
 		while(!Button.ESCAPE.isDown()) {
-			System.out.println("Etat "+etat);			
+			System.out.println("Etat "+etat);
+			if (ts.isPressed()) etat=paletAttraper;
 			recherchePrincipale();
 			if (etat==STOP) break;
 		}
