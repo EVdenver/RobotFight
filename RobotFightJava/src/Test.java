@@ -25,8 +25,9 @@ public class Test  {
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
 
-	static boolean DEBUG=true;
-	
+	final static boolean DEBUG=true;
+	final static boolean PAUSE=false;
+	final static boolean DEMARAGE=true;
 	static ColorimetrieSensor cs;
 
 	static Boussole b = new Boussole(180);
@@ -179,6 +180,24 @@ public class Test  {
 		a.setSpeed(500);
 		//	Delay.msDelay(1_000);
 
+	}
+	public static void modePause(boolean demarage) {
+		System.out.println("    MODE PAUSE ACTIVEE");
+		System.out.println(" PRESS ENTER POUR LANCER");
+		Delay(2000);
+		Button.ENTER.waitForPressAndRelease();
+		
+		if(!demarage) {
+			System.out.println("LE PROGRAMME SE RELANCE");
+			Delay(500);
+			
+		}
+	}
+
+
+	private static void Delay(int i) {
+		// TODO Auto-generated method stub
+		
 	}
 
 
