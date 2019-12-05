@@ -330,8 +330,11 @@ public class Test  {
 
 	public static void debutAutomate () throws FileNotFoundException, IOException {
 		a.openPince();
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		fonceUntilPush();
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		mettreUnBut();
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 	}
 
 	public static void recherchePrincipale() throws FileNotFoundException, IOException {
@@ -341,12 +344,14 @@ public class Test  {
 			debutAutomate();
 		System.out.println("boussolle "+b.getDir());
 		if (DEBUG)Button.ENTER.waitForPressAndRelease() ;
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		etat=chercheEnRond;
 		break;
 		case (chercheEnRond) : 
 			distanceAParcourir=rechercheTournante();
 		System.out.println("boussolle "+b.getDir());
 		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 
 		etat=detectionPalet;
 		//	if (rechercheTournante()<distanceMur) etat=detectionPalet;
@@ -355,42 +360,54 @@ public class Test  {
 		break;
 		case (detectionPalet):
 			if (!avanceVersPalet()) etat=dosAuMur;
+			if (Button.ENTER.isDown()) modePause(DEMARAGE);
 			else if (distanceAvant<=seuilDetectionPalet+marge) etat=faceAuPalet;
+			if (Button.ENTER.isDown()) modePause(DEMARAGE);
 			else etat=recalibrageAFaire;
+			if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		System.out.println("distance"+distanceAvant);
 		System.out.println("boussolle "+b.getDir());
 		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		break;
 		case (faceAuPalet):
 			if(fonceUntilPush()) etat=paletAttraper ;
+			if (Button.ENTER.isDown()) modePause(DEMARAGE);
 			else etat=dosAuMur;
 		System.out.println("boussolle "+b.getDir());
 		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		break;
 		case(aucunPaletEnVu) : etat=chercheEnRond; // ÃÂ  la fin de cherche en rond
 		System.out.println("boussolle "+b.getDir());
 		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		break;
 		case(dosAuMur) : 
 			a.forward(0.5);
 			etat=chercheEnRond;
 		System.out.println("boussolle "+b.getDir());
 		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		break;
 		case(paletAttraper): 
 			if (mettreUnBut()) etat=chercheEnRond;
 			else etat=dosAuMur;
 		System.out.println("boussolle "+b.getDir());
 		if (DEBUG)Button.ENTER.waitForPressAndRelease() ;
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		break;
 		case(recalibrageAFaire) :
 			System.out.println("recalibrage");
 		if (rectifiePosition(1)) etat=faceAuPalet;
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		else if (rectifiePosition(-1)) etat=faceAuPalet;
 		else etat=aucunPaletEnVu;
 		if(isMur()) etat=dosAuMur;
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		System.out.println("boussolle "+b.getDir());
 		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		if (Button.ENTER.isDown()) modePause(DEMARAGE);
 		break;
 	}
 
