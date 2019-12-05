@@ -65,7 +65,7 @@ public class Test  {
 			cs = new ColorimetrieSensor(SensorPort.S1);
 		couleur=cs.laCouleur();
 		
-    while(!ts.isPressed()) {
+    while(!Button.ESCAPE.isDown()) {
 			System.out.println("Etat "+etat);			
 			recherchePrincipale();
 			if (etat==STOP) break;
@@ -139,7 +139,8 @@ public class Test  {
 		trouver=distanceMin(tabList);
 		int i=tabList.indexOf(trouver);
 		System.out.println("distances min "+trouver+"a indice "+i); 
-		tourner(360/tabList.size()*i);
+		tourner(360/tabList.size()*i); 
+	//	a ce niveau recalibrer
 		System.out.println("je me suis recaler de"+360/tabList.size()*i+" degrees"); 		
 		System.out.println("distance "+trouver);
 		return trouver;
@@ -272,7 +273,9 @@ public class Test  {
 	static public void mettreUnBut() throws FileNotFoundException, IOException {
 		// la base ennemie est en carte, soit 0 soit 180
 	// VINCENT
-		tourner(-b.getDir()); // pour le moment
+		//tourner(-b.getDir()); // pour le moment
+		tourner(-b.getDir()+180);
+		
 		
 		while (!couleur.equals("white")) {
 			a.forward();
@@ -282,7 +285,7 @@ public class Test  {
 		a.forward(0.1);
 		a.openPince();
 		a.backward(0.8);
-		
+		a.closePince();
 		tourner(180);
 	}
 	

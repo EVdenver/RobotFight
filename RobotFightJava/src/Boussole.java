@@ -63,13 +63,11 @@ public class Boussole {
 	}
 	
 	
-	public Position getPos() {
+	public String getPos() {
 		return pos;
 	}
 
-	public void setPos(Position pos) {
-		this.pos = pos;
-	}
+
 
 	/**
 	 * @author darkf
@@ -86,9 +84,5 @@ public class Boussole {
 		}
 	}
 	
-	public void setPosition(int x, int y) {
-		pos.setX(x);
-		pos.setY(y);
-	}
 }
 
