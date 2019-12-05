@@ -54,17 +54,16 @@ public class Test  {
 	final static int firstPalet=8;
 	private static final String ArrayList = null;
 	static boolean trouver=false;
-
+	
 	static String couleur;
 	static Properties sauveur;
-
+	
 	public static void main(String[] args) throws IOException {
 		//	cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1")); 
 		//	cs.calibration();
 
-
 		cs = new ColorimetrieSensor(SensorPort.S1);
-		couleur=cs.laCouleur();
+		//couleur=cs.laCouleur();
 
 
 		while(!Button.ESCAPE.isDown()) {
@@ -105,6 +104,15 @@ public class Test  {
 		if (alpha>270) dist=calculHypothenus(y, longeurMax, alpha-270);
 		return dist;
 	} */
+	
+	/**
+	 * @author darkf
+	 * @param angle l'angle sur lequel le robot doit se fixer
+	 * @return l'angle de deplacement necessaire pour que le regard se tourne dans la direction voulue
+	 */
+	public int setDiff(int angle) {
+		return b.getDir()-angle;
+	}
 
 	/**
 	 * @author charlotte
@@ -299,7 +307,7 @@ public class Test  {
 		a.forward(0.1);
 		a.openPince();
 		a.backward(0.8);
-		a.closePince();
+
 		tourner(180);
 		return true;
 	}
