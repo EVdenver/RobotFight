@@ -181,6 +181,11 @@ public class Test  {
 		//	Delay.msDelay(1_000);
 
 	}
+	
+	/**
+	 * @author death
+	 * @param demarage
+	 */
 	public static void modePause(boolean demarage) {
 		System.out.println("    MODE PAUSE ACTIVEE");
 		System.out.println(" PRESS ENTER POUR LANCER");
