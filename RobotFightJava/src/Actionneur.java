@@ -8,11 +8,11 @@ public class Actionneur {
 	private  EV3LargeRegulatedMotor mLeftMotor;
 	private  EV3LargeRegulatedMotor mRightMotor;
 	private EV3MediumRegulatedMotor mPincesMotor;
-	private boolean open=true;
+	private boolean open=false;
 	Delay d= new Delay();
 	private final static int SPEED = 300; //degrees/sec
 	private final static double WHEEL_RADIUS = 0.05; // en mètre 
-	private final static int ROTATION_FACTOR=190; //facteur modulant la relation temps/vitesse/angle(en celcius) qui permet au robot de tourner sur son propre axe
+	private final static int ROTATION_FACTOR=200; //facteur modulant la relation temps/vitesse/angle(en celcius) qui permet au robot de tourner sur son propre axe
 	private boolean avance=true; //180
 	
 	public Actionneur(Port left_port, Port right_port, Port pinces_port) {

@@ -25,12 +25,13 @@ public class Test  {
 	static EchoSensor es= new EchoSensor (SensorPort.S3);
 	static TouchSensor ts = new TouchSensor(SensorPort.S2);
 
+	static boolean DEBUG=true;
 	
 	static ColorimetrieSensor cs;
-	
-	static Boussole b = new Boussole(0);
 
-	static Carte c = new Carte(0,180);
+	static Boussole b = new Boussole(180);
+
+	static Carte c = new Carte(180,0);
 
 	static double distanceMaintenant = 0;
 	static double distanceAvant = 0; 
@@ -64,15 +65,20 @@ public class Test  {
 		cs = new ColorimetrieSensor(SensorPort.S1);
 		//couleur=cs.laCouleur();
 
+
 		while(!Button.ESCAPE.isDown()) {
-			System.out.println("Etat "+etat);			
+			System.out.println("Etat "+etat);
+			if (ts.isPressed()) {
+				etat=paletAttraper;
+				a.closePince();
+			}
 			recherchePrincipale();
 			if (etat==STOP) break;
 		}
 		/*a.setSpeed(500);
 		a.forward(2);*/
-	}
-	
+	} 
+
 
 	/**
 	 * si renvoit un nombre positif, alors la distance entre le robot est l'obstacle s'est rÃ©duite
@@ -91,7 +97,7 @@ public class Test  {
 	 * @return
 	 */
 
-/*	public static double calculDistanceMur() {
+	/*	public static double calculDistanceMur() {
 		double x = b.getPos().getX();
 		double y = b.getPos().getY();
 		double alpha = b.getDir();
@@ -109,7 +115,7 @@ public class Test  {
 	 * @return l'angle de deplacement necessaire pour que le regard se tourne dans la direction voulue
 	 */
 	public static int getDiff(int angle) {
-		return b.getDir()-angle;
+		return angle - b.getDir();
 	}
 
 	/**
@@ -148,12 +154,13 @@ public class Test  {
 		trouver=distanceMin(tabList);
 		int i=tabList.indexOf(trouver);
 		System.out.println("distances min "+trouver+"a indice "+i); 
-		tourner(360/tabList.size()*i+10);
+		tourner(360/tabList.size()*i); 
+		//	a ce niveau recalibrer
 		System.out.println("je me suis recaler de"+360/tabList.size()*i+" degrees"); 		
 		System.out.println("distance "+trouver);
 		return trouver;
 	}
-	
+
 	private static double distanceMin (ArrayList<Double> list) {
 		double res=Double.MAX_VALUE;
 		for (Double d : list) {
@@ -161,7 +168,7 @@ public class Test  {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * @author charlotte
 	 * @param angle
@@ -170,8 +177,8 @@ public class Test  {
 		a.setSpeed(300);
 		int dir=angle>0?1:-1;
 		if (dir==-1)angle*=-1;
-	//	System.out.println("direction "+dir);
-	//	System.out.println("angle "+angle);
+		//	System.out.println("direction "+dir);
+		//	System.out.println("angle "+angle);
 		if (angle<=15) a.rotate(dir*angle);
 		else {
 			int i=0;
@@ -182,10 +189,10 @@ public class Test  {
 		}
 		b.setDir(dir*angle);
 		a.setSpeed(500);
-	//	Delay.msDelay(1_000);
+		//	Delay.msDelay(1_000);
 
 	}
-	
+
 
 	/**
 	 * @author charlotte
@@ -214,20 +221,20 @@ public class Test  {
 			a.stop();
 			a.backward(0.2);
 			int i=1;
-		//	if (isButOuest() && faceMurNord()) i*=-1;
-		//	if (isButEst() && faceMurSud()) i*=-1;
+			//	if (isButOuest() && faceMurNord()) i*=-1;
+			//	if (isButEst() && faceMurSud()) i*=-1;
 			tourner(i*180);
-      //a.rotate(i*180);
+			//a.rotate(i*180);
 			return true;
 		}
 		return false;
 	}
-/**
- * @author charlotte
- * @return
- * @throws FileNotFoundException
- * @throws IOException
- */
+	/**
+	 * @author charlotte
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	static public boolean fonceUntilPush() throws FileNotFoundException, IOException {
 		a.forward();
 		while (!ts.isPressed() ) {
@@ -245,18 +252,18 @@ public class Test  {
 		a.closePince();
 		return true;
 	}
-	
+
 	/*static public void changerPos(String couleur,Case[] caseAdj) {
 		if (b.getDir() <= 90 && b.getDir() >= 0) {
 			b.setPos(caseAdj[2].);
 		}
 	}*/
-/**
- * @author charlotte
- * @return
- * @throws FileNotFoundException
- * @throws IOException
- */
+	/**
+	 * @author charlotte
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	static public boolean avanceVersPalet() throws FileNotFoundException, IOException {
 		a.openPince();
 		distanceAvant = es.getDistance();
@@ -284,17 +291,22 @@ public class Test  {
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	static public void mettreUnBut() throws FileNotFoundException, IOException {
+	static public boolean mettreUnBut() throws FileNotFoundException, IOException {
 		// la base ennemie est en carte, soit 0 soit 180
 		// VINCENT
-		
+		Button.ENTER.waitForPressAndRelease();
+		Delay.msDelay(2000);
+		//tourner(-b.getDir()); // pour le moment
+		System.out.println("Angle:" +getDiff(c.getBaseE()));
 		tourner(getDiff(c.getBaseE())); // pour le moment
-		System.out.println();
+
+		Button.ENTER.waitForPressAndRelease();
 		Delay.msDelay(2000);
 
 		while (!couleur.equals("white")) {
 			a.forward();
 			couleur=cs.laCouleur();
+			if (isMur()) return false;
 		}
 
 		a.forward(0.1);
@@ -302,11 +314,14 @@ public class Test  {
 		a.backward(0.8);
 
 		tourner(180);
+		return true;
 	}
-	
+
 	public static void debutAutomate () throws FileNotFoundException, IOException {
 		a.openPince();
 		fonceUntilPush();
+		tourner(10);
+		a.forward(0.5);
 		mettreUnBut();
 	}
 
@@ -315,10 +330,15 @@ public class Test  {
 		switch(etat) {
 		case (firstPalet):
 			debutAutomate();
-			etat=chercheEnRond;
-			break;
+		System.out.println("boussolle "+b.getDir());
+		if (DEBUG)Button.ENTER.waitForPressAndRelease() ;
+		etat=chercheEnRond;
+		break;
 		case (chercheEnRond) : 
-		distanceAParcourir=rechercheTournante();
+			distanceAParcourir=rechercheTournante();
+		System.out.println("boussolle "+b.getDir());
+		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+
 		etat=detectionPalet;
 		//	if (rechercheTournante()<distanceMur) etat=detectionPalet;
 		//	else etat=aucunPaletEnVu;
@@ -329,17 +349,30 @@ public class Test  {
 			else if (distanceAvant<=seuilDetectionPalet+marge) etat=faceAuPalet;
 			else etat=recalibrageAFaire;
 		System.out.println("distance"+distanceAvant);
+		System.out.println("boussolle "+b.getDir());
+		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
 		break;
 		case (faceAuPalet):
 			if(fonceUntilPush()) etat=paletAttraper ;
 			else etat=dosAuMur;
+		System.out.println("boussolle "+b.getDir());
+		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
 		break;
 		case(aucunPaletEnVu) : etat=chercheEnRond; // ÃÂ  la fin de cherche en rond
+		System.out.println("boussolle "+b.getDir());
+		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
 		break;
-		case(dosAuMur) : etat=chercheEnRond;
-		break;
-		case(paletAttraper): mettreUnBut(); 
+		case(dosAuMur) : 
+			a.forward(0.5);
 			etat=chercheEnRond;
+		System.out.println("boussolle "+b.getDir());
+		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		break;
+		case(paletAttraper): 
+			if (mettreUnBut()) etat=chercheEnRond;
+			else etat=dosAuMur;
+		System.out.println("boussolle "+b.getDir());
+		if (DEBUG)Button.ENTER.waitForPressAndRelease() ;
 		break;
 		case(recalibrageAFaire) :
 			System.out.println("recalibrage");
@@ -347,10 +380,12 @@ public class Test  {
 		else if (rectifiePosition(-1)) etat=faceAuPalet;
 		else etat=aucunPaletEnVu;
 		if(isMur()) etat=dosAuMur;
+		System.out.println("boussolle "+b.getDir());
+		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
 		break;
-		}
+	}
 
 	}
-	
-	
+
+
 }
