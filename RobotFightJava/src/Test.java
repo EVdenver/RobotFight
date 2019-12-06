@@ -228,6 +228,24 @@ public class Test  {
 		}
 		return false;
 	}
+	
+
+	static public boolean isLigneBlanche() throws FileNotFoundException, IOException {
+		couleur=cs.laCouleur();
+		if (couleur.equals("white")) {
+			System.out.println("ligne blanche, distance "+distanceMaintenant);
+			a.stop();
+			a.backward(0.2);
+			int i=1;
+			//	if (isButOuest() && faceMurNord()) i*=-1;
+			//	if (isButEst() && faceMurSud()) i*=-1;
+			tourner(i*180);
+			//a.rotate(i*180);
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * @author charlotte
 	 * @return
