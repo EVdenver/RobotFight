@@ -244,7 +244,6 @@ public class Test  {
 			 * j'ai rajouter cette ligne ; elle te renvoit la couleur en string
 			 */
 			couleur=cs.laCouleur();
-			Case[] caseAdj = c.getCasesAdj(b.getPos());
 			distanceMaintenant=es.getDistance();
 			if (isMur()) return false;
 		}
