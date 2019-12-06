@@ -64,9 +64,8 @@ public class Test  {
 
 		cs = new ColorimetrieSensor(SensorPort.S1);
 		//couleur=cs.laCouleur();
-
-
-		while(!Button.ESCAPE.isDown()) {
+	
+			while(!Button.ESCAPE.isDown()) {
 			System.out.println("Etat "+etat);
 			if (ts.isPressed()) {
 				etat=paletAttraper;
@@ -216,7 +215,7 @@ public class Test  {
 	 */
 	static public boolean isMur() {
 		distanceMaintenant=es.getDistance();
-		if (distanceMaintenant<=seuilArretMur) {
+		if (distanceMaintenant<=seuilArretMur && distanceMaintenant!=0) {
 			System.out.println("mur detecte, distance "+distanceMaintenant);
 			a.stop();
 			a.backward(0.2);
@@ -318,10 +317,11 @@ public class Test  {
 	}
 
 	public static void debutAutomate () throws FileNotFoundException, IOException {
+		System.out.println("debutAutomate");
 		a.openPince();
 		fonceUntilPush();
 		tourner(10);
-		a.forward(0.5);
+		a.forward(1);
 		mettreUnBut();
 	}
 
@@ -330,49 +330,68 @@ public class Test  {
 		switch(etat) {
 		case (firstPalet):
 			debutAutomate();
-		System.out.println("boussolle "+b.getDir());
-		if (DEBUG)Button.ENTER.waitForPressAndRelease() ;
+		if (DEBUG) {
+			System.out.println("boussolle "+b.getDir());
+			System.out.println("getCheminParcouru "+a.getCheminParcouru());
+			Button.ENTER.waitForPressAndRelease() ;
+			
+		}
 		etat=chercheEnRond;
 		break;
 		case (chercheEnRond) : 
 			distanceAParcourir=rechercheTournante();
-		System.out.println("boussolle "+b.getDir());
-		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
-
+		
+		if (DEBUG) {
+			System.out.println("boussolle "+b.getDir());
+			System.out.println("getCheminParcouru "+a.getCheminParcouru());
+			Button.ENTER.waitForPressAndRelease() ;
+		}
 		etat=detectionPalet;
-		//	if (rechercheTournante()<distanceMur) etat=detectionPalet;
-		//	else etat=aucunPaletEnVu;
-
 		break;
 		case (detectionPalet):
 			if (!avanceVersPalet()) etat=dosAuMur;
 			else if (distanceAvant<=seuilDetectionPalet+marge) etat=faceAuPalet;
 			else etat=recalibrageAFaire;
 		System.out.println("distance"+distanceAvant);
-		System.out.println("boussolle "+b.getDir());
-		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		if (DEBUG) {
+			System.out.println("boussolle "+b.getDir());
+			System.out.println("getCheminParcouru "+a.getCheminParcouru());
+			Button.ENTER.waitForPressAndRelease() ;
+		}
 		break;
 		case (faceAuPalet):
 			if(fonceUntilPush()) etat=paletAttraper ;
 			else etat=dosAuMur;
-		System.out.println("boussolle "+b.getDir());
-		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		if (DEBUG) {
+			System.out.println("boussolle "+b.getDir());
+			System.out.println("getCheminParcouru "+a.getCheminParcouru());
+			Button.ENTER.waitForPressAndRelease() ;
+		}
 		break;
 		case(aucunPaletEnVu) : etat=chercheEnRond; // ÃÂ  la fin de cherche en rond
-		System.out.println("boussolle "+b.getDir());
-		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		if (DEBUG) {
+			System.out.println("boussolle "+b.getDir());
+			System.out.println("getCheminParcouru "+a.getCheminParcouru());
+			Button.ENTER.waitForPressAndRelease() ;
+		}
 		break;
 		case(dosAuMur) : 
 			a.forward(0.5);
 			etat=chercheEnRond;
-		System.out.println("boussolle "+b.getDir());
-		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		if (DEBUG) {
+			System.out.println("boussolle "+b.getDir());
+			System.out.println("getCheminParcouru "+a.getCheminParcouru());
+			Button.ENTER.waitForPressAndRelease() ;
+		}
 		break;
 		case(paletAttraper): 
 			if (mettreUnBut()) etat=chercheEnRond;
 			else etat=dosAuMur;
-		System.out.println("boussolle "+b.getDir());
-		if (DEBUG)Button.ENTER.waitForPressAndRelease() ;
+		if (DEBUG) {
+			System.out.println("boussolle "+b.getDir());
+			System.out.println("getCheminParcouru "+a.getCheminParcouru());
+			Button.ENTER.waitForPressAndRelease() ;
+		}
 		break;
 		case(recalibrageAFaire) :
 			System.out.println("recalibrage");
@@ -380,11 +399,13 @@ public class Test  {
 		else if (rectifiePosition(-1)) etat=faceAuPalet;
 		else etat=aucunPaletEnVu;
 		if(isMur()) etat=dosAuMur;
-		System.out.println("boussolle "+b.getDir());
-		if (DEBUG) Button.ENTER.waitForPressAndRelease() ;
+		if (DEBUG) {
+			System.out.println("boussolle "+b.getDir());
+			System.out.println("getCheminParcouru "+a.getCheminParcouru());
+			Button.ENTER.waitForPressAndRelease() ;
+		}
 		break;
 	}
-
 	}
 
 
