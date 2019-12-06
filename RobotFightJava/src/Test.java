@@ -108,7 +108,7 @@ public class Test  {
 	 * @param angle l'angle sur lequel le robot doit se fixer
 	 * @return l'angle de deplacement necessaire pour que le regard se tourne dans la direction voulue
 	 */
-	public int setDiff(int angle) {
+	public static int getDiff(int angle) {
 		return b.getDir()-angle;
 	}
 
@@ -288,8 +288,8 @@ public class Test  {
 		// la base ennemie est en carte, soit 0 soit 180
 		// VINCENT
 		
-		tourner(b.setDir(c.getBaseE())); // pour le moment
-		System.out.println(b.setDir(c.getBaseE()));
+		tourner(getDiff(c.getBaseE())); // pour le moment
+		System.out.println();
 		Delay.msDelay(2000);
 
 		while (!couleur.equals("white")) {
