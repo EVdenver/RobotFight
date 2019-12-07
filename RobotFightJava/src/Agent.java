@@ -24,22 +24,36 @@ public class Agent  {
 	final static boolean DEMARAGE=true;
 	
 	//Constantes representant les etats de l automate
-	final static int chercheEnRond=0;
-	final static int dosAuMur=1;
-	final static int detectionPalet=2;
-	final static int aucunPaletEnVu=3;
-	final static int faceAuPalet=4;
-	final static int paletAttraper=5;
-	final static int recalibrageAFaire=6;
+	final static int CHERCHE_EN_ROND=0;
+	final static int OBSTACLE_EN_VU=1;
+	final static int DETECTION_PALET=2;
+	final static int AUCUN_PALET_EN_VU=3;
+	final static int FACE_AU_PALET=4;
+	final static int PALET_ATTRAPE=5;
+	final static int RECALIBRAGE_A_FAIRE=6;
 	final static int STOP=7;
-	final static int firstPalet=8;
+	final static int FIRTS_PALET=8;
 	
 	//Constantes de l'algorithme
 	final static double seuilDetectionPalet = 0.38;
-	final static double marge = 0.05;
+	final static double margeDistance = 0.05;
 	final static double seuilArretMur = 0.2;
 	final static double largeurMax=2;
 	final static double longeurMax=1.7;
+	final static int angleRotationPalet=360;
+	final static int angleDemiTour=180;
+	final static int angleRecalage=15;
+	final static int margeRotation = 1;
+	final static int vitesseRotation=300;
+	final static int vitesseAvancer=500;
+	final static int tempsAttenteEntreDeuxMesureDistance = 100;
+	final static double distanceDeReculPostBut=0.8;
+	final static double distanceDeReculPostObstacle=0.5;
+	
+	// parametres d initialisation de position
+	static char positionBase='A';
+	static int regardRobot;
+	static int baseRobot;
 	
 	//Parametres d'instance de l agent
 	Actionneur a  ;
@@ -52,6 +66,7 @@ public class Agent  {
 	double distanceAvant = 0; 
 	double distanceAParcourir = 0; 
 	int etat;
+	int etatPrecedent;
 	String couleur;
 	
 	/**
@@ -76,6 +91,7 @@ public class Agent  {
 		distanceAvant = 0; 
 		distanceAParcourir = 0; 
 		etat=8;
+		etatPrecedent=8;
 		String couleur="";
 	}
 
@@ -84,16 +100,53 @@ public class Agent  {
 		
 		//	cs.calibration();
 
-		Agent robot=new Agent(new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B),new EchoSensor (SensorPort.S3),new TouchSensor(SensorPort.S2), new ColorimetrieSensor(SensorPort.S1),new Boussole(0),new Carte(0,180));
-		while(!Button.ESCAPE.isDown()) {
+		switch (positionBase) {
+		case 'A':
+			regardRobot=0;
+			baseRobot=180;
+			break;
+		case 'B':
+			regardRobot=0;
+			baseRobot=180;
+			break;
+		case 'C':
+			regardRobot=0;
+			baseRobot=180;
+			break;
+		case 'E':
+			regardRobot=180;
+			baseRobot=0;
+			break;
+		case 'F':
+			regardRobot=180;
+			baseRobot=0;
+			break;
+		case 'G':
+			regardRobot=180;
+			baseRobot=0;
+			break;
+
+		}
+
+
+
+		Agent robot=new Agent(new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B),new EchoSensor (SensorPort.S3),new TouchSensor(SensorPort.S2), new ColorimetrieSensor(SensorPort.S1),new Boussole(regardRobot),new Carte(regardRobot,baseRobot));
+	
+	
+		
+			while(!Button.ESCAPE.isDown()) {
 			System.out.println("Etat "+robot.etat);
 			if (robot.ts.isPressed()) {
-				robot.etat=paletAttraper;
+				robot.etat=PALET_ATTRAPE;
 				robot.a.closePince();
 			}
 			robot.recherchePrincipale();
 			if (robot.etat==STOP) break;
 		}
+		
+		
+		
+		
 	} 
 
 	/**
@@ -103,38 +156,48 @@ public class Agent  {
 	 * @author charlotte
 	 */
 	public void recherchePrincipale() throws FileNotFoundException, IOException {
+		etatPrecedent=etat;
 		switch(etat) {
-		case (firstPalet):
-			if(Button.UP.isDown()) {
+
+			
+
+		case (FIRTS_PALET):
+        if(Button.UP.isDown()) {
 				modePause();
 				}
+
 			debutAutomate();
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
-		etat=chercheEnRond;
+		etat=CHERCHE_EN_ROND;
 		break;
-		case (chercheEnRond) : 
-			if(Button.UP.isDown()) {
+
+		case (CHERCHE_EN_ROND) : 
+        if(Button.UP.isDown()) {
 				modePause();
 				}
+
 			distanceAParcourir=rechercheTournante();
+		System.out.println("distanceAParcourir "+distanceAParcourir);
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
-		etat=detectionPalet;
+		etat=DETECTION_PALET;
 		break;
-		case (detectionPalet):
-			if(Button.UP.isDown()) {
+
+		case (DETECTION_PALET):		
+        if(Button.UP.isDown()) {
 				modePause();
 			}
-			if (!avanceVersPalet()) etat=dosAuMur;
-			else if (distanceAvant<=seuilDetectionPalet+marge) etat=faceAuPalet;
-			else etat=recalibrageAFaire;
+			if (!avanceVersPalet()) etat=OBSTACLE_EN_VU;
+			else if (distanceAvant<=seuilDetectionPalet+margeDistance) etat=FACE_AU_PALET;
+			else etat=RECALIBRAGE_A_FAIRE;
+
 		System.out.println("distance"+distanceAvant);
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
@@ -142,61 +205,79 @@ public class Agent  {
 			Button.ENTER.waitForPressAndRelease() ;
 		}
 		break;
-		case (faceAuPalet):
+
+		case (FACE_AU_PALET):
 			if(Button.UP.isDown()) {
 				modePause();
 				}
-			if(fonceUntilPush()) etat=paletAttraper ;
-			else etat=dosAuMur;
+        if(fonceUntilPush()) etat=PALET_ATTRAPE ;
+			else etat=OBSTACLE_EN_VU;
+
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
 		break;
-		case(aucunPaletEnVu) : etat=chercheEnRond; // ÃÂ  la fin de cherche en rond
+
+		case(AUCUN_PALET_EN_VU) : etat=CHERCHE_EN_ROND; // ÃƒÂƒÃ‚Â  la fin de cherche en rond
+
 		if(Button.UP.isDown()) {
 			modePause();
 			}
+        if (DEBUG) {
+			System.out.println("boussolle "+b.getDir());
+			System.out.println("getCheminParcouru "+a.getCheminParcouru());
+			Button.ENTER.waitForPressAndRelease() ;
+		}
+		break;
+
+		case(OBSTACLE_EN_VU) :
+			if(Button.UP.isDown()) {
+				modePause();
+				}
+        if (etatPrecedent==PALET_ATTRAPE) {
+			//	recalibrerMur(); se mettre vers la distance moindre du mur
+				etat=PALET_ATTRAPE;
+			}
+			else {
+				
+				 etat=CHERCHE_EN_ROND;
+			}
+		demiTour();
+		
+
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
 		break;
-		case(dosAuMur) : 
+
+		case(PALET_ATTRAPE): 
 			if(Button.UP.isDown()) {
 				modePause();
 				}
-			a.forward(0.5);
-		etat=chercheEnRond;
+        if (mettreUnBut()) etat=CHERCHE_EN_ROND;
+			else etat=OBSTACLE_EN_VU;
+
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
 		break;
-		case(paletAttraper): 
+
+		case(RECALIBRAGE_A_FAIRE) :
+
 			if(Button.UP.isDown()) {
 				modePause();
 				}
-			if (mettreUnBut()) etat=chercheEnRond;
-			else etat=dosAuMur;
-		if (DEBUG) {
-			System.out.println("boussolle "+b.getDir());
-			System.out.println("getCheminParcouru "+a.getCheminParcouru());
-			Button.ENTER.waitForPressAndRelease() ;
-		}
-		break;
-		case(recalibrageAFaire) :
-			if(Button.UP.isDown()) {
-				modePause();
-				}
-			System.out.println("recalibrage");
-		if (rectifiePosition(1)) etat=faceAuPalet;
-		else if (rectifiePosition(-1)) etat=faceAuPalet;
-		else etat=aucunPaletEnVu;
-		if(isMur() || isLigneBlanche()) etat=dosAuMur;
+        System.out.println("recalibrage");
+		if (rectifiePosition(1)) etat=FACE_AU_PALET;
+		else if (rectifiePosition(-1)) etat=FACE_AU_PALET;
+		else etat=AUCUN_PALET_EN_VU;
+		if(isMur() || isLigneBlanche()) etat=OBSTACLE_EN_VU;
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
@@ -212,7 +293,7 @@ public class Agent  {
 	 * @throws IOException
 	 * @author charlotte
 	 */
-	public  void debutAutomate () throws FileNotFoundException, IOException {
+	public void debutAutomate () throws FileNotFoundException, IOException {
 		System.out.println("debutAutomate");
 		a.openPince();
 		fonceUntilPush();
@@ -227,10 +308,9 @@ public class Agent  {
 	 */
 	public double rechercheTournante () {
 		a.closePince();
-		int angleMax=360;
 		ArrayList<Double> tabList= new ArrayList<Double>();
 		double trouver;
-		tourner(angleMax);
+		tourner(angleRotationPalet+margeRotation);
 		while (a.isMoving()){
 			trouver=es.getDistance();
 			if (trouver==0) trouver=100;
@@ -240,20 +320,12 @@ public class Agent  {
 		trouver=distanceMin(tabList);
 		int i=tabList.indexOf(trouver);
 		System.out.println("distances min "+trouver+"a indice "+i); 
-		tourner(360/tabList.size()*i); 
-		//	a ce niveau recalibrer
-		System.out.println("je me suis recaler de"+360/tabList.size()*i+" degrees"); 		
+		tourner(angleRotationPalet/tabList.size()*i); 
+		System.out.println("je me suis recaler de"+angleRotationPalet/tabList.size()*i+" degrees"); 		
 		System.out.println("distance "+trouver);
 		return trouver;
 	}
 
-	private static double distanceMin (ArrayList<Double> list) {
-		double res=Double.MAX_VALUE;
-		for (Double d : list) {
-			if (d>seuilDetectionPalet-marge) res=d<res?d:res;
-		}
-		return res;
-	}
 	
 	/**
 	 * avance jusqu a ce que la distance augmente sans se prendre de mur
@@ -266,18 +338,18 @@ public class Agent  {
 		a.openPince();
 		distanceAvant = es.getDistance();
 		a.forward();
-		Delay.msDelay(1000);
+		Delay.msDelay(tempsAttenteEntreDeuxMesureDistance);
 		distanceMaintenant = es.getDistance();
 		while(distanceAvant > distanceMaintenant ) {
 			distanceAvant=distanceMaintenant;
-			Delay.msDelay(1000);
+			Delay.msDelay(tempsAttenteEntreDeuxMesureDistance);
 			distanceMaintenant = es.getDistance();
 			/**
 			 * @author charlotte 
+			 * @TO DO
 			 * VINCENT ICI AUSSI LES COULEURS CHANGENT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			 */
 			lectureCouleur();
-
 			if (isMur() || isLigneBlanche()) return false;
 		}
 		a.stop();
@@ -292,19 +364,20 @@ public class Agent  {
 		 public boolean mettreUnBut() throws FileNotFoundException, IOException {
 			// la base ennemie est en carte, soit 0 soit 180
 			// VINCENT
-			System.out.println("Angle:" +getDiff(c.getBaseE()));
+			System.out.println("Angle: " +getDiff(c.getBaseE()));
 			tourner(getDiff(c.getBaseE())); 
 			while (!couleur.equals("white")) {
 				a.forward();
-				lectureCouleur();
-				if (isMur()) return false;
+				if (lectureCouleur()) {
+					return mettreUnBut();
+				}
+				if (isMur()) {
+					return false;
+				}
 			}
-
-			a.forward(0.1);
 			a.openPince();
-			a.backward(0.8);
-
-			tourner(180);
+			a.backward(distanceDeReculPostBut);
+			tourner(angleDemiTour);
 			return true;
 		}
 	
@@ -339,12 +412,12 @@ public class Agent  {
 			 */
 			public boolean rectifiePosition (int i) {
 				distanceMaintenant = es.getDistance();
-				tourner(15*i);
-				Delay.msDelay(100); // mesure du temps pour bouger de 15 degres
+				tourner(angleRecalage*i);
+				Delay.msDelay(tempsAttenteEntreDeuxMesureDistance);
 				distanceAvant=distanceMaintenant;
 				distanceMaintenant = es.getDistance();
 				if (distanceMaintenant<distanceAvant) return true;
-				else tourner(-15*i);
+				else tourner(-angleRecalage*i);
 				return false;
 			}
 	
@@ -361,27 +434,25 @@ public class Agent  {
 	 * @param angle
 	 */
 	private void tourner (int angle) {
-		a.setSpeed(300);
+		a.setSpeed(vitesseRotation);
+		if (angle>180) {
+			angle-=angleRotationPalet;
+		}
 		int dir=angle>0?1:-1;
 		if (dir==-1)angle*=-1;
-		//	System.out.println("direction "+dir);
-		//	System.out.println("angle "+angle);
-		if (angle<=15) a.rotate(dir*angle);
+		if (angle<=angleRecalage) a.rotate(dir*angle);
 		else {
 			int i=0;
-			for (;i<angle;i+=15) {
-				a.rotate(dir*15);
+			for (;i<angle;i+=angleRecalage) {
+				a.rotate(dir*angleRecalage);
 			}
 			a.rotate(dir*(angle-i));
 		}
 		b.setDir(dir*angle);
-		a.setSpeed(500);
-		//	Delay.msDelay(1_000);
-
+		a.setSpeed(vitesseAvancer);
 	}
 
 
-	
 
 	/**
 	 * @author charlotte
@@ -392,35 +463,50 @@ public class Agent  {
 		if (distanceMaintenant<=seuilArretMur && distanceMaintenant!=0) {
 			System.out.println("mur detecte, distance "+distanceMaintenant);
 			a.stop();
-			a.backward(0.2);
-			int i=1;
-			//	if (isButOuest() && faceMurNord()) i*=-1;
-			//	if (isButEst() && faceMurSud()) i*=-1;
-			tourner(i*180);
-			//a.rotate(i*180);
 			return true;
 		}
 		return false;
 	}
 	 
-	 public void lectureCouleur() throws FileNotFoundException, IOException {
-		 couleur=cs.laCouleur();
-		 if (!couleur.equals("grey")) {
-		//	 b.nouvelleMethode(couleur);
-		 }
-	 }
-	
-
-	 public boolean isLigneBlanche() throws FileNotFoundException, IOException {
-		 lectureCouleur();
-		if (couleur.equals("white")) {
-			System.out.println("ligne blanche, distance "+distanceMaintenant);
-			a.stop();
-			a.backward(0.2);
+	 /**
+	  * fais un demi-tour
+	  * @author charlotte
+	  */
+	 public void demiTour() {
+		 a.backward(distanceDeReculPostObstacle);
 			int i=1;
 			//	if (isButOuest() && faceMurNord()) i*=-1;
 			//	if (isButEst() && faceMurSud()) i*=-1;
-			tourner(i*180);
+			tourner(i*angleDemiTour);
+	 }
+	 
+	 //TODO mettre le nom de la nouvelle methode de boussolle
+	 /**
+	  *  lit la couleur et la transmet à la boussole si ce n'est ni noir ni gris
+	  * @throws FileNotFoundException
+	  * @throws IOException
+	  * 
+	  */
+	 public boolean lectureCouleur() throws FileNotFoundException, IOException {
+		 couleur=cs.laCouleur();
+		 if (!couleur.equals("grey") && !couleur.equals("black")) {
+		//	 return b.nouvelleMethode(couleur);	
+		 }
+		 return false;
+	 }
+	
+/**
+ *  se déclenche dès qu'on croise une ligne blanche
+ * @return
+ * @throws FileNotFoundException
+ * @throws IOException
+ * @author charlotte
+ */
+	 public boolean isLigneBlanche() throws FileNotFoundException, IOException {
+		lectureCouleur();
+		if (couleur.equals("white")) {
+			System.out.println("ligne blanche, distance "+distanceMaintenant);
+			a.stop();
 			return true;
 		}
 		return false;
@@ -444,9 +530,21 @@ public class Agent  {
 				return;
 			}
 	
+
+	 /**
+		 * trouve la plus petite valeur qui ne soit pas en dessous du seuil de détaction du palet
+		 * @param list
+		 * @return
+		 * @author charlotte
+		 */
+		private static double distanceMin (ArrayList<Double> list) {
+			double res=Double.MAX_VALUE;
+			for (Double d : list) {
+				if (d>seuilDetectionPalet-margeDistance) res=d<res?d:res;
+			}
+			return res;
 		}
-	 
-	
+
 
 	/*static public void changerPos(String couleur,Case[] caseAdj) {
 		if (b.getDir() <= 90 && b.getDir() >= 0) {
