@@ -69,7 +69,7 @@ public class Boussole {
 	 * @param angle la valeur de l'angle qu'il a effectué
 	 */
 	public void setDir(int angle) {
-		this.dir = (this.dir + angle)%360;
+		this.dir = (this.dir + (angle+360))%360;
 	}
 }
 
