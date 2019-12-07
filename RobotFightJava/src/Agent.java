@@ -49,6 +49,11 @@ public class Agent  {
 	final static double distanceDeReculPostBut=0.8;
 	final static double distanceDeReculPostObstacle=0.5;
 	
+	// parametres d initialisation de position
+	static char positionBase='A';
+	static int regardRobot;
+	static int baseRobot;
+	
 	//Parametres d'instance de l agent
 	Actionneur a  ;
 	EchoSensor es ;
@@ -94,7 +99,37 @@ public class Agent  {
 		
 		//	cs.calibration();
 
-		Agent robot=new Agent(new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B),new EchoSensor (SensorPort.S3),new TouchSensor(SensorPort.S2), new ColorimetrieSensor(SensorPort.S1),new Boussole(0),new Carte(0,180));
+		switch (positionBase) {
+		case 'A':
+			regardRobot=0;
+			baseRobot=180;
+			break;
+		case 'B':
+			regardRobot=0;
+			baseRobot=180;
+			break;
+		case 'C':
+			regardRobot=0;
+			baseRobot=180;
+			break;
+		case 'E':
+			regardRobot=180;
+			baseRobot=0;
+			break;
+		case 'F':
+			regardRobot=180;
+			baseRobot=0;
+			break;
+		case 'G':
+			regardRobot=180;
+			baseRobot=0;
+			break;
+
+		}
+
+
+
+		Agent robot=new Agent(new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B),new EchoSensor (SensorPort.S3),new TouchSensor(SensorPort.S2), new ColorimetrieSensor(SensorPort.S1),new Boussole(regardRobot),new Carte(regardRobot,baseRobot));
 	
 	
 		
@@ -168,16 +203,22 @@ public class Agent  {
 			Button.ENTER.waitForPressAndRelease() ;
 		}
 		break;
-		case(OBSTACLE_EN_VU) : 
-			demiTour();
+		case(OBSTACLE_EN_VU) :
+			if (etatPrecedent==PALET_ATTRAPE) {
+			//	recalibrerMur(); se mettre vers la distance moindre du mur
+				etat=PALET_ATTRAPE;
+			}
+			else {
+				
+				 etat=CHERCHE_EN_ROND;
+			}
+		demiTour();
 		
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
-		if (etatPrecedent==PALET_ATTRAPE) etat=PALET_ATTRAPE;
-		else etat=CHERCHE_EN_ROND;
 		break;
 		case(PALET_ATTRAPE): 
 			if (mettreUnBut()) etat=CHERCHE_EN_ROND;
@@ -284,11 +325,13 @@ public class Agent  {
 			tourner(getDiff(c.getBaseE())); 
 			while (!couleur.equals("white")) {
 				a.forward();
-				lectureCouleur();
-				if (isMur()) return false;
+				if (lectureCouleur()) {
+					return mettreUnBut();
+				}
+				if (isMur()) {
+					return false;
+				}
 			}
-
-			a.forward(0.1);
 			a.openPince();
 			a.backward(distanceDeReculPostBut);
 			tourner(angleDemiTour);
@@ -401,11 +444,12 @@ public class Agent  {
 	  * @throws IOException
 	  * 
 	  */
-	 public void lectureCouleur() throws FileNotFoundException, IOException {
+	 public boolean lectureCouleur() throws FileNotFoundException, IOException {
 		 couleur=cs.laCouleur();
 		 if (!couleur.equals("grey") && !couleur.equals("black")) {
-		//	 b.nouvelleMethode(couleur);	 
+		//	 return b.nouvelleMethode(couleur);	
 		 }
+		 return false;
 	 }
 	
 /**
