@@ -21,6 +21,7 @@ import java.util.ArrayList;
 public class Agent  {
 	// Parametres de debugage et de lancement reel
 	final static boolean DEBUG=true;
+	final static boolean DEMARAGE=true;
 	
 	//Constantes representant les etats de l automate
 	final static int chercheEnRond=0;
@@ -104,6 +105,7 @@ public class Agent  {
 	public void recherchePrincipale() throws FileNotFoundException, IOException {
 		switch(etat) {
 		case (firstPalet):
+			if(Button.ENTER.isDown()) {modePause();}
 			debutAutomate();
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
@@ -113,6 +115,7 @@ public class Agent  {
 		etat=chercheEnRond;
 		break;
 		case (chercheEnRond) : 
+			if(Button.ENTER.isDown()) {modePause();}
 			distanceAParcourir=rechercheTournante();
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
@@ -122,6 +125,7 @@ public class Agent  {
 		etat=detectionPalet;
 		break;
 		case (detectionPalet):
+			if(Button.ENTER.isDown()) {modePause();}
 			if (!avanceVersPalet()) etat=dosAuMur;
 			else if (distanceAvant<=seuilDetectionPalet+marge) etat=faceAuPalet;
 			else etat=recalibrageAFaire;
@@ -133,6 +137,7 @@ public class Agent  {
 		}
 		break;
 		case (faceAuPalet):
+			if(Button.ENTER.isDown()) {modePause();}
 			if(fonceUntilPush()) etat=paletAttraper ;
 			else etat=dosAuMur;
 		if (DEBUG) {
@@ -142,6 +147,7 @@ public class Agent  {
 		}
 		break;
 		case(aucunPaletEnVu) : etat=chercheEnRond; // ÃÂ  la fin de cherche en rond
+		if(Button.ENTER.isDown()) {modePause();}
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
@@ -149,6 +155,7 @@ public class Agent  {
 		}
 		break;
 		case(dosAuMur) : 
+			if(Button.ENTER.isDown()) {modePause();}
 			a.forward(0.5);
 		etat=chercheEnRond;
 		if (DEBUG) {
@@ -158,6 +165,7 @@ public class Agent  {
 		}
 		break;
 		case(paletAttraper): 
+			if(Button.ENTER.isDown()) {modePause();}
 			if (mettreUnBut()) etat=chercheEnRond;
 			else etat=dosAuMur;
 		if (DEBUG) {
@@ -167,6 +175,7 @@ public class Agent  {
 		}
 		break;
 		case(recalibrageAFaire) :
+			if(Button.ENTER.isDown()) {modePause();}
 			System.out.println("recalibrage");
 		if (rectifiePosition(1)) etat=faceAuPalet;
 		else if (rectifiePosition(-1)) etat=faceAuPalet;
@@ -400,7 +409,20 @@ public class Agent  {
 		}
 		return false;
 	}
+	 /**
+		 * @author death
+		 * @param demarage
+		 */
+		public void modePause() {
+			System.out.println("  MODE PAUSE ACTIVEE");
+			System.out.println(" PRESS ENTER POUR LANCER");
+			System.out.println("angle: "+ b.getDir());
+			Delay.msDelay(3000);
+			Button.ENTER.waitForPressAndRelease();
+			
 	
+		}
+	 
 	
 
 	/*static public void changerPos(String couleur,Case[] caseAdj) {
