@@ -84,7 +84,10 @@ public class Agent  {
 		//	cs.calibration();
 
 		Agent robot=new Agent(new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B),new EchoSensor (SensorPort.S3),new TouchSensor(SensorPort.S2), new ColorimetrieSensor(SensorPort.S1),new Boussole(0),new Carte(0,180));
-		while(!Button.ESCAPE.isDown()) {
+	
+	
+		
+			while(!Button.ESCAPE.isDown()) {
 			System.out.println("Etat "+robot.etat);
 			if (robot.ts.isPressed()) {
 				robot.etat=paletAttraper;
@@ -93,6 +96,10 @@ public class Agent  {
 			robot.recherchePrincipale();
 			if (robot.etat==STOP) break;
 		}
+		
+		
+		
+		
 	} 
 
 	/**

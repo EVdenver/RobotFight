@@ -12,7 +12,7 @@ public class Actionneur {
 	Delay d= new Delay();
 	private final static int SPEED = 500; //degrees/sec
 	private final static double WHEEL_RADIUS = 0.05; // en mètre 
-	private final static int ROTATION_FACTOR=200; //facteur modulant la relation temps/vitesse/angle(en celcius) qui permet au robot de tourner sur son propre axe
+	private final static int ROTATION_FACTOR=325; //facteur modulant la relation temps/vitesse/angle(en celcius) qui permet au robot de tourner sur son propre axe
 	private boolean avance=true; //180
 	private Chrono chrono=new Chrono();
 	private double cheminParcouru=0;
