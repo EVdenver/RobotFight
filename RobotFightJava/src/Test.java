@@ -189,7 +189,7 @@ public class Test  {
 	public static void modePause(boolean demarage) {
 		System.out.println("    MODE PAUSE ACTIVEE");
 		System.out.println(" PRESS ENTER POUR LANCER");
-		Delay(2000);
+		Delay(3000);
 		Button.ENTER.waitForPressAndRelease();
 		
 		if(!demarage) {
