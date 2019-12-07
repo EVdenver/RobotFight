@@ -529,6 +529,7 @@ public class Agent  {
 				etat=STOP;
 				return;
 			}
+		}
 	
 
 	 /**
