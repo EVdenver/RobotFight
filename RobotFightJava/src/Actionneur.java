@@ -8,12 +8,14 @@ public class Actionneur {
 	private  EV3LargeRegulatedMotor mLeftMotor;
 	private  EV3LargeRegulatedMotor mRightMotor;
 	private EV3MediumRegulatedMotor mPincesMotor;
-	private boolean open=false;
+	private boolean open=true;
 	Delay d= new Delay();
-	private final static int SPEED = 300; //degrees/sec
+	private final static int SPEED = 500; //degrees/sec
 	private final static double WHEEL_RADIUS = 0.05; // en mètre 
-	private final static int ROTATION_FACTOR=190; //facteur modulant la relation temps/vitesse/angle(en celcius) qui permet au robot de tourner sur son propre axe
+	private final static int ROTATION_FACTOR=200; //facteur modulant la relation temps/vitesse/angle(en celcius) qui permet au robot de tourner sur son propre axe
 	private boolean avance=true; //180
+	private Chrono chrono=new Chrono();
+	private double cheminParcouru=0;
 	
 	public Actionneur(Port left_port, Port right_port, Port pinces_port) {
 		mLeftMotor = new EV3LargeRegulatedMotor(left_port);
@@ -63,11 +65,10 @@ public class Actionneur {
 		double radianByS = SPEED*0.017453292519943; //vitesse en radian/seconde
 		double distanceByS=radianByS*WHEEL_RADIUS; // distance en mètre/seconde
 		double time=distance/distanceByS;
-		long timeStampBefore = System.currentTimeMillis();
 		forward();
 		Delay.msDelay((long) (time*1000)); // en ms		
 		stop();
-		long timeStampAfter = System.currentTimeMillis();
+		cheminParcouru+=distance*SPEED;
 	//	return (timeStampBefore-timeStampAfter)*distanceByS*1000; // retourne la distance vraiment parcourue
 	}
  
@@ -109,12 +110,26 @@ public class Actionneur {
 
 
 	void forward() {
+		chrono.start();
 		mLeftMotor.startSynchronization();
 		mLeftMotor.forward();
 		mRightMotor.forward();
 		mLeftMotor.endSynchronization();
+		chrono.stop();
+		cheminParcouru+=chrono.getDureeSec()*SPEED;	
 	}
 	
+	
+	
+	
+	public double getCheminParcouru() {
+		return cheminParcouru;
+	}
+
+	public void setCheminParcouru(double cheminParcouru) {
+		this.cheminParcouru = cheminParcouru;
+	}
+
 	private void backward() {
 		mLeftMotor.startSynchronization();
 		mLeftMotor.backward();

@@ -63,15 +63,13 @@ public class Boussole {
 	public String getPos() {
 		return pos;
 	}
+	
 	/**
 	 * @author darkf
-	 * @param dir La direction sur laquelle doit se fixer le robot (si elle est presente dans les cardinalite)
-	 * @return l'angle de deplacement necessaire pour que le regard se tourne dans la direction voulue
+	 * @param angle la valeur de l'angle qu'il a effectué
 	 */
-	public int setDir(int angle) {
-		int tmp = this.dir;
-		this.dir = angle;
-		return tmp - this.dir;
+	public void setDir(int angle) {
+		this.dir = (this.dir + angle)%360;
 	}
 }
 
