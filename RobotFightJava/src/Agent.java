@@ -39,13 +39,13 @@ public class Agent  {
 	final static double seuilArretMur = 0.2;
 	final static double largeurMax=2;
 	final static double longeurMax=1.7;
-	final static int angleRotationPalet=360;
-	final static int angleDemiTour=180;
-	final static int angleRecalage=15;
-	final static int margeRotation = 1;
-	final static int vitesseRotation=300;
-	final static int vitesseAvancer=500;
-	final static int tempsAttenteEntreDeuxMesureDistance = 100;
+	final static double angleRotationPalet=360;
+	final static double angleDemiTour=180;
+	final static double angleRecalage=15;
+	final static double margeRotation = 1;
+	final static double vitesseRotation=200;
+	final static double vitesseAvancer=500;
+	final static double tempsAttenteEntreDeuxMesureDistance = 100;
 	final static double distanceDeReculPostBut=0.8;
 	final static double distanceDeReculPostObstacle=0.5;
 	
@@ -132,7 +132,7 @@ public class Agent  {
 		Agent robot=new Agent(new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B),new EchoSensor (SensorPort.S3),new TouchSensor(SensorPort.S2), new ColorimetrieSensor(SensorPort.S1),new Boussole(regardRobot),new Carte(regardRobot,baseRobot));
 	
 	
-		
+	/*	
 			while(!Button.ESCAPE.isDown()) {
 			System.out.println("Etat "+robot.etat);
 			if (robot.ts.isPressed()) {
@@ -141,10 +141,19 @@ public class Agent  {
 			}
 			robot.recherchePrincipale();
 			if (robot.etat==STOP) break;
+		}*/
+		
+		
+	
+		
+		robot.a.forward();
+		while(!robot.isMur()) {
+			System.out.println("avance");
 		}
+		robot.recalibrageMur();
 		
-		
-		
+		/*	robot.a.forward(0.1);
+		robot.rechercheTournante();*/
 		
 	} 
 
@@ -267,18 +276,19 @@ public class Agent  {
 		a.closePince();
 		ArrayList<Double> tabList= new ArrayList<Double>();
 		double trouver;
-		tourner(angleRotationPalet+margeRotation);
+		System.out.println("tourne de "+(angleRotationPalet+margeRotation));
+		tourner((int) (angleRotationPalet+margeRotation));
 		while (a.isMoving()){
 			trouver=es.getDistance();
 			if (trouver==0) trouver=100;
 			tabList.add(trouver);
 		}
 		System.out.println(tabList.size()+" distances mesurees"); // 300
-		trouver=distanceMin(tabList);
+		trouver=distanceMinPalet(tabList);
 		int i=tabList.indexOf(trouver);
 		System.out.println("distances min "+trouver+"a indice "+i); 
-		tourner(angleRotationPalet/tabList.size()*i); 
-		System.out.println("je me suis recaler de"+angleRotationPalet/tabList.size()*i+" degrees"); 		
+		tourner((int) (angleRotationPalet/tabList.size()*i)); 
+		System.out.println("je me suis recaler de"+(angleRotationPalet/tabList.size()*i)+" degrees"); 		
 		System.out.println("distance "+trouver);
 		return trouver;
 	}
@@ -295,11 +305,11 @@ public class Agent  {
 		a.openPince();
 		distanceAvant = es.getDistance();
 		a.forward();
-		Delay.msDelay(tempsAttenteEntreDeuxMesureDistance);
+		Delay.msDelay((long) tempsAttenteEntreDeuxMesureDistance);
 		distanceMaintenant = es.getDistance();
 		while(distanceAvant > distanceMaintenant ) {
 			distanceAvant=distanceMaintenant;
-			Delay.msDelay(tempsAttenteEntreDeuxMesureDistance);
+			Delay.msDelay((long) tempsAttenteEntreDeuxMesureDistance);
 			distanceMaintenant = es.getDistance();
 			/**
 			 * @author charlotte 
@@ -370,7 +380,7 @@ public class Agent  {
 			public boolean rectifiePosition (int i) {
 				distanceMaintenant = es.getDistance();
 				tourner(angleRecalage*i);
-				Delay.msDelay(tempsAttenteEntreDeuxMesureDistance);
+				Delay.msDelay((long) tempsAttenteEntreDeuxMesureDistance);
 				distanceAvant=distanceMaintenant;
 				distanceMaintenant = es.getDistance();
 				if (distanceMaintenant<distanceAvant) return true;
@@ -388,25 +398,25 @@ public class Agent  {
 	}
 	/**
 	 * @author charlotte
-	 * @param angle
+	 * @param angledemitour2
 	 */
-	private void tourner (int angle) {
-		a.setSpeed(vitesseRotation);
-		if (angle>180) {
-			angle-=angleRotationPalet;
+	private void tourner (double angledemitour2) {
+		a.setSpeed((int) vitesseRotation);
+		if (angledemitour2>180 && angledemitour2!=(angleRotationPalet+margeRotation)) {
+			angledemitour2-=angleRotationPalet;
 		}
-		int dir=angle>0?1:-1;
-		if (dir==-1)angle*=-1;
-		if (angle<=angleRecalage) a.rotate(dir*angle);
+		int dir=angledemitour2>0?1:-1;
+		if (dir==-1)angledemitour2*=-1;
+		if (angledemitour2<=angleRecalage) a.rotate(dir*angledemitour2);
 		else {
 			int i=0;
-			for (;i<angle;i+=angleRecalage) {
+			for (;i<angledemitour2;i+=angleRecalage) {
 				a.rotate(dir*angleRecalage);
 			}
-			a.rotate(dir*(angle-i));
+			a.rotate(dir*(angledemitour2-i));
 		}
-		b.setDir(dir*angle);
-		a.setSpeed(vitesseAvancer);
+		b.setDir((int) (dir*angledemitour2));
+		a.setSpeed((int) vitesseAvancer);
 	}
 
 
@@ -417,6 +427,7 @@ public class Agent  {
 	 */
 	 public boolean isMur() {
 		distanceMaintenant=es.getDistance();
+		System.out.println("is Mur "+distanceMaintenant);
 		if (distanceMaintenant<=seuilArretMur && distanceMaintenant!=0) {
 			System.out.println("mur detecte, distance "+distanceMaintenant);
 			a.stop();
@@ -447,7 +458,7 @@ public class Agent  {
 	 public boolean lectureCouleur() throws FileNotFoundException, IOException {
 		 couleur=cs.laCouleur();
 		 if (!couleur.equals("grey") && !couleur.equals("black")) {
-		//	 return b.nouvelleMethode(couleur);	
+		//	 return b.(couleur);	
 		 }
 		 return false;
 	 }
@@ -475,12 +486,58 @@ public class Agent  {
 		 * @return
 		 * @author charlotte
 		 */
-		private static double distanceMin (ArrayList<Double> list) {
+		private static double distanceMinPalet (ArrayList<Double> list) {
 			double res=Double.MAX_VALUE;
 			for (Double d : list) {
 				if (d>seuilDetectionPalet-margeDistance) res=d<res?d:res;
 			}
 			return res;
+		}
+		
+		 /**
+		 * trouve la plus petite valeur 
+		 * @param list
+		 * @return
+		 * @author charlotte
+		 */
+		private static double distanceMinMur (ArrayList<Double> list) {
+			double res=Double.MAX_VALUE;
+			for (Double d : list) {
+				res=d<res?d:res;
+			}
+			return res;
+		}
+		private void recalibrageMur() {
+			// si je me suis décalé vers le moins ou vers le plus
+			ArrayList<Double> tabList= new ArrayList<Double>();
+			double trouver;
+			tourner(-90);
+			tourner(angleDemiTour);
+			
+			while (a.isMoving()){
+				trouver=es.getDistance();
+				System.out.println("trouver "+trouver);
+				if (trouver==0) trouver=100;
+				tabList.add(trouver);
+			}
+			a.stop();
+			Delay.msDelay(10);
+			tourner(-180);
+			System.out.println(tabList.size()+" distances mesurees"); 
+			trouver=distanceMinMur(tabList);
+			int i=tabList.indexOf(trouver);
+			System.out.println("distances min "+trouver+"a indice "+i); 
+			tourner(angleDemiTour/tabList.size()*i); 
+			System.out.println("je me suis recaler de"+angleRotationPalet/tabList.size()*i+" degrees"); 		
+			System.out.println("distance "+trouver);
+			if (angleRotationPalet/tabList.size()*i<90) {
+				// recalibrage  boussole
+				//je regarde le mur à droite de la base E
+			}
+			else {
+				// je regarde le mur à gauche de la base E
+			}
+			
 		}
 
 	/*static public void changerPos(String couleur,Case[] caseAdj) {
