@@ -20,7 +20,8 @@ import java.util.ArrayList;
 
 public class Agent  {
 	// Parametres de debugage et de lancement reel
-	final static boolean DEBUG=true;
+	final static boolean DEBUG=false;
+	final static boolean DEMARAGE=true;
 	
 	//Constantes representant les etats de l automate
 	final static int CHERCHE_EN_ROND=0;
@@ -157,7 +158,14 @@ public class Agent  {
 	public void recherchePrincipale() throws FileNotFoundException, IOException {
 		etatPrecedent=etat;
 		switch(etat) {
+
+			
+
 		case (FIRTS_PALET):
+        if(Button.UP.isDown()) {
+				modePause();
+				}
+
 			debutAutomate();
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
@@ -166,7 +174,12 @@ public class Agent  {
 		}
 		etat=CHERCHE_EN_ROND;
 		break;
+
 		case (CHERCHE_EN_ROND) : 
+        if(Button.UP.isDown()) {
+				modePause();
+				}
+
 			distanceAParcourir=rechercheTournante();
 		System.out.println("distanceAParcourir "+distanceAParcourir);
 		if (DEBUG) {
@@ -176,10 +189,15 @@ public class Agent  {
 		}
 		etat=DETECTION_PALET;
 		break;
-		case (DETECTION_PALET):
+
+		case (DETECTION_PALET):		
+        if(Button.UP.isDown()) {
+				modePause();
+			}
 			if (!avanceVersPalet()) etat=OBSTACLE_EN_VU;
 			else if (distanceAvant<=seuilDetectionPalet+margeDistance) etat=FACE_AU_PALET;
 			else etat=RECALIBRAGE_A_FAIRE;
+
 		System.out.println("distance"+distanceAvant);
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
@@ -187,24 +205,38 @@ public class Agent  {
 			Button.ENTER.waitForPressAndRelease() ;
 		}
 		break;
+
 		case (FACE_AU_PALET):
-			if(fonceUntilPush()) etat=PALET_ATTRAPE ;
+			if(Button.UP.isDown()) {
+				modePause();
+				}
+        if(fonceUntilPush()) etat=PALET_ATTRAPE ;
 			else etat=OBSTACLE_EN_VU;
+
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
 		break;
-		case(AUCUN_PALET_EN_VU) : etat=CHERCHE_EN_ROND; // ÃÂ  la fin de cherche en rond
-		if (DEBUG) {
+
+		case(AUCUN_PALET_EN_VU) : etat=CHERCHE_EN_ROND; // ÃƒÂƒÃ‚Â  la fin de cherche en rond
+
+		if(Button.UP.isDown()) {
+			modePause();
+			}
+        if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
 		break;
+
 		case(OBSTACLE_EN_VU) :
-			if (etatPrecedent==PALET_ATTRAPE) {
+			if(Button.UP.isDown()) {
+				modePause();
+				}
+        if (etatPrecedent==PALET_ATTRAPE) {
 			//	recalibrerMur(); se mettre vers la distance moindre du mur
 				etat=PALET_ATTRAPE;
 			}
@@ -214,23 +246,34 @@ public class Agent  {
 			}
 		demiTour();
 		
+
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
 		break;
+
 		case(PALET_ATTRAPE): 
-			if (mettreUnBut()) etat=CHERCHE_EN_ROND;
+			if(Button.UP.isDown()) {
+				modePause();
+				}
+        if (mettreUnBut()) etat=CHERCHE_EN_ROND;
 			else etat=OBSTACLE_EN_VU;
+
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
 		break;
+
 		case(RECALIBRAGE_A_FAIRE) :
-			System.out.println("recalibrage");
+
+			if(Button.UP.isDown()) {
+				modePause();
+				}
+        System.out.println("recalibrage");
 		if (rectifiePosition(1)) etat=FACE_AU_PALET;
 		else if (rectifiePosition(-1)) etat=FACE_AU_PALET;
 		else etat=AUCUN_PALET_EN_VU;
@@ -439,7 +482,7 @@ public class Agent  {
 	 
 	 //TODO mettre le nom de la nouvelle methode de boussolle
 	 /**
-	  *  lit la couleur et la transmet � la boussole si ce n'est ni noir ni gris
+	  *  lit la couleur et la transmet à la boussole si ce n'est ni noir ni gris
 	  * @throws FileNotFoundException
 	  * @throws IOException
 	  * 
@@ -453,7 +496,7 @@ public class Agent  {
 	 }
 	
 /**
- *  se d�clenche d�s qu'on croise une ligne blanche
+ *  se déclenche dès qu'on croise une ligne blanche
  * @return
  * @throws FileNotFoundException
  * @throws IOException
@@ -468,9 +511,28 @@ public class Agent  {
 		}
 		return false;
 	}
-	
 	 /**
-		 * trouve la plus petite valeur qui ne soit pas en dessous du seuil de d�taction du palet
+		 * @author nicolas
+		 * @param demarage
+		 */
+		public void modePause() {
+			System.out.println("  MODE PAUSE ACTIVEE");
+			System.out.println(" PRESS ENTER POUR LANCER");
+			System.out.println("ou press escape et enter ");
+			System.out.println("pour tout arreter");
+			
+			System.out.println("angle: "+ b.getDir());
+			Delay.msDelay(3000);
+			
+			Button.ENTER.waitForPressAndRelease();
+			if(Button.ESCAPE.isDown()) {
+				etat=STOP;
+				return;
+			}
+	
+
+	 /**
+		 * trouve la plus petite valeur qui ne soit pas en dessous du seuil de détaction du palet
 		 * @param list
 		 * @return
 		 * @author charlotte
@@ -482,6 +544,7 @@ public class Agent  {
 			}
 			return res;
 		}
+
 
 	/*static public void changerPos(String couleur,Case[] caseAdj) {
 		if (b.getDir() <= 90 && b.getDir() >= 0) {
