@@ -62,7 +62,7 @@ public class Test  {
 		//	cs = new ColorimetrieSensor(LocalEV3.get().getPort("S1")); 
 		//	cs.calibration();
 
-		cs = new ColorimetrieSensor(SensorPort.S1);
+		/*cs = new ColorimetrieSensor(SensorPort.S1);
 		//couleur=cs.laCouleur();
 
 
