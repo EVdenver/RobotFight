@@ -121,6 +121,18 @@ public class Carte {
 		}
 	}
 	
+	
+	public int getDirDroiteE() {
+		if(baseE==0) return 270;
+		return 90;
+	}
+	
+	
+	public int getDirGaucheE() {
+		if(baseE==0) return 90;
+		return 270;
+	}
+	
 	public int getDirA() {
 		Case tmp = new Case();
 		for (int i = 0; i < cases.size(); i++) {

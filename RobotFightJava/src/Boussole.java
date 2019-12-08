@@ -71,5 +71,9 @@ public class Boussole {
 	public void setDir(int angle) {
 		this.dir = (this.dir + (angle+360))%360;
 	}
+	
+	public void setAbsoluteDir(int angle) {
+		this.dir = angle;
+	}
 }
 

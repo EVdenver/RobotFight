@@ -36,7 +36,7 @@ public class Agent  {
 	//Constantes de l'algorithme
 	final static double seuilDetectionPalet = 0.38;
 	final static double margeDistance = 0.05;
-	final static double seuilArretMur = 0.2;
+	final static double seuilArretMur = 0.25;
 	final static double largeurMax=2;
 	final static double longeurMax=1.7;
 	final static double angleRotationPalet=360;
@@ -44,7 +44,7 @@ public class Agent  {
 	final static double angleRecalage=15;
 	final static double margeRotation = 1;
 	final static double vitesseRotation=200;
-	final static double vitesseAvancer=500;
+	final static double vitesseAvancer=400;
 	final static double tempsAttenteEntreDeuxMesureDistance = 100;
 	final static double distanceDeReculPostBut=0.8;
 	final static double distanceDeReculPostObstacle=0.5;
@@ -67,6 +67,7 @@ public class Agent  {
 	int etat;
 	int etatPrecedent;
 	String couleur;
+	private Chrono chrono;
 	
 	/**
 	 * initialise un agent
@@ -91,7 +92,8 @@ public class Agent  {
 		distanceAParcourir = 0; 
 		etat=8;
 		etatPrecedent=8;
-		String couleur="";
+		couleur="";
+		chrono=new Chrono();
 	}
 
 
@@ -130,7 +132,11 @@ public class Agent  {
 
 
 		Agent robot=new Agent(new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B),new EchoSensor (SensorPort.S3),new TouchSensor(SensorPort.S2), new ColorimetrieSensor(SensorPort.S1),new Boussole(regardRobot),new Carte(regardRobot,baseRobot));
-	
+		
+		robot.a.forward(2);
+		System.out.println(robot.a.getCheminParcouru());
+		
+		
 	
 	/*	
 			while(!Button.ESCAPE.isDown()) {
@@ -145,15 +151,20 @@ public class Agent  {
 		
 		
 	
-		
+		/*
 		robot.a.forward();
 		while(!robot.isMur()) {
 			System.out.println("avance");
 		}
 		robot.recalibrageMur();
 		
-		/*	robot.a.forward(0.1);
-		robot.rechercheTournante();*/
+			robot.a.forward(0.1);
+		robot.rechercheTournante();
+		
+		
+		robot.etat=PALET_ATTRAPE;
+		while(!Button.ESCAPE.isDown()) {
+		robot.recherchePrincipale();}*/
 		
 	} 
 
@@ -164,7 +175,6 @@ public class Agent  {
 	 * @author charlotte
 	 */
 	public void recherchePrincipale() throws FileNotFoundException, IOException {
-		etatPrecedent=etat;
 		switch(etat) {
 		case (FIRTS_PALET):
 			debutAutomate();
@@ -173,6 +183,7 @@ public class Agent  {
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
+		etatPrecedent=etat;
 		etat=CHERCHE_EN_ROND;
 		break;
 		case (CHERCHE_EN_ROND) : 
@@ -183,12 +194,22 @@ public class Agent  {
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
+		etatPrecedent=etat;
 		etat=DETECTION_PALET;
 		break;
 		case (DETECTION_PALET):
-			if (!avanceVersPalet()) etat=OBSTACLE_EN_VU;
-			else if (distanceAvant<=seuilDetectionPalet+margeDistance) etat=FACE_AU_PALET;
-			else etat=RECALIBRAGE_A_FAIRE;
+			if (!avanceVersPalet()) {
+				etatPrecedent=etat;
+				etat=OBSTACLE_EN_VU;
+			}
+			else if (distanceAvant<=seuilDetectionPalet+margeDistance) {
+				etatPrecedent=etat;
+				etat=FACE_AU_PALET;
+			}
+			else {
+				etatPrecedent=etat;
+				etat=RECALIBRAGE_A_FAIRE;
+			}
 		System.out.println("distance"+distanceAvant);
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
@@ -197,15 +218,23 @@ public class Agent  {
 		}
 		break;
 		case (FACE_AU_PALET):
-			if(fonceUntilPush()) etat=PALET_ATTRAPE ;
-			else etat=OBSTACLE_EN_VU;
+			if(fonceUntilPush()) {
+				etatPrecedent=etat;
+				etat=PALET_ATTRAPE ;
+			}
+			else {
+				etatPrecedent=etat;
+				etat=OBSTACLE_EN_VU;
+			}
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
 		break;
-		case(AUCUN_PALET_EN_VU) : etat=CHERCHE_EN_ROND; // ÃÂ  la fin de cherche en rond
+		case(AUCUN_PALET_EN_VU) : 
+			etatPrecedent=etat;
+			etat=CHERCHE_EN_ROND; // ÃÂ  la fin de cherche en rond
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
@@ -213,12 +242,14 @@ public class Agent  {
 		}
 		break;
 		case(OBSTACLE_EN_VU) :
+			System.out.println("etatPrecedent "+etatPrecedent);
 			if (etatPrecedent==PALET_ATTRAPE) {
-			//	recalibrerMur(); se mettre vers la distance moindre du mur
+				recalibrageMur(); // se mettre vers la distance moindre du mur
+				etatPrecedent=etat;
 				etat=PALET_ATTRAPE;
 			}
 			else {
-				
+				etatPrecedent=etat;
 				 etat=CHERCHE_EN_ROND;
 			}
 		demiTour();
@@ -230,8 +261,14 @@ public class Agent  {
 		}
 		break;
 		case(PALET_ATTRAPE): 
-			if (mettreUnBut()) etat=CHERCHE_EN_ROND;
-			else etat=OBSTACLE_EN_VU;
+			if (mettreUnBut()) {
+				etatPrecedent=etat;
+				etat=CHERCHE_EN_ROND;
+			}
+			else {
+				etatPrecedent=etat;
+				etat=OBSTACLE_EN_VU;
+			}
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
@@ -240,10 +277,22 @@ public class Agent  {
 		break;
 		case(RECALIBRAGE_A_FAIRE) :
 			System.out.println("recalibrage");
-		if (rectifiePosition(1)) etat=FACE_AU_PALET;
-		else if (rectifiePosition(-1)) etat=FACE_AU_PALET;
-		else etat=AUCUN_PALET_EN_VU;
-		if(isMur() || isLigneBlanche()) etat=OBSTACLE_EN_VU;
+		if (rectifiePosition(1)) {
+			etatPrecedent=etat;
+			etat=FACE_AU_PALET;
+		}
+		else if (rectifiePosition(-1)) {
+			etatPrecedent=etat;
+			etat=FACE_AU_PALET;
+		}
+		else {
+			etatPrecedent=etat;
+			etat=AUCUN_PALET_EN_VU;
+		}
+		if(isMur() || isLigneBlanche()) {
+			etatPrecedent=etat;
+			etat=OBSTACLE_EN_VU;
+		}
 		if (DEBUG) {
 			System.out.println("boussolle "+b.getDir());
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
@@ -333,7 +382,7 @@ public class Agent  {
 			// VINCENT
 			System.out.println("Angle: " +getDiff(c.getBaseE()));
 			tourner(getDiff(c.getBaseE())); 
-			while (!couleur.equals("white")) {
+			while (!couleur.equals("white") || true) {
 				a.forward();
 				if (lectureCouleur()) {
 					return mettreUnBut();
@@ -509,8 +558,10 @@ public class Agent  {
 		}
 		private void recalibrageMur() {
 			// si je me suis d�cal� vers le moins ou vers le plus
-			ArrayList<Double> tabList= new ArrayList<Double>();
 			double trouver;
+			a.backward(0.4);
+			ArrayList<Double> tabList= new ArrayList<Double>();
+		
 			tourner(-90);
 			tourner(angleDemiTour);
 			
@@ -522,22 +573,21 @@ public class Agent  {
 			}
 			a.stop();
 			Delay.msDelay(10);
-			tourner(-180);
 			System.out.println(tabList.size()+" distances mesurees"); 
 			trouver=distanceMinMur(tabList);
 			int i=tabList.indexOf(trouver);
 			System.out.println("distances min "+trouver+"a indice "+i); 
-			tourner(angleDemiTour/tabList.size()*i); 
+			tourner(angleDemiTour/tabList.size()*i-180); 
 			System.out.println("je me suis recaler de"+angleRotationPalet/tabList.size()*i+" degrees"); 		
 			System.out.println("distance "+trouver);
 			if (angleRotationPalet/tabList.size()*i<90) {
-				// recalibrage  boussole
-				//je regarde le mur � droite de la base E
+				System.out.println("je suis au "+c.getDirDroiteE());
+				b.setAbsoluteDir(c.getDirDroiteE());
 			}
 			else {
-				// je regarde le mur � gauche de la base E
+				System.out.println("je suis au "+c.getDirDroiteE());
+				b.setAbsoluteDir(c.getDirGaucheE());
 			}
-			
 		}
 
 	/*static public void changerPos(String couleur,Case[] caseAdj) {
