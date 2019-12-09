@@ -20,7 +20,8 @@ import java.util.ArrayList;
 
 public class Agent  {
 	// Parametres de debugage et de lancement reel
-	final static boolean DEBUG=true;
+	final static boolean DEBUG=false;
+	final static boolean DEMARAGE=true;
 	
 	//Constantes representant les etats de l automate
 	final static int CHERCHE_EN_ROND=0;
@@ -179,27 +180,39 @@ public class Agent  {
 	 */
 	public void recherchePrincipale() throws FileNotFoundException, IOException {
 		switch(etat) {
-		case (FIRTS_PALET):
-			debutAutomate();
-		if (DEBUG) debug();
-		etatPrecedent=etat;
-		etat=SECOND_PALET;
-		break;
+      case (FIRTS_PALET):
+              if(Button.UP.isDown()) {
+			           modePause();
+				      }
+              debutAutomate();
+	          	if (DEBUG) debug();
+	          	etatPrecedent=etat;
+	          	etat=SECOND_PALET;
+  	break;
+
 		case (SECOND_PALET):
+             if(Button.UP.isDown()) {
+			           modePause();
+				      }
 							tourner(45);
 							if (DEBUG) debug();
 							etatPrecedent=etat;
 							etat=FACE_AU_PALET;
-		break;		
-		case (CHERCHE_EN_ROND) : 
+		break;	
+		case (CHERCHE_EN_ROND) :
+             if(Button.UP.isDown()) {
+			           modePause();
+				      }
 							distanceAParcourir=rechercheTournante();
 							System.out.println("distanceAParcourir "+distanceAParcourir);
 							if (DEBUG)debug();
 							etatPrecedent=etat;
 							etat=DETECTION_PALET;
 		break;
-
 		case (DETECTION_PALET):
+              if(Button.UP.isDown()) {
+			           modePause();
+				      }
 							chrono.start();
 							if (!avanceVersPalet()) {
 								etatPrecedent=etat;
@@ -217,7 +230,11 @@ public class Agent  {
 				//			if (a.addParcour(chrono.getDureeSec())) b.setDir(5); TODO
 							if (DEBUG) debug();
 		break;
+
 		case (FACE_AU_PALET):
+  	if(Button.UP.isDown()) {
+				modePause();
+				}
 							chrono.start();
 							if(fonceUntilPush()) {
 								etatPrecedent=etat;
@@ -232,11 +249,20 @@ public class Agent  {
 							if (DEBUG) debug();
 		break;
 		case(AUCUN_PALET_EN_VU) : 
+        	if(Button.UP.isDown()) {
+			modePause();
+			}
 							etatPrecedent=etat;
 							etat=CHERCHE_EN_ROND; // Ã la fin de cherche en rond
 							if (DEBUG) debug();
+
 		break;
+
 		case(OBSTACLE_EN_VU) :
+        if(Button.UP.isDown()) {
+			modePause();
+			}
+
 							System.out.println("etatPrecedent "+etatPrecedent);
 							if (etatPrecedent==PALET_ATTRAPE) {
 								recalibrageMurNordSud(); // se mettre vers la distance moindre du mur
@@ -253,7 +279,11 @@ public class Agent  {
 				//			if (a.addParcour(chrono.getDureeSec())) b.setDir(5); TODO
 							if (DEBUG) debug();
 		break;
+
 		case(PALET_ATTRAPE): 
+if(Button.UP.isDown()) {
+				modePause();
+				}
 							chrono.start();
 							if (mettreUnBut()) {
 								etatPrecedent=etat;
@@ -267,7 +297,12 @@ public class Agent  {
 				//			if (a.addParcour(chrono.getDureeSec())) b.setDir(5); TODO
 							if (DEBUG) debug();
 		break;
+
 		case(RECALIBRAGE_A_FAIRE) :
+        if(Button.UP.isDown()) {
+				modePause();
+				}
+
 							System.out.println("recalibrage");
 							if (rectifiePosition(1)) {
 								etatPrecedent=etat;
@@ -484,7 +519,7 @@ public class Agent  {
 	 
 	 //TODO mettre le nom de la nouvelle methode de boussolle
 	 /**
-	  *  lit la couleur et la transmet � la boussole si ce n'est ni noir ni gris
+	  *  lit la couleur et la transmet à la boussole si ce n'est ni noir ni gris
 	  * @throws FileNotFoundException
 	  * @throws IOException
 	  * 
@@ -498,7 +533,7 @@ public class Agent  {
 	 }
 	
 /**
- *  se d�clenche d�s qu'on croise une ligne blanche
+ *  se déclenche dès qu'on croise une ligne blanche
  * @return
  * @throws FileNotFoundException
  * @throws IOException
@@ -513,9 +548,29 @@ public class Agent  {
 		}
 		return false;
 	}
-	
 	 /**
-		 * trouve la plus petite valeur qui ne soit pas en dessous du seuil de d�taction du palet
+		 * @author nicolas
+		 * @param demarage
+		 */
+		public void modePause() {
+			System.out.println("  MODE PAUSE ACTIVEE");
+			System.out.println(" PRESS ENTER POUR LANCER");
+			System.out.println("ou press escape et enter ");
+			System.out.println("pour tout arreter");
+			
+			System.out.println("angle: "+ b.getDir());
+			Delay.msDelay(3000);
+			
+			Button.ENTER.waitForPressAndRelease();
+			if(Button.ESCAPE.isDown()) {
+				etat=STOP;
+				return;
+			}
+		}
+	
+
+	 /**
+		 * trouve la plus petite valeur qui ne soit pas en dessous du seuil de détaction du palet
 		 * @param list
 		 * @return
 		 * @author charlotte
@@ -622,6 +677,7 @@ public class Agent  {
 			System.out.println("getCheminParcouru "+a.getCheminParcouru());
 			Button.ENTER.waitForPressAndRelease() ;
 		}
+
 
 	/*static public void changerPos(String couleur,Case[] caseAdj) {
 		if (b.getDir() <= 90 && b.getDir() >= 0) {
