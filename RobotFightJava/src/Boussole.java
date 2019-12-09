@@ -122,5 +122,9 @@ public class Boussole {
 			throw new IllegalArgumentException("Combinaison n'existe pas");
 		}
 	}
+	
+	public void setAbsoluteDir(int angle) {
+		this.dir = angle;
+	}
 }
 

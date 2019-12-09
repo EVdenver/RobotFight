@@ -11,6 +11,20 @@ public class Carte {
 		this.baseE = e;
 	}
 	
+
+
+	
+	public int getDirDroiteE() {
+		if(baseE==0) return 270;
+		return 90;
+	}
+	
+	
+	public int getDirGaucheE() {
+		if(baseE==0) return 90;
+		return 270;
+	}
+
 	/**
 	 * @author darkf
 	 * @return la position de la base ennemie

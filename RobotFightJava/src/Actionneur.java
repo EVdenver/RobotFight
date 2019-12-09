@@ -10,11 +10,10 @@ public class Actionneur {
 	private EV3MediumRegulatedMotor mPincesMotor;
 	private boolean open=false;
 	Delay d= new Delay();
-	private final static int SPEED = 500; //degrees/sec
+	private final static int SPEED = 400; //degrees/sec
 	private final static double WHEEL_RADIUS = 0.05; // en mètre 
 	private final static int ROTATION_FACTOR=325; //facteur modulant la relation temps/vitesse/angle(en celcius) qui permet au robot de tourner sur son propre axe
 	private boolean avance=true; //180
-	private Chrono chrono=new Chrono();
 	private double cheminParcouru=0;
 	
 	public Actionneur(Port left_port, Port right_port, Port pinces_port) {
@@ -39,6 +38,15 @@ public class Actionneur {
 		open=true;
 		}
 		
+	}
+	
+	public boolean addParcour(double d) {
+		cheminParcouru+=d*SPEED;
+		if (cheminParcouru>=4000) {
+			cheminParcouru-=4000;
+			return true;
+		}
+		return false;
 	}
 	
 	public void closePince() { 
@@ -68,7 +76,7 @@ public class Actionneur {
 		forward();
 		Delay.msDelay((long) (time*1000)); // en ms		
 		stop();
-		cheminParcouru+=distance*SPEED;
+		cheminParcouru+=distance*SPEED*2;
 	//	return (timeStampBefore-timeStampAfter)*distanceByS*1000; // retourne la distance vraiment parcourue
 	}
  
@@ -110,16 +118,13 @@ public class Actionneur {
 
 
 	void forward() {
-		chrono.start();
 		mLeftMotor.startSynchronization();
 		mLeftMotor.forward();
 		mRightMotor.forward();
 		mLeftMotor.endSynchronization();
-		chrono.stop();
-		cheminParcouru+=chrono.getDureeSec()*SPEED;	
 	}
 	
-	
+
 	
 	
 	public double getCheminParcouru() {
