@@ -218,9 +218,9 @@ public class ColorimetrieSensor {
 			color = "grey";
 		}
 
-
-		System.out.println("The color is " + color + " \n");
-
+		if (!color.equals("grey")) {
+			System.out.println("The color is " + color + " \n");
+		}
 		return color;
 	}
 }

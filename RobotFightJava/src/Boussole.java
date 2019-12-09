@@ -52,8 +52,8 @@ public class Boussole {
 	 * 
 	 * Prend la couleur en parametre et si la combinaison de couleur existe dans l'enum existe regarde si le robot est dans le bons sens et corrige la boussole
 	 */
-	public boolean corrigerBoussole(String couleur) {
-		CouleurLocalisation c = initCouleur(couleur);
+	/*public boolean corrigerBoussole(String couleur) {
+		CouleurLocalisation[] c = CouleurLocalisation.values();
 		if(!getCouleur().equals(couleur)) {
 			switch (c) {
 			case paire1:
@@ -97,31 +97,7 @@ public class Boussole {
 			}
 		}
 		return false;
-	}
-	
-	/**
-	 * 
-	 * @param c1 la nouvelle couleur vue
-	 * @return un element de l enum correspondant a la combinaisonn de couleur
-	 */
-	private CouleurLocalisation initCouleur(String c1) {
-		if (c1.equals("green") && this.couleur.equals("blue")) {
-			System.out.println("1");
-			return CouleurLocalisation.paire1;
-		}else if (c1.equals("blue") && this.couleur.equals("green")) {
-			System.out.println("2");
-			return CouleurLocalisation.paire2;
-		}else if (c1.equals("yellow") && this.couleur.equals("red")) {
-			System.out.println("4");
-			return CouleurLocalisation.paire4;
-		}else if (c1.equals("red") && this.couleur.equals("yellow")) {
-			System.out.println("3");
-			return CouleurLocalisation.paire3;
-		}else {
-			System.out.println("D");
-			throw new IllegalArgumentException("Combinaison n'existe pas");
-		}
-	}
+	}*/
 	
 	public void setAbsoluteDir(int angle) {
 		this.dir = angle;

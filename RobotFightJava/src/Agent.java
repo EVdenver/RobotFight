@@ -1,19 +1,9 @@
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.util.Properties;
 
 import lejos.hardware.Button;
-import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
-import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 import java.util.ArrayList;
 
@@ -103,7 +93,6 @@ public class Agent  {
 
 	public static void main(String[] args) throws IOException {
 		
-		//	cs.calibration();
 
 		switch (positionBase) {
 		case 'A':
@@ -137,12 +126,16 @@ public class Agent  {
 
 		Agent robot=new Agent(new Actionneur(MotorPort.C, MotorPort.A, MotorPort.B),new EchoSensor (SensorPort.S3),new TouchSensor(SensorPort.S2), new ColorimetrieSensor(SensorPort.S1),new Boussole(regardRobot),new Carte(regardRobot,baseRobot));
 		
-		robot.a.forward(2);
-		System.out.println(robot.a.getCheminParcouru());
+		Button.ENTER.waitForPressAndRelease();
+		
+		//robot.cs.calibration();
+		//robot.tourner(90);
+		/*robot.a.forward(2);
+		System.out.println(robot.a.getCheminParcouru());*/
 		
 		
 	
-	/*	
+		
 			while(!Button.ESCAPE.isDown()) {
 			System.out.println("Etat "+robot.etat);
 			if (robot.ts.isPressed()) {
@@ -151,7 +144,7 @@ public class Agent  {
 			}
 			robot.recherchePrincipale();
 			if (robot.etat==STOP) break;
-		}*/
+		}
 		
 		
 	
@@ -194,7 +187,8 @@ public class Agent  {
              if(Button.UP.isDown()) {
 			           modePause();
 				      }
-							tourner(45);
+							a.openPince();
+							tourner(100);
 							if (DEBUG) debug();
 							etatPrecedent=etat;
 							etat=FACE_AU_PALET;
@@ -227,7 +221,7 @@ public class Agent  {
 								etat=RECALIBRAGE_A_FAIRE;
 							}
 							chrono.stop();
-				//			if (a.addParcour(chrono.getDureeSec())) b.setDir(5); TODO
+							if (a.addParcour(chrono.getDureeSec())) b.setDir(-5); 
 							if (DEBUG) debug();
 		break;
 
@@ -245,7 +239,7 @@ public class Agent  {
 								etat=OBSTACLE_EN_VU;
 							}
 							chrono.stop();
-				//			if (a.addParcour(chrono.getDureeSec())) b.setDir(5); TODO
+							if (a.addParcour(chrono.getDureeSec())) b.setDir(-5); 
 							if (DEBUG) debug();
 		break;
 		case(AUCUN_PALET_EN_VU) : 
@@ -265,7 +259,7 @@ public class Agent  {
 
 							System.out.println("etatPrecedent "+etatPrecedent);
 							if (etatPrecedent==PALET_ATTRAPE) {
-								recalibrageMurNordSud(); // se mettre vers la distance moindre du mur
+								//recalibrageMurNordSud(); // se mettre vers la distance moindre du mur
 								etatPrecedent=etat;
 								etat=PALET_ATTRAPE;
 							}
@@ -276,7 +270,7 @@ public class Agent  {
 							chrono.start();
 							demiTour();
 							chrono.stop();
-				//			if (a.addParcour(chrono.getDureeSec())) b.setDir(5); TODO
+							if (a.addParcour(chrono.getDureeSec())) b.setDir(-5);
 							if (DEBUG) debug();
 		break;
 
@@ -294,7 +288,7 @@ if(Button.UP.isDown()) {
 								etat=OBSTACLE_EN_VU;
 							}
 							chrono.stop();
-				//			if (a.addParcour(chrono.getDureeSec())) b.setDir(5); TODO
+							if (a.addParcour(chrono.getDureeSec())) b.setDir(-5); 
 							if (DEBUG) debug();
 		break;
 
@@ -432,7 +426,6 @@ if(Button.UP.isDown()) {
 				 * j'ai rajouter cette ligne ; elle te renvoit la couleur en string
 				 */
 				lectureCouleur();
-				Case[] caseAdj = c.getCasesAdj(b.getPos());
 				distanceMaintenant=es.getDistance();
 				if (isMur() || isLigneBlanche()) return false;
 			}
@@ -527,7 +520,7 @@ if(Button.UP.isDown()) {
 	 public boolean lectureCouleur() throws FileNotFoundException, IOException {
 		 couleur=cs.laCouleur();
 		 if (!couleur.equals("grey") && !couleur.equals("black")) {
-		//	 return b.(couleur);	
+			 //return b.corrigerBoussole(couleur);	
 		 }
 		 return false;
 	 }
@@ -604,7 +597,7 @@ if(Button.UP.isDown()) {
 		 *  indique à la boussolle si on est face au mur Nord ou Sud
 		 *  @author charlotte
 		 */
-		private void recalibrageMurNordSud() {
+		/*private void recalibrageMurNordSud() {
 			double trouver;
 			ArrayList<Double> tabList= new ArrayList<Double>();
 			
@@ -635,7 +628,7 @@ if(Button.UP.isDown()) {
 				System.out.println("je suis au "+c.getDirDroiteE());
 				b.setAbsoluteDir(c.getDirGaucheE());
 			}
-		}
+		}*/
 		
 		
 		/**

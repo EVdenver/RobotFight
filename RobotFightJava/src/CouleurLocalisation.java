@@ -30,4 +30,8 @@ public enum CouleurLocalisation {
 	public int getAngle2() {
 		return this.angle2;
 	}
+	
+	public CouleurLocalisation[] getEnum() {
+		return CouleurLocalisation.values();
+	}
 }
