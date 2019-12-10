@@ -36,7 +36,7 @@ public class Agent  {
 	final static double angleRecalage=15;
 	final static double margeRotation = 1;
 	final static double vitesseRotation=200;
-	final static double vitesseAvancer=400;
+	final static double vitesseAvancer=500;
 	final static double tempsAttenteEntreDeuxMesureDistance = 100;
 	final static double distanceDeReculPostBut=0.8;
 	final static double distanceDeReculPostObstacle=0.5;
@@ -188,7 +188,7 @@ public class Agent  {
 			           modePause();
 				      }
 							a.openPince();
-							tourner(100);
+							tourner(92);
 							if (DEBUG) debug();
 							etatPrecedent=etat;
 							etat=FACE_AU_PALET;
@@ -330,7 +330,7 @@ if(Button.UP.isDown()) {
 		a.openPince();
 		fonceUntilPush();
 		tourner(30);
-		a.forward(1);
+		a.forward(0.5);
 		mettreUnBut();
 	}
 
