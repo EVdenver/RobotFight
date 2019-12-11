@@ -1,43 +1,49 @@
 import lejos.hardware.Button;
-
-import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.lcd.Font;
-import lejos.hardware.lcd.GraphicsLCD;
 import lejos.hardware.port.Port;
-import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.robotics.Color;
 import lejos.robotics.SampleProvider;
 import lejos.robotics.filter.MeanFilter;
 import lejos.utility.Delay;
 
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
-import lejos.hardware.port.Port;
 
+/**
+ * @author Nicolas
+ *Classe pour calibrer les couleurs et le capteur de couleur
+ */
 public class ColorimetrieSensor {
-	
+
 	private static EV3ColorSensor colorSensor;
 	private static Properties sauveur;
-	
+
+	//Constructor
+	/**
+	 * @author Nicolas
+	 * @param port le port sur lequel est branche le capteur couleur
+	 * @throws IOException
+	 * Constructeur de la classe
+	 */
 	public ColorimetrieSensor(Port port ) throws IOException {
-		this.colorSensor=new EV3ColorSensor(port);
+		ColorimetrieSensor.colorSensor=new EV3ColorSensor(port);
 		sauveur=getProperties();
 	}
 
+	//Method
+	/**
+	 * @author Nicolas
+	 * Calibre couleur par couleur le capteur couleur et enregistre les differentes valeurs dans un fichier
+	 */
 	public void calibration() {
 		try {
 			sauveur = new Properties();
 			OutputStream out=new FileOutputStream("couleur"); 
-			boolean again= true;
 
 			SampleProvider average = new MeanFilter(colorSensor.getRGBMode(), 1);
 			colorSensor.setFloodlight(Color.WHITE);
@@ -93,34 +99,51 @@ public class ColorimetrieSensor {
 			System.exit(0);
 		}
 	}
-	// auteur nicolas
+	/**
+	 * @author Nicolas
+	 * @return le fichier contenant les couleurs
+	 * @throws IOException
+	 * Ouvre le fichier et enregistre la properties trouvee puis retourne le nouveau fichier
+	 */
 	public static Properties getProperties() throws IOException {
 		InputStream in= new FileInputStream("couleur");
 		sauveur= new Properties();
 		sauveur.load(in);
 		return sauveur;
 	}
-	
-	//auteur nicolas
+
+	/**
+	 * @author Nicolas
+	 * @param v1
+	 * @param v2
+	 * @return le produit scalaire des deux valeurs en parametre
+	 */
 	public static double scalaire(float[] v1, float[] v2) {
 		return Math.sqrt (Math.pow(v1[0] - v2[0], 2.0) +
 				Math.pow(v1[1] - v2[1], 2.0) +
 				Math.pow(v1[2] - v2[2], 2.0));
 	}
 
-	public static float [] getEch() {
+	/**
+	 * @author Nicolas
+	 * @return 
+	 */
+	public static float[] getEch() {
 		SampleProvider med= new MeanFilter(colorSensor.getRGBMode(),1);
 		float[] flat= new float[med.sampleSize()];
 		med.fetchSample(flat,0);
 		return flat;
 	}
-	
-// auteur nicolas
+
+	/**
+	 * @author Nicolas
+	 * @return la couleur vu par le capteur si elle est presente dans le fichier
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public String laCouleur() throws FileNotFoundException, IOException {
-
-
 		float [] sample=getEch();
-		
+
 		float[] blue= new float[3];
 		System.out.println(sauveur.getProperty("Blue"));
 		String[] tab= sauveur.getProperty("Blue").split(",");
@@ -164,55 +187,38 @@ public class ColorimetrieSensor {
 		grey[1]=Float.parseFloat(tab[1]);
 		grey[2]=Float.parseFloat(tab[2]);
 
-
-
-
-		//System.out.println(sauveur.getProperty("Red"));
-
 		double minscal = Double.MAX_VALUE;
 		String color = "";
 
 		double scalaire = scalaire(sample, blue);
-		//Button.ENTER.waitForPressAndRelease();
-		//System.out.println(scalaire);
 		if (scalaire < minscal) {
 			minscal = scalaire;
 			color = "blue";
 		}
 
 		scalaire = scalaire(sample, red);
-		//System.out.println(scalaire);
-		//Button.ENTER.waitForPressAndRelease();
 		if (scalaire < minscal) {
 			minscal = scalaire;
 			color = "red";
 		}
 
 		scalaire = scalaire(sample, green);
-		//System.out.println(scalaire);
-		//Button.ENTER.waitForPressAndRelease();
 		if (scalaire < minscal) {
 			minscal = scalaire;
 			color = "green";
 		}
 
 		scalaire = scalaire(sample, black);
-		//System.out.println(scalaire);
-		//Button.ENTER.waitForPressAndRelease();
 		if (scalaire < minscal) {
 			minscal = scalaire;
 			color = "black";
 		}
 		scalaire = scalaire(sample, white);
-		//System.out.println(scalaire);
-		//Button.ENTER.waitForPressAndRelease();
 		if (scalaire < minscal) {
 			minscal = scalaire;
 			color = "white";
 		}
 		scalaire = scalaire(sample, grey);
-		//System.out.println(scalaire);
-		//Button.ENTER.waitForPressAndRelease();
 		if (scalaire < minscal) {
 			minscal = scalaire;
 			color = "grey";
