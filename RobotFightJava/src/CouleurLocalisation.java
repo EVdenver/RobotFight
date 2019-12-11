@@ -63,9 +63,14 @@ public enum CouleurLocalisation {
 
 	/**
 	 * @author Vincent
-	 * @return toute les valeurs possible de l'enum
+	 * @param col1
+	 * @param col2
+	 * @return la valeur de l'enum en fonction des couleurs passées en parametres
 	 */
-	public CouleurLocalisation[] getEnum() {
-		return CouleurLocalisation.values();
+	public CouleurLocalisation getEnum(String col1, String col2) {
+		for (CouleurLocalisation cl :values()) {
+			if (col1.equals(couleur1) && col2.equals(couleur2)) return cl;
+		}
+		return null;
 	}
 }
