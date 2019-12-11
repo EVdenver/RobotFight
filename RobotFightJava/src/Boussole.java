@@ -1,6 +1,5 @@
 /**
- * 
- * @author darkf
+ * @author Vincent
  * La boussole du Robot lui permettant de se deplacer sur la table
  */
 public class Boussole {
@@ -8,45 +7,59 @@ public class Boussole {
 	private int dir;
 	//Constructor
 	/**
-	 * @author darkf
+	 * @author Vincent
 	 * @param angle angle de base vers lequel le robot porte son regard lors de l'initialisation de la boussole
+	 * Constructeur de la boussole
 	 */
 	public Boussole(int angle) {
 		this.dir = angle;
 	}
 	//Accessor
 	/**
-	 * @author darkf
+	 * @author Vincent
 	 * @return la dernière couleur gardé en mémoire
+	 * Accesseur pour la couleur
 	 */
 	public String getCouleur() {
 		return couleur;
 	}
 	/**
-	 * @author darkf
+	 * @author Vincent
 	 * @param couleur la nouvelle couleur croisé
+	 * Mutateur pour la couleur
 	 */
 	public void setCouleur(String couleur) {
 		this.couleur = couleur;
 	}
 	/**
-	 * @author darkf
+	 * @author Vincent
 	 * @return la direction du champ visuel du robot
+	 * Accesseur pour la direction
 	 */
 	public int getDir() {
 		return this.dir;
 	}		
 	/**
-	 * @author darkf
+	 * @author Vincent
 	 * @param angle la valeur de l'angle qu'il a effectué
+	 * Mutateur pour la direction
 	 */
 	public void setDir(int angle) {
 		this.dir = (this.dir + (angle+360))%360;
 	}
-	//Methods
-	
+
 	/**
-	 * @author darkf
+	 * @author Charlotte
+	 * @param angle la nouvelle valeur de la dircetion sans incrementation
+	 * Mutateur alternatif pour la direction
+	 */
+	public void setAbsoluteDir(int angle) {
+		this.dir = angle;
+	}
+	//Methods
+
+	/**
+	 * @author Vincent
 	 * @param couleur la nouvelle couleur vue
 	 * @return true si le robot etait pas dans le bon sens tout en recalibrant la boussole, false sinon
 	 * 
@@ -98,9 +111,4 @@ public class Boussole {
 		}
 		return false;
 	}*/
-	
-	public void setAbsoluteDir(int angle) {
-		this.dir = angle;
-	}
 }
-

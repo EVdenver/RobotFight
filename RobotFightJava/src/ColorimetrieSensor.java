@@ -116,7 +116,7 @@ public class ColorimetrieSensor {
 	}
 	
 // auteur nicolas
-	public static String laCouleur() throws FileNotFoundException, IOException {
+	public String laCouleur() throws FileNotFoundException, IOException {
 
 
 		float [] sample=getEch();
