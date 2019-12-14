@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>4</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>20</x>
+      <y>184</y>
+      <w>116</w>
+      <h>204</h>
+    </coordinates>
+    <panel_attributes>Actionneur
+Package::codeRobot
+--
+- mLeftMotor : EV3LargeRegulatedMotor
+- mRightMotor : EV3LargeRegulatedMotor
+- mPinceMotor : EV3MediumRegulatedMotor
+-open : boolean
+- d : Delay
+_-SPEED : int_
+_-WHEEL_RADIUS : double_
+_-ROTATION_FACTOR: int_
+-avance : boolean
+-cheminParcouru : double
+--
++Actionneur(Port, Port, Port)
++setSpeed(int):void
++getCheminParcouru() : double
++isAvance() : boolean
++openPince():void
++closePince():void
++addParcour(double):boolean
++backward(double):double
++forward(double):void
++backwardUntilStop():boolean
++forwardUntilStop():boolean
++stop():void
++isMoving():boolean
++rotate(double):void
++forward():void
++backward():void
+-rotateClockwise():void
+-rotateCounterClockwise():void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>308</x>
+      <y>208</y>
+      <w>212</w>
+      <h>420</h>
+    </coordinates>
+    <panel_attributes>Agent
+Package::codeRobot
+--
+_-CHERCHE_EN_ROND:int_
+_-OBSTACLE_EN_VU:int_
+_-DETECTION_PALET:int_
+_-AUCUN_PALET_EN_VU:int_
+_-FACE_AU_PALET:int_
+_-PALET_ATTRAPE:int_
+_-RECALIBRAGE_A_FAIRE:int_
+_-STOP:int_
+_-FIRST_PALET:int_
+_-SECOND_PALET:int_
+_-seuilDetectionPalet:double_
+_-margedistance:double_
+_-seuilArretMur:double_
+_-angleRotationPalet:double_
+_-angleDemiTour:double_
+_-anglerecalage:double_
+_-margeRotation:double_
+_-vitesseRotation:double_
+_-vitesseAvancer:double_
+_-tempsAttenteEntreDeuxMesureDistance:double_
+_-distanceDeReculPostBut:double_
+_-distanceDeReculPostObstacle:double_
+_-positionBase:char_
+_-regardRobot:int_
+_-baseRobot:int_
+-a:Actioneur
+-es:EchoSensor
+-ts:TouchSensor
+-cs:ColorimetrieSensor
+-b:Boussole
+-c:Carte
+-distanceMaintenant:double
+-distanceAvant:double
+-distanceAParcourir:double
+-etat:int
+-etatPrecedent:int
+-couleur:String
+-chrono:Chrono
+-nbrPaletAttrape:int
+--
++Agent(Actionneur,EchoSensor,TouchSensor,ColorimetrieSensor,Boussole,Carte)
+_+main(Sting[ ] args):void_
++recherchePrincipale():void
++debutAutomate():void
++rechercheTournante():double
++avancerVersPalet():boolean
++mettreUnBut():boolean
++fonceUntilPush():boolean
++rectifiePosition(int):boolean
++getDiff(int):int
++tourner():void
++isMur():boolean
++demiTour():void
++lectureCouleur():boolean
++isLigneBlanche():boolean
++modePause():void
+-distanceMinPalet(ArrayList&lt;Double&gt;):double
+-distanceMinMur(ArrayList&lt;Double&gt;):double
+-recalibrageMurNordSud():void
+-recalibrageBaseE():void
+_-calculDistanceMur():double_
+_-calculHypothenus(double,double,double):double_</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>648</x>
+      <y>304</y>
+      <w>88</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>Boussole
+Package::codeRobot
+--
+-couleur:String
+-dir:int
+--
++Boussole(int)
++getCouleur():String
++setCouleur(String):void
++getDir():int
++setDir(int):void
++setAbsoluteDir(int):void
++corrigerBoussole(String):boolean</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>648</x>
+      <y>396</y>
+      <w>84</w>
+      <h>68</h>
+    </coordinates>
+    <panel_attributes>Carte
+Package::codeRobot
+--
+-baseE:int
+-baseA:int
+--
++Carte(int,int)
++getBaseE():int
++getBaseA():int
++getDirDroiteE():int
++getDirGaucheE():int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>648</x>
+      <y>472</y>
+      <w>84</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>Chrono
+Package::codeRobot
+--
+-tempsDepart:long
+-tempsFin:long
+-pauseDepart:long
+-pauseFin:long
+-duree:long
+--
++getDureeSec():long
++getDureeMs():long
++getDureeTxt():String
++start():void
++pause():void
++resume():void
++stop():void
++timeToHMS(long):String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>72</x>
+      <y>560</y>
+      <w>84</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>ColorimetrieSensor
+Package::codeRobot
+--
+_-colorSensor:EV3ColorSensore_
+_-sauveur:Properties_
+--
++ColorimetrieSensor(Port)
++claibration():void
+_+getProperties():Properties_
+_+scalaire(float[ ],float[ ]):double_
+_+getEch():float[ ]_
++laCouleur():String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>532</x>
+      <y>172</y>
+      <w>116</w>
+      <h>124</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt;
+CouleurLocalisation
+Package:codeRobot
+--
+paire1("green","blue",80,280)
+paire2("blue","green",100,260)
+paire3("red","yellow",190,350)
+paire4("yellow","red",10,170)
+--
+-couleur1:String
+-couleur2:String
+-angle1:int
+-angle2:int
+--
+-CouleurLocalisation(String,String,int,int)
++getCouleur1():String
++getCouleur2():String
++getAngle1():int
++getAngle2():int
++getEnum(String,String):CouleurLocalisation</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>36</x>
+      <y>420</y>
+      <w>84</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>EchoSensor
+Package::codeRobot
+--
++EchoSensor(Port)
++getDistance():float</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>36</x>
+      <y>496</y>
+      <w>84</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>TouchSensor
+Package::codeRobot
+--
++TouchSensor(Port)
++isPressed():boolean</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>132</x>
+      <y>288</y>
+      <w>184</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1</panel_attributes>
+    <additional_attributes>10.0;10.0;440.0;260.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>48</x>
+      <y>396</y>
+      <w>60</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes>EV3UltrasonicSensor</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>72</x>
+      <y>404</y>
+      <w>12</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>116</x>
+      <y>396</y>
+      <w>200</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1</panel_attributes>
+    <additional_attributes>10.0;70.0;480.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>108</x>
+      <y>408</y>
+      <w>208</w>
+      <h>160</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1</panel_attributes>
+    <additional_attributes>10.0;380.0;500.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>48</x>
+      <y>468</y>
+      <w>60</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>EV3TouchSensor</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>72</x>
+      <y>480</y>
+      <w>12</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>116</x>
+      <y>400</y>
+      <w>200</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1</panel_attributes>
+    <additional_attributes>10.0;260.0;480.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>516</x>
+      <y>336</y>
+      <w>140</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1</panel_attributes>
+    <additional_attributes>330.0;10.0;10.0;200.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>516</x>
+      <y>464</y>
+      <w>140</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1</panel_attributes>
+    <additional_attributes>330.0;130.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>516</x>
+      <y>416</y>
+      <w>140</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1</panel_attributes>
+    <additional_attributes>330.0;10.0;10.0;20.0</additional_attributes>
+  </element>
+</diagram>
