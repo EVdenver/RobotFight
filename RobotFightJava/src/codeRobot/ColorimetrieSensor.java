@@ -142,7 +142,7 @@ public class ColorimetrieSensor {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public String laCouleur() throws FileNotFoundException, IOException {
+	public static String laCouleur() throws FileNotFoundException, IOException {
 		float [] sample=getEch();
 
 		float[] blue= new float[3];
